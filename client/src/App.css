@@ -1,21 +1,51 @@
 @import '~antd/dist/antd.css';
 
-.header-title{
-    color: #d8d8d8;
-    font-size: 1.5em;
-    font-family: Arial;
+html, body{
+    min-height: 100% !important;
+    height: 100%;
+
+}
+
+#app{
+    height: 100%;
+}
+
+.layout{
+    min-height:900px;
+    height: 100%;
 }
 
 .header{
-      display:flex;
-      flex-direction:row;
-  }
+    display:flex;
+    flex-direction:row;
+    line-height: 50px;
+}
+
+.header-title{
+    color: #d8d8d8;
+    font-size: 1.2em;
+    font-family: Arial;
+
+}
+
 
 .paper-title{
     color: #787878;
-    font-size: 1.5em;
+    font-size: 1.2em;
     font-family: Arial;
     font-style: italic;
     margin-left:auto;
     margin-right:0;
+}
+
+.view{
+    border: solid 1px #c7cabb;
+    border-radius: 5px;
+    padding: 5px;
+    height: 100%;
+
+}
+
+#svg_view{
+    height: 100% ;
 }

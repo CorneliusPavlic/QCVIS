@@ -10,18 +10,16 @@ class DOM extends Component {
     }
 
     componentDidMount(){
-        axios.get(`/api/add_one`)
-            .then(res => {
-                const persons = res.data;
-                console.log(persons)
-            })
+
     }
 
     render(){
 
         return(
             <div>
-                <h1>I'm a child component from {this.state.item}</h1>
+                <svg id="svg_view">
+
+                </svg>
             </div>
         )
     }
