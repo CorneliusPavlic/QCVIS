@@ -2,7 +2,31 @@ import qiskit
 from qiskit import IBMQ
 from datetime import datetime
 
+def mapfunc(i):
+    return i[0]
+arr = [1,2,4,6]
+print(list(map(mapfunc, enumerate(arr))))
+exit()
+
+
+obj1 = {'name':'s'}
+obj2 = {'name':'l'}
+list = [obj1, obj2]
+list.remove(obj1)
+print(list)
+exit()
+
+print('yes' if set([1,2]) in [set([2,1]), set([3,4])] else 'no')
+
+exit()
+
 obj = {'name': 'shaolun', "age": 12}
+
+for (k,v) in obj.items():
+    print(k,v)
+
+exit()
+
 ele = obj.pop('ae', None)
 print(obj)
 exit()
