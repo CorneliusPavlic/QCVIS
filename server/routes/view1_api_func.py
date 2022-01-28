@@ -41,7 +41,6 @@ def temporal_data_function(db, backends, interval, timerange):
         day = day - timedelta(days=int(interval))
         date_arr.append('{year}-{month}-{day}'.format(year=day.year, month=day.month, day=day.day))
 
-    print(date_arr)
 
     # 查找时的格式: '2022-1-11', 而不是 '2022-01-11'
     # date_arr = ['2021-10-10', '2021-10-11', '2021-10-12', '2021-10-13', '2021-10-14', '2021-10-15'] # TODO: 生成timeslicing的数组， 并且是01=>1, 并且使cx4_3 == cx3_4

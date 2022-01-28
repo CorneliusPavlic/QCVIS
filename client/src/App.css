@@ -53,7 +53,11 @@ html, body{
     overflow-y: auto;
     overflow-x: auto;
     height: 100%;
-    max-width: 420px;
+    max-width: 450px;
+}
+
+#svg_container_2{
+    max-width: 300px;
 }
 
 #container_1{
@@ -64,7 +68,10 @@ html, body{
 
 #container_2{
     position: absolute;
-    left: 450px;
+    left: 500px;
 }
 
+.display-none{
+    display: none;
+}
 

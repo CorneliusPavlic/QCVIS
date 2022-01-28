@@ -1,13 +1,14 @@
-from flask import Flask, request
+from flask import Flask, request, session
 from flask_pymongo import PyMongo
 from flask_cors import CORS
+
+import os
 
 from functions.update_calidata import download_cali_data_to_latest
 
 from routes.view1_api_func import temporal_data_function
-from routes.view2_api_func import view2_api_func
+from routes.view2_get_func import view2_get_func
 from routes.view2_post_func import view2_post_func
-
 
 
 app = Flask(__name__)
@@ -15,6 +16,7 @@ CORS(app)
 
 app.config['ENV'] = 'development' # 'production
 app.config['DEBUG'] = True
+app.config['SECRET_KEY'] = os.urandom(24)
 
 # 配置数据库端口
 mongodb_client = PyMongo(app, uri="mongodb://localhost:27017/QCVIS")
@@ -24,9 +26,9 @@ db = mongodb_client.db
 # download_cali_data_to_latest()
 
 
-# @app.route('/')
-# def hello_world():
-#     return 'Hello World!'
+@app.route('/')
+def hello_world():
+    return 'Hello World!'
 
 
 
@@ -70,18 +72,42 @@ def view1_api(timerange=30, interval=1, backends='ibm_lagos'): # 默认路由参
         return 'error'
 
 
+
+
+transpiled_data = 'transData_TBD'
+
 @app.route('/view2_api/', methods = ['GET', 'POST'])
-@app.route('/view2_api/<int:trans_times>/', methods = ['GET', 'POST'])
-def view2_api(trans_times=10):
+def view2_api():
     try:
-        if request.method == "POST":
-            trans_times = request.get_json()['trans_times']
-            view2_post_func(trans_times)
+        global transpiled_data
 
-        data = view2_api_func(db, trans_times)
+        if request.method == 'POST':
+            trans_times = request.get_json()['trans_times'] or 100
+            backend_name = request.get_json()['backend_name'] or 'ibmq_jakarta' # 如果没有指定，默认用 ibmq_jakarta 来执行
 
-        # return data
-        return 'success'
+            result = view2_post_func(trans_times, backend_name)
+
+            data = result[0]
+            transpiled_data = result[1]
+
+
+            return data
+
+
+        if request.method == 'GET':
+
+
+            # 这种情况是已经 通过post请求修改了transpiled_data, 所以类型不再是‘transData_TBD’的 str, 所以可以开始处理而生成 View 3
+            if not isinstance(transpiled_data, str):
+                data = view2_get_func(db, transpiled_data)
+
+                return data
+
+            # 没有修改 transpiled_data 的情况，直接返回原始数值 ‘transData_TBD’
+            return transpiled_data
+
+
+
 
     except Exception as e:
         print(e)
@@ -94,3 +120,37 @@ def view2_api(trans_times=10):
 if __name__ == '__main__':
     app.run()
 
+
+
+
+
+# class Shoe():
+#     """ Creates a new shoe object from which cards are dealt
+#     to the player and the dealer.
+#
+#     Input arguments:
+#     decks :: the number of decks the player wishes to play with.
+#     """
+#
+#     def __init__(self, decks=1):
+#         self.cards_in_shoe = {}
+#         self.total_cards = decks * 52
+#
+#
+#     def get_random_card(self):
+#
+#         pass
+#
+#     def remaining_cards_in_shoe(self):
+#         """ Returns the total number of cards remaining to be
+#         drawn for both player and dealer.
+#         """
+#         return sum(len(v) for v in self.cards_in_shoe.itervalues())
+#
+# shoe = Shoe()
+#
+# print(shoe)
+#
+# session['name'] = shoe
+#
+# print(session.get('name'))

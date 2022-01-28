@@ -21,24 +21,25 @@ class View_1 extends Component {
     render_view1(){
 
         // const {radius} = this.props
+        let select_computer = this.props.select_computer
 
 
         // axios.get('/api/view1_api/30/7/ibm_lagos&ibm_perth&ibmq_belem&ibmq_bogota&ibmq_casablanca&ibmq_jakarta&ibmq_lima&ibmq_manila&ibmq_quito&ibmq_santiago&ibmq_armonk')
-        axios.get('/api/view1_api/30/7/ibm_lagos&ibm_perth&ibmq_belem&ibmq_bogota&ibmq_casablanca&ibmq_jakarta&ibmq_lima&ibmq_manila&ibmq_quito&ibmq_armonk&ibmq_santiago')
+        axios.get('/api/view1_api/30/7/ibm_lagos&ibm_perth&ibmq_belem&ibmq_bogota&ibmq_casablanca&ibmq_jakarta&ibmq_lima&ibmq_manila&ibmq_quito&ibmq_armonk&ibmq_armonk')
             .then(d=>{
 
                 const data = d.data
 
                 // console.log(data)
 
-                d3.select('svg')
+                d3.select('.view1_svg')
                     .remove('*')
 
                 const ref_value = 120
 
                 const attr = 'T1'
 
-                const theta =0.7
+                const theta =0.8
 
                 /*size for View 1*/
                 const {view1_width, view1_height, view1_computer_height, view1_computer_width, view1_computer_block_width, view1_computer_block_height, view1_qubitMaxRadius, view1_qubitHeight, view1_legend_height, view1_legend_width} = params
@@ -61,6 +62,7 @@ class View_1 extends Component {
 
                 let svg = d3.select('#svg_container_1')
                     .append('svg')
+                    .attr('class', 'view1_svg')
                     .attr('width', view1_width * theta)
                     .attr('height', view1_height * theta)
 
@@ -253,6 +255,10 @@ class View_1 extends Component {
                     })
                     .attr('transform', (d,i)=>`translate(${(view1_padding_left/2-15)* theta}, ${(view1_computer_height/2+20)* theta})`)
                     .style('font-size', '0.9em')
+                    .on('click', (d,item)=>{
+                        console.log(item)
+                        select_computer(item[0]['qcomputer'])
+                    })
 
 
 
@@ -349,7 +355,6 @@ class View_1 extends Component {
                     .attr('fill', 'url(#gradient)')
 
 
-
             })
 
 
@@ -365,7 +370,8 @@ class View_1 extends Component {
 
 
     componentDidUpdate() {
-        // console.log('view 1 will update!')
+
+        console.log('view 1 updated')
 
         this.render_view1()
     }
