@@ -26,9 +26,6 @@ db = mongodb_client.db
 # download_cali_data_to_latest()
 
 
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
 
 
 
@@ -73,25 +70,31 @@ def view1_api(timerange=30, interval=1, backends='ibm_lagos'): # 默认路由参
 
 
 
-
+api_data = 'apiData_TBD'
 transpiled_data = 'transData_TBD'
 
 @app.route('/view2_api/', methods = ['GET', 'POST'])
 def view2_api():
     try:
-        global transpiled_data
+        global transpiled_data, api_data
 
         if request.method == 'POST':
+            if not request.data:
+                print('No request body found')
+                return 'No request body found'
+
+            # 获取请求体 Request Body
             trans_times = request.get_json()['trans_times'] or 100
             backend_name = request.get_json()['backend_name'] or 'ibmq_jakarta' # 如果没有指定，默认用 ibmq_jakarta 来执行
 
+
             result = view2_post_func(trans_times, backend_name)
 
-            data = result[0]
+            api_data = result[0]
             transpiled_data = result[1]
 
-
-            return data
+    
+            return api_data
 
 
         if request.method == 'GET':
@@ -99,12 +102,11 @@ def view2_api():
 
             # 这种情况是已经 通过post请求修改了transpiled_data, 所以类型不再是‘transData_TBD’的 str, 所以可以开始处理而生成 View 3
             if not isinstance(transpiled_data, str):
-                data = view2_get_func(db, transpiled_data)
 
-                return data
+                return api_data
 
-            # 没有修改 transpiled_data 的情况，直接返回原始数值 ‘transData_TBD’
-            return transpiled_data
+            # 没有修改 api_data 的情况，直接返回原始数值 ‘api_data_TBD’
+            return api_data
 
 
 
@@ -115,6 +117,9 @@ def view2_api():
 
 
 
+@app.route('/')
+def hello_world():
+    return api_data
 
 
 if __name__ == '__main__':

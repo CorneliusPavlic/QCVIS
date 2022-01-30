@@ -82,18 +82,18 @@ def temporal_data_function(db, backends, interval, timerange):
             computer_arr.append({
                 'timestamp': key,
                 'gate': list(map(lambda obj: {
-                    'computer_id': value['backend_name'],
-                    'gate_name': obj['name'],
-                    'source': 'q_{}'.format(obj['qubits'][0]),
-                    'target': 'q_{}'.format(obj['qubits'][1]),
-                    'error_rate': obj['parameters'][0]['value']
+                        'computer_id': value['backend_name'],
+                        'gate_name': obj['name'],
+                        'source': 'q_{}'.format(obj['qubits'][0]),
+                        'target': 'q_{}'.format(obj['qubits'][1]),
+                        'error_rate': round(obj['parameters'][0]['value'], 4)
                 }, value['gates'])),
                 'qubit': list(map(lambda arr: {
                     'computer_id': value['backend_name'],
                     'qubit_id': 'q_{}'.format(arr[0]),
-                    'T1': arr[1][0]['value'] if arr[1][0]['name'] == 'T1' else 0,
-                    'T2': arr[1][1]['value'] if arr[1][1]['name'] == 'T2' else 0,
-                    'readout_error': arr[1][2]['value'] if arr[1][2]['name'] == 'readout_error' else 0.02,
+                    'T1': round(arr[1][0]['value'], 2) if arr[1][0]['name'] == 'T1' else 0,
+                    'T2': round(arr[1][1]['value'], 2) if arr[1][1]['name'] == 'T2' else 0,
+                    'readout_error': round(arr[1][2]['value'], 4) if arr[1][2]['name'] == 'readout_error' else 0.02,
                 }
                                   , enumerate(value['qubits'])))
             })
@@ -102,7 +102,7 @@ def temporal_data_function(db, backends, interval, timerange):
 
             data[backend_name] = computer_arr
 
-    # pprint(data)
+    pprint(data)
     return data
 
 

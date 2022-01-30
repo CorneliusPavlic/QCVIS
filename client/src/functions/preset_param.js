@@ -15,7 +15,16 @@ const params = {
     'view1_padding_left' : 40,
     'view1_padding_right' : 10,
     'view1_block_top' : 40,
-    'view1_qubit_padding_left' : 10
+    'view1_qubit_padding_left' : 10,
+
+
+    'view23_svg_width': 780,
+    'view23_svg_height' : 1050,
+    'view2_padding_top' : 50,
+    'view2_padding_bottom' : 50,
+    'view2_padding_left' : 50,
+    'view2_padding_right' : 550
+
 }
 
 export default  params

@@ -133,7 +133,7 @@ class View_1 extends Component {
                         let radius = scales['view1'][d['computer_id']][attr](Math.abs(d[attr] - ref_value))
                         return radius*theta
                     })
-                    .attr('fill', d=>d[attr]>=ref_value? '#90ce90':'#e18c8f')
+                    .attr('fill', d=>d[attr]>=ref_value? '#14b3ff':'#fe5e0f')
                     .append('title')
                     .text(d=>`${attr}: ${d[attr].toFixed(2)}`)
 

@@ -57,7 +57,7 @@ html, body{
 }
 
 #svg_container_2{
-    max-width: 300px;
+    max-width: 780px;
 }
 
 #container_1{
@@ -68,7 +68,7 @@ html, body{
 
 #container_2{
     position: absolute;
-    left: 500px;
+    left: 630px;
 }
 
 .display-none{

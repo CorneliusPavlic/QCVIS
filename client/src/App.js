@@ -164,7 +164,8 @@ class App extends Component {
 
                                 <Form>
                                         <Form.Item label="Transpile times" >
-                                            <InputNumber id={'view2-button'} defaultValue={100} min={100} max={1000} step={100}/>
+                                            {/*<InputNumber id={'view2-button'} defaultValue={100} min={100} max={1000} step={100}/>*/}
+                                            <InputNumber id={'view2-button'} defaultValue={3} min={3} max={10} step={1}/>
                                             <Button  style={{margin:'5px'}} onClick={this.handle_View2_button}>Launch Transpilation</Button>
                                         </Form.Item>
                                     <Form.Item  label="Gate Qual. Filter">
