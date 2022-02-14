@@ -75,3 +75,23 @@ html, body{
     display: none;
 }
 
+.circle_gate_source{
+    display: none;
+}
+
+
+.circle_gate_target{
+    display: none;
+}
+
+
+.lineSegment_gate{
+    display: none;
+}
+
+.linkpath23 {
+    fill: none;
+    stroke: #555;
+    stroke-opacity: 0.3;
+    stroke-width: 6px;
+}

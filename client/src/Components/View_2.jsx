@@ -33,9 +33,24 @@ class View_2 extends Component {
                 let data = res.data
 
 
-                /* 搭建View 2*/
+
                 const {view23_svg_width, view23_svg_height} = params
                 const {view2_padding_top, view2_padding_bottom, view2_padding_left, view2_padding_right} = params
+
+
+                const theta2 = 1
+
+                const view3_padding_top = view2_padding_top, view3_padding_bottom = view2_padding_bottom
+                const view3_padding_left = 400, view3_padding_right = 50
+                const view3_block_padding_left = 20, view3_block_padding_top = 20, view3_block_padding_height = 40
+                const view3_block_width = 300, view3_block_height = 185
+
+                const view3_rect_height = 15, view3_rect_individual_width =6, view3_barchart_height = 80, view3_rect_refLine_height = 16, view3_rect_padding_left = 8
+                const view3_bar_width = 13, view3_barGap_width = 5
+
+
+
+                /* 搭建View 2*/
 
                 const theta = 1
 
@@ -59,6 +74,8 @@ class View_2 extends Component {
 
                 let depth_extent = d3.extent(Object.values(data).map(d=>d['depth']))
 
+                let view2_chart_width = view23_svg_width - view2_padding_left - view2_padding_right
+
                 let qubit_scale = d3.scaleLinear()
                     .domain(qubits_qual_extent)
                     .range([(view23_svg_height - view2_padding_top - view2_padding_bottom)* theta, 0 ])
@@ -66,7 +83,7 @@ class View_2 extends Component {
 
                 let depth_scale = d3.scaleLinear()
                     .domain(depth_extent)
-                    .range([0, (view23_svg_width - view2_padding_left - view2_padding_right)* theta])
+                    .range([0, view2_chart_width * theta])
 
 
                 let gate_scale = d3.scaleLinear()
@@ -84,7 +101,7 @@ class View_2 extends Component {
 
 
                 /*画每个circuit代表的方形*/
-                chart
+                let cube = chart
                     .selectAll('.view2_rect')
                     .data(Object.entries(data))
                     .join('rect')
@@ -94,7 +111,25 @@ class View_2 extends Component {
                     .attr('width', 8* theta)
                     .attr('height', 8* theta)
                     .attr('fill', d=>gate_scale(d[1]['gates_quality']))
-                    .append('title')
+                    .on('click', function(d, item){
+                        let x0 = view2_padding_left + view2_chart_width + 15
+                        let y0 = view2_padding_top + this.getBBox().y
+                        let x1 = view3_padding_left
+                        let y1 = +d3.selectAll('.linkpath23').size() * (view3_block_height + view3_block_padding_height) + view3_block_height/2
+
+                        d3.select('.view2_svg')
+                            .append('path')
+                            .attr('class', 'linkpath23')
+                            .attr("d", function(d) {
+                            return "M" + x0 + "," + y0
+                                + "C" + (x0 + 100) + "," + y0
+                                + " " + (x1 - 100) + "," + y1
+                                + " " + x1 + "," + y1;
+                        })
+                    })
+
+
+                cube.append('title')
                     .text(d=>{
                         return `${d[0]}, q_qual: ${d[1]['qubits_quality']}, gate_qual: ${d[1]['gates_quality']}`
                     })
@@ -128,15 +163,10 @@ class View_2 extends Component {
 
 
                 /*搭建View 3*/
-                const theta2 = 1
 
-                const view3_padding_top = view2_padding_top, view3_padding_bottom = view2_padding_bottom
-                const view3_padding_left = 400, view3_padding_right = 50
-                const view3_block_padding_left = 20, view3_block_padding_top = 20, view3_block_padding_height = 40
-                const view3_block_width = 300, view3_block_height = 185
 
-                const view3_rect_height = 15, view3_rect_individual_width =6, view3_barchart_height = 80, view3_rect_refLine_height = 16, view3_rect_padding_left = 8
-                const view3_bar_width = 13, view3_barGap_width = 5
+                const color_qubit_attr = ['#14b3ff', '#fe5e0f']
+                const color_gate_error = ['#f0f0f0', '#44c45b']
 
                 /*计算所有qubit出现次数最大最小值*/
                 let qubit_times_arr = []
@@ -146,6 +176,38 @@ class View_2 extends Component {
                 })
 
                 let scale_qubits_times = d3.scaleLinear().domain(d3.extent(qubit_times_arr)).range([0, view3_block_width - 3*view3_rect_individual_width])
+
+                /*计算一个scale来支持rect3 T1 的颜色的渐变*/
+                let qubit_T1_arr = []
+                Object.entries(data).forEach(trans=>{
+                    let T1_arr = Object.values(trans[1]['qubits']).map(q=>q['T1'])
+                    qubit_T1_arr = qubit_T1_arr.concat(T1_arr)
+                })
+
+                let scale_qubit_T1 = d3.scaleLinear().domain(d3.extent(qubit_T1_arr)).range(color_qubit_attr)
+
+
+
+                /*计算一个scale来支持rect3 T2 的颜色的渐变*/
+                let qubit_T2_arr = []
+                Object.entries(data).forEach(trans=>{
+                    let T2_arr = Object.values(trans[1]['qubits']).map(q=>q['T2'])
+                    qubit_T2_arr = qubit_T2_arr.concat(T2_arr)
+                })
+
+                let scale_qubit_T2 = d3.scaleLinear().domain(d3.extent(qubit_T2_arr)).range(color_qubit_attr)
+
+
+
+
+                /*计算一个scale来支持rect3 T2 的颜色的渐变*/
+                let qubit_error_arr = []
+                Object.entries(data).forEach(trans=>{
+                    let error_arr = Object.values(trans[1]['qubits']).map(q=>q['readout_error'])
+                    qubit_error_arr = qubit_error_arr.concat(error_arr)
+                })
+
+                let scale_qubit_error = d3.scaleLinear().domain(d3.extent(qubit_error_arr)).range(color_qubit_attr)
 
 
                 /*计算所有gate出现次数最大最小值*/
@@ -161,7 +223,7 @@ class View_2 extends Component {
                 /*height*/
                 let scale_gates_times = d3.scaleLinear().domain(d3.extent(gate_times_arr)).range([view3_barchart_height-15, 0])
                 /*color*/
-                let scale_gates_errorGate = d3.scaleLinear().domain(d3.extent(gate_errorRate_arr)).range(['#f0f0f0', '#44c45b'])
+                let scale_gates_errorGate = d3.scaleLinear().domain(d3.extent(gate_errorRate_arr)).range(color_gate_error)
 
 
                 let view3 = svg.append('g')
@@ -197,32 +259,34 @@ class View_2 extends Component {
 
 
 
-
                 /* 代表 T1 的第一个方块*/
                 rect3.append('rect')
                     .attr('width', view3_rect_individual_width)
                     .attr('height', view3_rect_height)
                     .attr('x', 0)
                     .attr('y', 0)
-                    .attr('fill', '#14b3ff')
+                    .attr('fill', d=>scale_qubit_T1(d[1]['T1']))
 
 
-                /* 代表 T2 的第一个方块*/
+                /* 代表 T2 的第er个方块*/
                 rect3.append('rect')
                     .attr('width', view3_rect_individual_width)
                     .attr('height', view3_rect_height)
                     .attr('x', view3_rect_individual_width)
                     .attr('y', 0)
-                    .attr('fill', '#fe5e0f')
+                    .attr('fill', d=>scale_qubit_T2(d[1]['T2']))
 
 
-                /* 代表 error rate 的第一个方块*/
+                /* 代表 error rate 的第三个方块*/
                 rect3.append('rect')
                     .attr('width', view3_rect_individual_width)
                     .attr('height', view3_rect_height)
                     .attr('x', 2*view3_rect_individual_width)
                     .attr('y', 0)
-                    .attr('fill', '#14b3ff')
+                    .attr('fill', d=>scale_qubit_error(d[1]['T2']))
+
+
+
 
                 /* 代表每个 qubit 使用次数 的 刻度的对齐竖线*/
                 rect3.append('line')
@@ -261,6 +325,28 @@ class View_2 extends Component {
                     .attr('x', (d, i)=>view3_rect_padding_left + i * (view3_bar_width + view3_barGap_width))
                     .attr('y', (d, i)=> scale_gates_times(d[1]['times']) - 5)
                     .attr('fill', d=>scale_gates_errorGate(d[1]['error_rate']))
+                    .on('mouseover', (d, item)=>{
+                        let gate = item[0]
+                        d3.selectAll(`.${gate}`)
+                            .style('display', 'block')
+
+                        d3.selectAll(`.rect3`)
+                            .style('display', 'none')
+                    })
+                    .on('mouseout', (d, item)=>{
+                        let gate = item[0]
+                        d3.selectAll(`.${gate}`)
+                            .style('display', 'none')
+
+                        d3.selectAll(`.rect3`)
+                            .style('display', 'block')
+                    })
+
+
+
+                bar.append('title')
+                    .text(d=>`${d[0]}, error rate:${d[1]['error_rate'].toFixed(2)}, times:${d[1]['times']}`)
+
 
 
                 /*画分隔bar 和 rects 的一条线*/
@@ -353,53 +439,57 @@ class View_2 extends Component {
                     .attr('height', 15)
                     .attr('fill', 'url(#gradient2)')
 
+
+
                 /* 画每个bar对应的gate的首尾*/
                 block.selectAll('.lineSegment_gate')
-                    .data(d=>Object.values(d['gates']))
+                    .data(d=>Object.entries(d['gates']))
                     .join('line')
-                    .attr('class', 'lineSegment_gate')
+                    .attr('class', d=>`lineSegment_gate ${d[0]}`)
                     .attr('x1', (d, i)=>view3_rect_padding_left+ view3_bar_width/2 + i * (view3_bar_width + view3_barGap_width))
                     .attr('y1', d=>{
-                        if(d['source'].length){
-                            return d['source'].split('_')[1] * view3_rect_height  + view3_rect_height/2 + view3_barchart_height
+                        if(d[1]['source'].length){
+                            return d[1]['source'].split('_')[1] * view3_rect_height  + view3_rect_height/2 + view3_barchart_height
                         }
                     })
                     .attr('x2', (d, i)=>view3_rect_padding_left + view3_bar_width/2 + i * (view3_bar_width + view3_barGap_width))
                     .attr('y2', d=>{
-                        if(d['target'].length){
-                            return d['target'].split('_')[1] * view3_rect_height  + view3_rect_height/2 + view3_barchart_height
+                        if(d[1]['target'].length){
+                            return d[1]['target'].split('_')[1] * view3_rect_height  + view3_rect_height/2 + view3_barchart_height
                         }
                     })
-                    .attr('stroke', d=>scale_gates_errorGate(d['error_rate']))
-                    .attr('stroke-width', '3')
+                    .attr('stroke', '#4b4b4b')
+                    .attr('stroke-width', 1)
+
+
 
                 /*画每个gate首尾的两个圆点*/
                 block.selectAll('.circle_gate_source')
-                    .data(d=>Object.values(d['gates']))
+                    .data(d=>Object.entries(d['gates']))
                     .join('circle')
-                    .attr('class', 'circle_gate_source')
+                    .attr('class', d=>`circle_gate_source ${d[0]}`)
                     .attr('cx', (d, i)=>view3_rect_padding_left+ view3_bar_width/2 + i * (view3_bar_width + view3_barGap_width))
                     .attr('cy', d=> {
-                        if(d['source']){
-                            return d['source'].split('_')[1] * view3_rect_height  + view3_rect_height/2 + view3_barchart_height
+                        if(d[1]['source']){
+                            return d[1]['source'].split('_')[1] * view3_rect_height  + view3_rect_height/2 + view3_barchart_height
                         }
                     })
-                    .attr('r', d=>d['source'] && d['target']? 3:0)
-                    .attr('fill', d=>scale_gates_errorGate(d['error_rate']))
+                    .attr('r', d=>d[1]['source'] && d[1]['target']? 2:0)
+                    .attr('fill', '#4b4b4b')
 
 
                 block.selectAll('.circle_gate_target')
-                    .data(d=>Object.values(d['gates']))
+                    .data(d=>Object.entries(d['gates']))
                     .join('circle')
-                    .attr('class', 'circle_gate_target')
+                    .attr('class', d=>`circle_gate_target ${d[0]}`)
                     .attr('cx', (d, i)=>view3_rect_padding_left+ view3_bar_width/2 + i * (view3_bar_width + view3_barGap_width))
                     .attr('cy', d=> {
-                        if(d['target']){
-                            return d['target'].split('_')[1] * view3_rect_height  + view3_rect_height/2 + view3_barchart_height
+                        if(d[1]['target']){
+                            return d[1]['target'].split('_')[1] * view3_rect_height  + view3_rect_height/2 + view3_barchart_height
                         }
                     })
-                    .attr('r', d=>d['source'] && d['target']? 3:0)
-                    .attr('fill', d=>scale_gates_errorGate(d['error_rate']))
+                    .attr('r', d=>d[1]['source'] && d[1]['target']? 2:0)
+                    .attr('fill', '#4b4b4b')
 
 
 
