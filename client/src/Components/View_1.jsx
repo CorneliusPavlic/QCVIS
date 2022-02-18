@@ -11,7 +11,7 @@ class View_1 extends Component {
         super(props);
         this.render_view1 = this.render_view1.bind(this)
         this.state = {
-            radius: this.props.radius
+
         }
     }
 
@@ -20,7 +20,6 @@ class View_1 extends Component {
 
     render_view1(){
 
-        // const {radius} = this.props
         let select_computer = this.props.select_computer
 
 
@@ -43,7 +42,7 @@ class View_1 extends Component {
 
                 /*size for View 1*/
                 const {view1_width, view1_height, view1_computer_height, view1_computer_width, view1_computer_block_width, view1_computer_block_height, view1_qubitMaxRadius, view1_qubitHeight, view1_legend_height, view1_legend_width} = params
-                const {view1_padding_top, view1_padding_bottom, view1_padding_left, view1_padding_right} = params
+                const {view1_margin_top, view1_margin_left} = params
                 const {view1_block_top, view1_qubit_padding_left} = params
 
 
@@ -89,10 +88,10 @@ class View_1 extends Component {
                     .style('stroke', '#a3e1e8')
                     .style('stroke-width', 1* theta)
                     .attr('class', 'circuit_ref_line')
-                    .attr('x1', view1_padding_left* theta)
-                    .attr('x2', (view1_padding_left + view1_computer_width-20)* theta)
-                    .attr('y1', d=>(view1_padding_top + view1_block_top + d*2*view1_qubitMaxRadius)*theta)
-                    .attr('y2', d=>(view1_padding_top + view1_block_top + d*2*view1_qubitMaxRadius)*theta)
+                    .attr('x1', view1_margin_left* theta)
+                    .attr('x2', (view1_margin_left + view1_computer_width-20)* theta)
+                    .attr('y1', d=>(view1_margin_top + view1_block_top + d*2*view1_qubitMaxRadius)*theta)
+                    .attr('y2', d=>(view1_margin_top + view1_block_top + d*2*view1_qubitMaxRadius)*theta)
 
 
 
@@ -103,14 +102,16 @@ class View_1 extends Component {
                         return d[1].map(_d=> {return {"qcomputer": d[0], ..._d} || 'Q_X'})
                     }))
                     .join('g')
-                    .attr('class', `qcomputer`)
+                    .attr('class', d=>d[0]['qcomputer'])
+                    .classed('qcomputer', true)
                     .attr('transform', (d,i)=>`translate(0,${(view1_legend_height * theta + i*(view1_computer_height+10))*theta})`)
+
 
                 /*每个糖葫芦+电路线段组成的基本单位叫做一个 block*/
                 let block = qcomputer.selectAll('g')
                     .data(d=>d)
                     .join('g')
-                    .attr('transform', (_d,_i)=>`translate(${(view1_padding_left + _i*view1_computer_block_width)*theta},${view1_padding_top*theta})`)
+                    .attr('transform', (_d,_i)=>`translate(${(view1_margin_left + _i*view1_computer_block_width)*theta},${view1_margin_top*theta})`)
 
 
                 /*画 block 中的串糖葫芦的棍*/
@@ -143,7 +144,7 @@ class View_1 extends Component {
                 time_arr = Object.values(data).map(d=>{return d.map(_d=>{return _d['timestamp']})})
 
                 let timeline_g = qcomputer.append('g')
-                    .attr('transform', `translate(${view1_padding_left* theta}, ${(view1_padding_top+15)* theta})`)
+                    .attr('transform', `translate(${view1_margin_left* theta}, ${(view1_margin_top+15)* theta})`)
 
                 timeline_g.append('line')
                     .style('stroke', '#747474')
@@ -253,10 +254,9 @@ class View_1 extends Component {
                         let arr = d[0]['qcomputer'].split('_')
                         return `${arr[0]}\n${arr[1]}`
                     })
-                    .attr('transform', (d,i)=>`translate(${(view1_padding_left/2-15)* theta}, ${(view1_computer_height/2+20)* theta})`)
+                    .attr('transform', (d,i)=>`translate(${(view1_margin_left/2-15)* theta}, ${(view1_computer_height/2+20)* theta})`)
                     .style('font-size', '0.9em')
                     .on('click', (d,item)=>{
-                        console.log(item)
                         select_computer(item[0]['qcomputer'])
                     })
 
@@ -378,7 +378,6 @@ class View_1 extends Component {
 
 
     render(){
-        const {radius} = this.props
 
         return (
             <div id="svg_container_1"></div>

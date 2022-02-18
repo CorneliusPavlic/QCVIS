@@ -10,20 +10,20 @@ const params = {
     'view1_legend_height' :  40,
     'view1_legend_width' :  230,
 
-    'view1_padding_top' : 20,
-    'view1_padding_bottom' : 40,
-    'view1_padding_left' : 40,
-    'view1_padding_right' : 10,
+    'view1_margin_top' : 20,
+    'view1_margin_left' : 40,
     'view1_block_top' : 40,
     'view1_qubit_padding_left' : 10,
 
 
     'view23_svg_width': 780,
     'view23_svg_height' : 1050,
-    'view2_padding_top' : 50,
-    'view2_padding_bottom' : 50,
-    'view2_padding_left' : 50,
-    'view2_padding_right' : 550
+    'view2_margin_top' : 50,
+    'view2_margin_left' : 50,
+    'view2_margin_right' : 550,
+    'circle_radius_min' : 3,
+    'circle_radius_max' : 10,
+    'view2_block_text_width' : 55
 
 }
 

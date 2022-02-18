@@ -66,9 +66,15 @@ html, body{
     height: 100%;
 }
 
+.control-panel{
+    border: solid 1px #808080;
+    border-radius: 8px;
+    margin: 0 5px;
+}
+
 #container_2{
     position: absolute;
-    left: 630px;
+    left: 530px;
 }
 
 .display-none{
@@ -91,7 +97,36 @@ html, body{
 
 .linkpath23 {
     fill: none;
-    stroke: #555;
+    stroke-opacity: 0.6;
+    stroke-width: 6px;
+}
+
+
+.linkpath_vert {
+    fill: none;
+    stroke: #686868;
+    stroke-opacity: 0.3;
+    stroke-width: 2px;
+}
+
+.link12{
+    fill: none;
+    stroke: #1890ff;
     stroke-opacity: 0.3;
     stroke-width: 6px;
+}
+
+#link12{
+    position: absolute;
+    height: 100%;
+}
+
+#link12_svg_container{
+    height: 100%;
+}
+
+.ref_line{
+    stroke: #af5d60;
+    stroke-dasharray: 2;
+    stroke-width: 2px;
 }

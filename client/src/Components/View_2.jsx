@@ -3,6 +3,7 @@ import * as d3 from 'd3'
 import axios from "axios";
 
 import params from '../functions/preset_param'
+import ReactDOM from "react-dom";
 
 
 class View_2 extends Component {
@@ -10,7 +11,8 @@ class View_2 extends Component {
         super(props);
         this.render_view2 = this.render_view2.bind(this)
         this.state = {
-            radius: this.props.radius,
+            gates_qual_extent: [],
+            qubits_qual_extent: []
         }
     }
 
@@ -21,13 +23,19 @@ class View_2 extends Component {
 
         /*更改gate_qual extent 的函数*/
         let view2_gate_qual_extent = this.props.view2_gate_qual_extent
-        /*更改qubit_qual extent 的函数*/
-        let view2_qubit_qual_extent = this.props.view2_qubit_qual_extent
 
 
 
         let trans_times = Number(document.getElementById('view2-button').value)
         let backend_name = this.props.backend_name
+        let view2_attr = this.props.view2_attr
+
+
+        let qual_avg = 6
+
+
+        const _this = this
+
         axios.post(`/api/view2_api/`, {'trans_times': trans_times, 'backend_name': backend_name})
             .then(function(res){
                 let data = res.data
@@ -35,19 +43,11 @@ class View_2 extends Component {
 
 
                 const {view23_svg_width, view23_svg_height} = params
-                const {view2_padding_top, view2_padding_bottom, view2_padding_left, view2_padding_right} = params
+                const {view2_margin_top, view2_padding_bottom, view2_margin_left, view2_margin_right} = params
+                const {circle_radius_min, circle_radius_max, view2_block_text_width} = params
+                const view3_block_padding_height = view2_margin_top, view2_block_height = circle_radius_max * 2
 
-
-                const theta2 = 1
-
-                const view3_padding_top = view2_padding_top, view3_padding_bottom = view2_padding_bottom
-                const view3_padding_left = 400, view3_padding_right = 50
-                const view3_block_padding_left = 20, view3_block_padding_top = 20, view3_block_padding_height = 40
-                const view3_block_width = 300, view3_block_height = 185
-
-                const view3_rect_height = 15, view3_rect_individual_width =6, view3_barchart_height = 80, view3_rect_refLine_height = 16, view3_rect_padding_left = 8
-                const view3_bar_width = 13, view3_barGap_width = 5
-
+                const color_view2_circle = ['#b7ebff', '#1890ff']
 
 
                 /* 搭建View 2*/
@@ -66,19 +66,20 @@ class View_2 extends Component {
                     .attr('height', view23_svg_height* theta)
 
 
-                // console.log(data)
 
                 let gates_qual_extent = d3.extent(Object.values(data).map(d=>d['gates_quality']))
+
+                let qual_extent = d3.extent(Object.values(data).map(d=>Math.abs(d[`${view2_attr}s_quality`]-qual_avg)))
 
                 let qubits_qual_extent = d3.extent(Object.values(data).map(d=>d['qubits_quality']))
 
                 let depth_extent = d3.extent(Object.values(data).map(d=>d['depth']))
 
-                let view2_chart_width = view23_svg_width - view2_padding_left - view2_padding_right
+                let view2_chart_width = view23_svg_width - view2_margin_left - view2_margin_right
 
                 let qubit_scale = d3.scaleLinear()
                     .domain(qubits_qual_extent)
-                    .range([(view23_svg_height - view2_padding_top - view2_padding_bottom)* theta, 0 ])
+                    .range(color_view2_circle)
 
 
                 let depth_scale = d3.scaleLinear()
@@ -86,50 +87,99 @@ class View_2 extends Component {
                     .range([0, view2_chart_width * theta])
 
 
-                let gate_scale = d3.scaleLinear()
-                    .domain(gates_qual_extent)
-                    .range(['#bed1e4', '#73a2b9'])
+                let qual_scale = d3.scaleLinear()
+                    .domain(qual_extent)
+                    .range([circle_radius_min, circle_radius_max])
 
-                /**/
+
+
+                /*更改control panel里面的range control slider*/
                 view2_gate_qual_extent(gates_qual_extent)
-                view2_qubit_qual_extent(qubits_qual_extent)
+
+
+                _this.setState({
+                    gates_qual_extent: gates_qual_extent,
+                    qubits_qual_extent: qubits_qual_extent
+                })
+
 
 
                 let chart = d3.select('.view2_svg')
                     .append('g')
-                    .attr('transform', `translate(${view2_padding_left* theta}, ${view2_padding_top* theta})`)
+                    .attr('transform', `translate(${view2_margin_left* theta}, ${view2_margin_top* theta})`)
 
 
-                /*画每个circuit代表的方形*/
-                let cube = chart
-                    .selectAll('.view2_rect')
+                /*画每个circuit代表的 g*/
+                let block = chart
+                    .selectAll('.view2_block')
                     .data(Object.entries(data))
-                    .join('rect')
-                    .attr('class', 'view2_rect')
-                    .attr('x', d=>depth_scale(d[1]['depth']))
-                    .attr('y', d=>qubit_scale(d[1]['qubits_quality']))
-                    .attr('width', 8* theta)
-                    .attr('height', 8* theta)
-                    .attr('fill', d=>gate_scale(d[1]['gates_quality']))
+                    .join('g')
+                    .attr('class', 'view2_block')
+                    .attr('transform', (d, i)=>`translate(0, ${i * view2_block_height})`)
+
+
+                /*画 从左边指到circle的线*/
+                block.append('line')
+                    .attr('x1',  view2_block_text_width)
+                    .attr('y1', view2_block_height/2)
+                    .attr('x2', d=>depth_scale(d[1]['depth']) + view2_block_text_width)
+                    .attr('y2', view2_block_height/2)
+                    .attr('stroke', '#a0a0a0')
+
+
+                /*画 left-border的线*/
+                block.append('line')
+                    .attr('x1',  view2_block_text_width)
+                    .attr('y1', 2)
+                    .attr('x2',  view2_block_text_width)
+                    .attr('y2', view2_block_height - 2)
+                    .attr('stroke', '#a0a0a0')
+
+
+                /*画 right-border的线*/
+                block.append('line')
+                    .attr('x1',  view2_chart_width + view2_block_text_width)
+                    .attr('y1', 1)
+                    .attr('x2',  view2_chart_width + view2_block_text_width)
+                    .attr('y2', view2_block_height - 1)
+                    .attr('stroke', '#a0a0a0')
+
+
+                /*画 代表circuit的circle*/
+                block.append('circle')
+                    .attr('class', 'view2_circle')
+                    .attr('cx', d=>depth_scale(d[1]['depth']) + view2_block_text_width)
+                    .attr('cy', view2_block_height/2)
+                    .attr('r', d=>qual_scale(Math.abs(d[1][`${view2_attr}s_quality`] - qual_avg)))
+                    .attr('fill', d=>d[1][`${view2_attr}s_quality`] > qual_avg? "#14b3ff":'#fe5e0f')
                     .on('click', function(d, item){
-                        let x0 = view2_padding_left + view2_chart_width + 15
-                        let y0 = view2_padding_top + this.getBBox().y
-                        let x1 = view3_padding_left
+                        let x0 = view2_block_text_width + view2_margin_left + view2_chart_width + 15
+                        let y0 = view2_margin_top + +d3.select(this.parentNode).attr('transform').split(/[\s,()]+/)[2] + view2_block_height/2
+                        let x1 = view3_margin_left + 50
                         let y1 = +d3.selectAll('.linkpath23').size() * (view3_block_height + view3_block_padding_height) + view3_block_height/2
 
                         d3.select('.view2_svg')
                             .append('path')
                             .attr('class', 'linkpath23')
                             .attr("d", function(d) {
-                            return "M" + x0 + "," + y0
-                                + "C" + (x0 + 100) + "," + y0
-                                + " " + (x1 - 100) + "," + y1
-                                + " " + x1 + "," + y1;
-                        })
+                                return "M" + x0 + "," + y0
+                                    + "C" + (x0 + 80) + "," + y0
+                                    + " " + (x1 - 80) + "," + y1
+                                    + " " + x1 + "," + y1;
+                            })
+                            .style('stroke', d=>d3.select(this).attr('fill'))
+
+                        /*给 view3 增加一个 block*/
+                        append_block(item)
                     })
 
+                /*画每个block之前的名称*/
+                block.append('text')
+                    .text(d=>d[1]['id'])
+                    .attr('transform', `translate(0, ${view2_block_height/2})`)
 
-                cube.append('title')
+
+                block.append('title')
                     .text(d=>{
                         return `${d[0]}, q_qual: ${d[1]['qubits_quality']}, gate_qual: ${d[1]['gates_quality']}`
                     })
@@ -145,28 +195,60 @@ class View_2 extends Component {
                     .tickValues([ depth_arr[0], depth_arr[Math.round(depth_arr.length*(1/3))], depth_arr[Math.round(depth_arr.length*(2/3))], depth_arr[depth_arr.length-1]])
 
                 let bottom_axis_g = svg.append('g')
-                    .attr('transform', `translate(${view2_padding_left* theta}, ${(view23_svg_height - view2_padding_bottom + 10)* theta})`)
+                    .attr('transform', `translate(${view2_margin_left + view2_block_text_width}, ${d3.selectAll('.view2_block').size()*view2_block_height + view2_margin_top  + 10})`)
                     .call(bottom_axis)
 
 
-                /*画纵向坐标轴*/
-                let right_axis = d3.axisRight()
-                    .scale(qubit_scale)
-
-                let right_axis_g = svg.append('g')
-                    .attr('transform', `translate(${(view23_svg_width - view2_padding_right + 15)* theta}, ${view2_padding_top* theta} )`)
-                    .call(right_axis)
 
 
 
 
 
+                /**********************/
 
                 /*搭建View 3*/
 
 
-                const color_qubit_attr = ['#14b3ff', '#fe5e0f']
-                const color_gate_error = ['#f0f0f0', '#44c45b']
+                const theta2 = 1
+
+                const view3_margin_top = view2_margin_top, view3_margin_left = 400
+                const view3_padding_left = 50
+                const view3_block_height = 185
+                const view3_bar_height_max = 60
+
+                const view3_bar_width = 13, view3_barGap_width = 3, view3_gap_height = 20
+
+
+                const color_qubit_attr = ['#d1ffe0', '#44c45b']
+                const color_gate_error = ['#d1ffe0', '#44c45b']
+
+
+
+                /*构造一个对象，用来装 gate qubit均值的假数据*/
+                const ref_value = {
+                    'gates_times_avg': {
+                        'cx0_1': 110,
+                        'cx1_2': 110,
+                        'cx1_3': 110,
+                        'cx3_5': 110,
+                        'cx4_5': 110,
+                        'cx5_6': 110,
+                        'rz': 110,
+                        'sx': 110,
+                    },
+                    'qubits_times_avg': {
+                        'q_0': 130,
+                        'q_1': 130,
+                        'q_2': 130,
+                        'q_3': 130,
+                        'q_4': 130,
+                        'q_5': 130,
+                        'q_6': 130
+                    }
+                }
+
+                /*获取view3的attr (T1, T2, error_rate)*/
+                let view3_attr = _this.props.view3_attr
 
                 /*计算所有qubit出现次数最大最小值*/
                 let qubit_times_arr = []
@@ -175,39 +257,21 @@ class View_2 extends Component {
                     qubit_times_arr = qubit_times_arr.concat(times_arr)
                 })
 
-                let scale_qubits_times = d3.scaleLinear().domain(d3.extent(qubit_times_arr)).range([0, view3_block_width - 3*view3_rect_individual_width])
+                let scale_qubits_times = d3.scaleLinear().domain(d3.extent(qubit_times_arr)).range([view3_bar_height_max, 0])
 
-                /*计算一个scale来支持rect3 T1 的颜色的渐变*/
-                let qubit_T1_arr = []
+
+                /*计算一个scale来支持qubit bar的 attr 的颜色的渐变*/
+                let qubit_attr_arr = []
                 Object.entries(data).forEach(trans=>{
-                    let T1_arr = Object.values(trans[1]['qubits']).map(q=>q['T1'])
-                    qubit_T1_arr = qubit_T1_arr.concat(T1_arr)
+                    let T1_arr = Object.values(trans[1]['qubits']).map(q=>q[view3_attr])
+                    qubit_attr_arr = qubit_attr_arr.concat(T1_arr)
                 })
 
-                let scale_qubit_T1 = d3.scaleLinear().domain(d3.extent(qubit_T1_arr)).range(color_qubit_attr)
+
+                let scale_qubit_attr = d3.scaleLinear().domain(d3.extent(qubit_attr_arr)).range(color_qubit_attr)
 
 
 
-                /*计算一个scale来支持rect3 T2 的颜色的渐变*/
-                let qubit_T2_arr = []
-                Object.entries(data).forEach(trans=>{
-                    let T2_arr = Object.values(trans[1]['qubits']).map(q=>q['T2'])
-                    qubit_T2_arr = qubit_T2_arr.concat(T2_arr)
-                })
-
-                let scale_qubit_T2 = d3.scaleLinear().domain(d3.extent(qubit_T2_arr)).range(color_qubit_attr)
-
-
-
-
-                /*计算一个scale来支持rect3 T2 的颜色的渐变*/
-                let qubit_error_arr = []
-                Object.entries(data).forEach(trans=>{
-                    let error_arr = Object.values(trans[1]['qubits']).map(q=>q['readout_error'])
-                    qubit_error_arr = qubit_error_arr.concat(error_arr)
-                })
-
-                let scale_qubit_error = d3.scaleLinear().domain(d3.extent(qubit_error_arr)).range(color_qubit_attr)
 
 
                 /*计算所有gate出现次数最大最小值*/
@@ -220,155 +284,18 @@ class View_2 extends Component {
                     gate_errorRate_arr = gate_errorRate_arr.concat(errorRate_arr)
                 })
 
+
                 /*height*/
-                let scale_gates_times = d3.scaleLinear().domain(d3.extent(gate_times_arr)).range([view3_barchart_height-15, 0])
+                let scale_gates_times = d3.scaleLinear().domain(d3.extent(gate_times_arr)).range([view3_bar_height_max, 0])
                 /*color*/
                 let scale_gates_errorGate = d3.scaleLinear().domain(d3.extent(gate_errorRate_arr)).range(color_gate_error)
 
 
                 let view3 = svg.append('g')
-                    .attr('transform', `translate(${view3_padding_left}, ${view3_padding_top})`)
+                    .attr('transform', `translate(${view3_margin_left}, ${view3_margin_top})`)
                     .attr('class', 'view3')
 
 
-                let block = view3.selectAll('.view3_block')
-                    .data(Object.values(data))
-                    .join('g')
-                    .attr('class', 'view3_block')
-                    .attr('transform', (d, i)=>`translate(0, ${i * (view3_block_height + view3_block_padding_height)})`)
-
-
-                /* 每个 rect3 之前的横线*/
-                block.selectAll('.rect3_line')
-                    .data(d=>Object.entries(d['qubits']))
-                    .join('line')
-                    .attr('x1', 0)
-                    .attr('x2', (d, i)=>scale_qubits_times(d[1]['times']))
-                    .attr('y1', (d, i)=>i * view3_rect_height + view3_barchart_height + view3_rect_height/2)
-                    .attr('y2', (d, i)=>i * view3_rect_height + view3_barchart_height + view3_rect_height/2)
-                    .attr('stroke', '#cccccc')
-
-
-
-                /*画每个qubit代表的三个小方块，代表的三个参数*/
-                let rect3 = block.selectAll('g')
-                    .data(d=>Object.entries(d['qubits']))
-                    .join('g')
-                    .attr('transform', (d, i)=>`translate(${scale_qubits_times(d[1]['times'])}, ${i * view3_rect_height + view3_barchart_height})`)
-                    .attr('class', 'rect3')
-
-
-
-                /* 代表 T1 的第一个方块*/
-                rect3.append('rect')
-                    .attr('width', view3_rect_individual_width)
-                    .attr('height', view3_rect_height)
-                    .attr('x', 0)
-                    .attr('y', 0)
-                    .attr('fill', d=>scale_qubit_T1(d[1]['T1']))
-
-
-                /* 代表 T2 的第er个方块*/
-                rect3.append('rect')
-                    .attr('width', view3_rect_individual_width)
-                    .attr('height', view3_rect_height)
-                    .attr('x', view3_rect_individual_width)
-                    .attr('y', 0)
-                    .attr('fill', d=>scale_qubit_T2(d[1]['T2']))
-
-
-                /* 代表 error rate 的第三个方块*/
-                rect3.append('rect')
-                    .attr('width', view3_rect_individual_width)
-                    .attr('height', view3_rect_height)
-                    .attr('x', 2*view3_rect_individual_width)
-                    .attr('y', 0)
-                    .attr('fill', d=>scale_qubit_error(d[1]['T2']))
-
-
-
-
-                /* 代表每个 qubit 使用次数 的 刻度的对齐竖线*/
-                rect3.append('line')
-                    .attr('x1', 0)
-                    .attr('x2', 0)
-                    .attr('y1', -4)
-                    .attr('y2', view3_rect_height +4)
-                    .attr('stroke', '#000')
-
-
-                /* 左边的竖线*/
-                block.append('line')
-                    .attr('class', 'line_left')
-                    .attr('x1', 0)
-                    .attr('x2', 0)
-                    .attr('y1', view3_barchart_height)
-                    .attr('y2', d=>view3_barchart_height+ Object.values(d['qubits']).length * view3_rect_height + 10)
-                    .attr('stroke', '#000')
-
-
-                /* 下面的坐标轴*/
-                block.append('g')
-                    .call(d3.axisBottom(scale_qubits_times))
-                    .attr('transform', d=>{
-                        return `translate(0, ${Object.keys(d['qubits']).length * view3_rect_height + view3_barchart_height + 15})`
-                    })
-
-
-                /* 开始绘制 上方的代表 gate 状态的 柱状图 */
-                let bar = block.selectAll('.bar_gate')
-                    .data(d=>Object.entries(d['gates']))
-                    .join('rect')
-                    .attr('class', 'bar_gate')
-                    .attr('width', view3_bar_width)
-                    .attr('height', (d,i)=>view3_barchart_height - scale_gates_times(d[1]['times']))
-                    .attr('x', (d, i)=>view3_rect_padding_left + i * (view3_bar_width + view3_barGap_width))
-                    .attr('y', (d, i)=> scale_gates_times(d[1]['times']) - 5)
-                    .attr('fill', d=>scale_gates_errorGate(d[1]['error_rate']))
-                    .on('mouseover', (d, item)=>{
-                        let gate = item[0]
-                        d3.selectAll(`.${gate}`)
-                            .style('display', 'block')
-
-                        d3.selectAll(`.rect3`)
-                            .style('display', 'none')
-                    })
-                    .on('mouseout', (d, item)=>{
-                        let gate = item[0]
-                        d3.selectAll(`.${gate}`)
-                            .style('display', 'none')
-
-                        d3.selectAll(`.rect3`)
-                            .style('display', 'block')
-                    })
-
-
-
-                bar.append('title')
-                    .text(d=>`${d[0]}, error rate:${d[1]['error_rate'].toFixed(2)}, times:${d[1]['times']}`)
-
-
-
-                /*画分隔bar 和 rects 的一条线*/
-                block.append('line')
-                    .attr('x1', 0)
-                    .attr('x2', view3_block_width)
-                    .attr('y1', view3_barchart_height-5)
-                    .attr('y2', view3_barchart_height-5)
-                    .attr('stroke', '#000')
-                    .attr('stroke-width', 0.5)
-
-
-                /*画 bar 的左边的纵向坐标轴*/
-                block.append('g')
-                    .call(d3.axisLeft().scale(scale_gates_times).ticks(4))
-                    .attr('transform', `translate(0, 8)`)
-
-
-                /*加入 circuit 的名称*/
-                block.append('text')
-                    .text(d=>d['id'])
-                    .attr('transform', `translate(${view3_block_width-50}, ${view3_barchart_height-10})`)
 
 
                 /*画 legend*/
@@ -440,56 +367,195 @@ class View_2 extends Component {
                     .attr('fill', 'url(#gradient2)')
 
 
+                /*用来画view3，触发方式：通过点击view2的圆点*/
+                function append_block(item){
 
-                /* 画每个bar对应的gate的首尾*/
-                block.selectAll('.lineSegment_gate')
-                    .data(d=>Object.entries(d['gates']))
-                    .join('line')
-                    .attr('class', d=>`lineSegment_gate ${d[0]}`)
-                    .attr('x1', (d, i)=>view3_rect_padding_left+ view3_bar_width/2 + i * (view3_bar_width + view3_barGap_width))
-                    .attr('y1', d=>{
-                        if(d[1]['source'].length){
-                            return d[1]['source'].split('_')[1] * view3_rect_height  + view3_rect_height/2 + view3_barchart_height
-                        }
-                    })
-                    .attr('x2', (d, i)=>view3_rect_padding_left + view3_bar_width/2 + i * (view3_bar_width + view3_barGap_width))
-                    .attr('y2', d=>{
-                        if(d[1]['target'].length){
-                            return d[1]['target'].split('_')[1] * view3_rect_height  + view3_rect_height/2 + view3_barchart_height
-                        }
-                    })
-                    .attr('stroke', '#4b4b4b')
-                    .attr('stroke-width', 1)
+                    let block_data = data[item[0]]
+                    let index = d3.selectAll('.view3_block').size()
 
+                    /*view3 的每个 block*/
+                    let block3 = d3.select('.view3')
+                        .datum(block_data)
+                        .append('g')
+                        .attr('class', 'view3_block')
+                        .attr('transform', `translate(0, ${index * view3_block_height})`)
 
-
-                /*画每个gate首尾的两个圆点*/
-                block.selectAll('.circle_gate_source')
-                    .data(d=>Object.entries(d['gates']))
-                    .join('circle')
-                    .attr('class', d=>`circle_gate_source ${d[0]}`)
-                    .attr('cx', (d, i)=>view3_rect_padding_left+ view3_bar_width/2 + i * (view3_bar_width + view3_barGap_width))
-                    .attr('cy', d=> {
-                        if(d[1]['source']){
-                            return d[1]['source'].split('_')[1] * view3_rect_height  + view3_rect_height/2 + view3_barchart_height
-                        }
-                    })
-                    .attr('r', d=>d[1]['source'] && d[1]['target']? 2:0)
-                    .attr('fill', '#4b4b4b')
+                    /*画view3 每一个block的边框*/
+                    block3.append('rect')
+                        .attr('x', 50)
+                        .attr('y', -10)
+                        .attr('width', d=>Math.max(Object.keys(d['gates']).length, Object.keys(d['qubits']).length) * (view3_bar_width+view3_barGap_width)-view3_barGap_width)
+                        .attr('height', 2*view3_bar_height_max + view3_gap_height+20)
+                        .attr('fill', 'none')
+                        .attr('stroke', '#9d9d9d')
+                        .attr('stroke-width', 2)
 
 
-                block.selectAll('.circle_gate_target')
-                    .data(d=>Object.entries(d['gates']))
-                    .join('circle')
-                    .attr('class', d=>`circle_gate_target ${d[0]}`)
-                    .attr('cx', (d, i)=>view3_rect_padding_left+ view3_bar_width/2 + i * (view3_bar_width + view3_barGap_width))
-                    .attr('cy', d=> {
-                        if(d[1]['target']){
-                            return d[1]['target'].split('_')[1] * view3_rect_height  + view3_rect_height/2 + view3_barchart_height
-                        }
-                    })
-                    .attr('r', d=>d[1]['source'] && d[1]['target']? 2:0)
-                    .attr('fill', '#4b4b4b')
+
+                    /*为每个block 添加bar， 一个bar用一个 g 元素实现*/
+                    let bar_g = block3.selectAll('.each_bars')
+                        .data(d=>Object.entries(d.gates))
+                        .join('g')
+                        .attr('class', 'each_bars')
+                        .attr('transform', (d, i)=>`translate(${view3_padding_left + i*(view3_bar_width+view3_barGap_width)}, 0)`)
+
+
+                    /*TODO: 待确定 画 gate 高出来的一截 代表平均值的 没颜色的 bar*/
+/*                    bar_g.append('rect')
+                        .attr('x', 0)
+                        .attr('y', d=>scale_gates_times(ref_value['gates_times_avg'][d[0]]))
+                        .attr('width', view3_bar_width)
+                        .attr('height', d=>ref_value['gates_times_avg'][d[0]] > d[1]['times']?view3_bar_height_max - scale_gates_times(ref_value['gates_times_avg'][d[0]]):null)
+                        .attr('fill', d=>ref_value['gates_times_avg'][d[0]] > d[1]['times']? '#d6d6d6': null)*/
+
+
+                    /*画 gate 本身实际值的 有颜色的bar*/
+                    bar_g.append('rect')
+                        .attr('x', 0)
+                        .attr('y', d=>scale_gates_times(d[1]['times']))
+                        .attr('width', view3_bar_width)
+                        .attr('height', d=>view3_bar_height_max - scale_gates_times(d[1]['times']))
+                        .attr('fill', d=>scale_gates_errorGate(d[1]['error_rate']))
+                        .attr('class', 'view3_gate_bar')
+                        .attr('stroke', '#474747')
+                        .attr('stroke-width', 2)
+                        .append('title')
+                        .text(d=>`${d[0]}  Error:${d[1]['error_rate']}  times:${d[1]['times']}`)
+
+                    /*画 代表ref-value的虚线*/
+                    bar_g.each(d=>{console.log(d)})
+                        .append('line')
+                        .attr('x1', 0)
+                        .attr('class', 'ref_line')
+                        .attr('y1', d=>scale_gates_times(ref_value['gates_times_avg'][d[0]]))
+                        .attr('x2', view3_bar_width)
+                        .attr('y2', d=>scale_gates_times(ref_value['gates_times_avg'][d[0]]))
+
+
+                    /*TODO: 待确定 画 gate 矮的一截 代表平均值的 没颜色的 bar*/
+/*                    bar_g.append('rect')
+                        .attr('x', 1)
+                        .attr('y', d=>scale_gates_times(ref_value['gates_times_avg'][d[0]]))
+                        .attr('width', view3_bar_width-2)
+                        .attr('height', d=>ref_value['gates_times_avg'][d[0]] <= d[1]['times']?view3_bar_height_max - scale_gates_times(ref_value['gates_times_avg'][d[0]]):null)
+                        .attr('fill', d=>ref_value['gates_times_avg'][d[0]] <= d[1]['times']? '#d6d6d6': null)*/
+
+
+
+
+
+                    /*为每个block 添加bar， 一个bar用一个 g 元素实现*/
+                    let bar_g2 = block3.selectAll('.each_bars2')
+                        .data(d=>Object.entries(d['qubits']))
+                        .join('g')
+                        .attr('transform', (d, i)=>`translate(${view3_padding_left + i*(view3_bar_width+view3_barGap_width)}, ${view3_bar_height_max+view3_gap_height})`)
+                        .attr('class', d=>`trans_${index+1}_${d[0]}`)
+
+                    /*画 gate 高出来的一截 代表平均值的 没颜色的 bar*/
+/*                    bar_g2.append('rect')
+                        .attr('x', 0)
+                        .attr('y', 0)
+                        .attr('width', view3_bar_width)
+                        .attr('height', d=>ref_value['qubits_times_avg'][d[0]] > d[1]['times']?view3_bar_height_max - scale_qubits_times(ref_value['qubits_times_avg'][d[0]]): null)
+                        .attr('fill', d=> '#d6d6d6')*/
+
+
+                    /*TODO: 待确定 画 qubit 本身实际值的 有颜色的bar*/
+                    bar_g2.append('rect')
+                        .attr('x', 0)
+                        .attr('y', 0)
+                        .attr('width', view3_bar_width)
+                        .attr('height', d=>view3_bar_height_max - scale_qubits_times(d[1]['times']))
+                        .attr('fill', d=>scale_qubit_attr(d[1][view3_attr]))
+                        .attr('class', 'view3_qubit_bar')
+                        .attr('stroke', '#474747')
+                        .attr('stroke-width', 2)
+                        .append('title')
+                        .text(d=>`${d[0]}  ${view3_attr}:${d[1][view3_attr]}  times:${d[1]['times']}`)
+
+
+                    /*画 代表ref-value的虚线*/
+                    bar_g2.append('line')
+                        .attr('x1', 0)
+                        .attr('class', 'ref_line')
+                        .attr('y1', d=>scale_gates_times(ref_value['qubits_times_avg'][d[0]]))
+                        .attr('x2', view3_bar_width)
+                        .attr('y2', d=>scale_gates_times(ref_value['qubits_times_avg'][d[0]]))
+
+
+                    /*TODO: 待确定 画 gate 高出来的一截 代表平均值的 没颜色的 bar*/
+/*
+                    bar_g2.append('rect')
+                        .attr('x', 1)
+                        .attr('y', 0)
+                        .attr('width', view3_bar_width-2)
+                        .attr('height', d=>ref_value['qubits_times_avg'][d[0]] <= d[1]['times']?view3_bar_height_max - scale_qubits_times(ref_value['qubits_times_avg'][d[0]]): null)
+                        .attr('fill', d=> '#d6d6d6')
+*/
+
+
+
+                    /*画上下bars之间的，用来连接gate所属qubit的曲线*/
+                    let link_g = block3.selectAll('.link_g')
+                        .data(d=>Object.entries(d['gates']))
+                        .join('g')
+                        .attr('class', 'link_g')
+                        .attr('transform', `translate(0, ${view3_bar_height_max})`)
+
+
+                    link_g.append('path')
+                        .attr('class', 'linkpath_vert')
+                        .attr("d", function(d, i) {
+                            let x0, y0, x1, y1
+
+                            x0 = view3_padding_left + i*(view3_bar_width+view3_barGap_width) + view3_bar_width/2
+                            y0 = 0
+
+                            /*source qubit 的 x位置*/
+                            if (!d3.select(`.trans_${index+1}_${d[1]['source']}`).empty()){
+                                x1 = +d3.select(`.trans_${index+1}_${d[1]['source']}`).attr('transform').split(/[\s,()]+/)[1] + view3_bar_width/2
+                                y1 = view3_gap_height
+                            }else{
+                                return
+                            }
+
+
+                            return "M" + x0 + "," + y0
+                                + "C" + x0 + "," + (y0+10)
+                                + " " + x1 + "," + (y1-10)
+                                + " " + x1 + "," + y1;
+                        })
+
+
+                    link_g.append('path')
+                        .attr('class', 'linkpath_vert')
+                        .attr("d", function(d, i) {
+                            let x0, y0, x2, y2
+
+                            x0 = view3_padding_left + i*(view3_bar_width+view3_barGap_width) + view3_bar_width/2
+                            y0 = 0
+
+
+                            /*target qubit 的 x位置*/
+                            if (!d3.select(`.trans_${index+1}_${d[1]['target']}`).empty()) {
+                                x2 = +d3.select(`.trans_${index + 1}_${d[1]['target']}`).attr('transform').split(/[\s,()]+/)[1] + view3_bar_width/2
+                                y2 = view3_gap_height
+                            }else{
+                                return
+                            }
+
+
+                            return "M" + x0 + "," + y0
+                                + "C" + x0 + "," + (y0+10)
+                                + " " + x2 + "," + (y2-10)
+                                + " " + x2 + "," + y2;
+                        })
+
+
+                }
+
+
+
 
 
 
@@ -508,46 +574,111 @@ class View_2 extends Component {
     }
 
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps, prevStates) {
 
         console.log('view 2 updated')
 
 
-        /*更改gate_qual 所选范围 的 []*/
-        let view2_gate_qual_filter = this.props.view2_gate_qual_filter
-        /*更改qubit_qual 所选范围 的 []*/
-        let view2_qubit_qual_filter = this.props.view2_qubit_qual_filter
 
 
-        d3.selectAll('.view2_rect')
-            .attr('class', d=>{
-                if(view2_gate_qual_filter.length && view2_qubit_qual_filter.length){
-                    if((d[1]['gates_quality'] > view2_gate_qual_filter[1] || d[1]['gates_quality'] < view2_gate_qual_filter[0])
-                        ||
-                        (d[1]['qubits_quality'] > view2_qubit_qual_filter[1] || d[1]['qubits_quality'] < view2_qubit_qual_filter[0])
-                    ){
-                        return 'view2_rect display-none'
-                    }else{
-                        return 'view2_rect'
-                    }
-                }
-                if(view2_gate_qual_filter.length){
-                    if(d[1]['gates_quality'] > view2_gate_qual_filter[1] || d[1]['gates_quality'] < view2_gate_qual_filter[0]
-                    ){
-                        return 'view2_rect display-none'
-                    }else{
-                        return 'view2_rect'
-                    }
-                }
-                if(view2_qubit_qual_filter.length){
-                    if(d[1]['qubits_quality'] > view2_qubit_qual_filter[1] || d[1]['qubits_quality'] < view2_qubit_qual_filter[0]){
-                        return 'view2_rect display-none'
-                    }else{
-                        return 'view2_rect'
-                    }
-                }
+        /*情况1：控制view2 的 view2_attr 更新*/
+        if(this.props.view2_attr && prevProps['view2_attr'] != this.props.view2_attr){/*加this.props.view2_attr判断是因为避免由于未传参而触发这个条件的情况 */
 
-            })
+
+            console.log(prevProps['view2_attr'], this.props.view2_attr)
+            /*更新 左边 view2_qual_extent*/
+            let attr = this.props.view2_attr
+            this.props.view2_gate_qual_extent(this.state[`${attr}s_qual_extent`])
+
+
+            /*根据 view2_attr 更新view2的circle的颜色和大小*/
+
+            let trans_times = Number(document.getElementById('view2-button').value)
+            let backend_name = this.props.backend_name
+            let view2_attr = this.props.view2_attr
+
+            const {circle_radius_min, circle_radius_max} = params
+
+
+            axios.get(`/api/view2_api/`)
+                .then(function(res) {
+                    let data = res.data
+
+
+                    let qual_avg = 6
+
+                    let qual_extent = d3.extent(Object.values(data).map(d => Math.abs(d[`${view2_attr}s_quality`] - qual_avg)))
+                    let qual_scale = d3.scaleLinear()
+                        .domain(qual_extent)
+                        .range([circle_radius_min, circle_radius_max])
+
+                    d3.selectAll('.view2_circle')
+                        .attr('r', d => {
+                            return qual_scale(Math.abs(d[1][`${view2_attr}s_quality`] - qual_avg))
+                        })
+                        .attr('fill', d => d[1][`${view2_attr}s_quality`] > qual_avg ? "#14b3ff" : '#fe5e0f')
+                })
+        }
+
+
+
+
+        /*情况2：控制 view2 的 view2_gate_qual_filter 更新*/
+        if(this.props.view2_gate_qual_filter && prevProps['view2_gate_qual_filter'] != this.props.view2_gate_qual_filter){
+            /*更改gate_qual 所选范围 的 []*/
+            let view2_gate_qual_filter = this.props.view2_gate_qual_filter
+
+            let attr = this.props.view2_attr
+
+
+            d3.selectAll('.view2_circle')
+                .each(function(d){
+                    if(d[1][`${attr}s_quality`] < view2_gate_qual_filter[0] || d[1][`${attr}s_quality`] > view2_gate_qual_filter[1]){
+                        d3.select(this)
+                            .classed('display-none', true)
+                    }else{
+                        d3.select(this)
+                            .classed('display-none', false)
+                    }
+
+                })
+
+        }
+
+
+        /*情况3：控制view3 的 view3_attr 更新*/
+        if(this.props.view3_attr && prevProps['view3_attr'] != this.props.view3_attr){
+            let view3_attr = this.props.view3_attr
+
+            axios.get(`/api/view2_api/`)
+                .then(function(res) {
+                    let data = res.data
+
+                    const color_qubit_attr = ['#d1ffe0', '#44c45b']
+
+                    /*计算一个scale来支持qubit bar的 attr 的颜色的渐变*/
+                    let qubit_attr_arr = []
+                    Object.entries(data).forEach(trans=>{
+                        let T1_arr = Object.values(trans[1]['qubits']).map(q=>q[view3_attr])
+                        qubit_attr_arr = qubit_attr_arr.concat(T1_arr)
+                    })
+
+
+                    let scale_qubit_attr = d3.scaleLinear().domain(d3.extent(qubit_attr_arr)).range(color_qubit_attr)
+
+
+                    /*画 qubit 本身实际值的 有颜色的bar*/
+                    d3.selectAll('.view3_qubit_bar')
+                        .attr('fill', d=>scale_qubit_attr(d[1][view3_attr]))
+                        .select('title')
+                        .text(d=>`${d[0]}  ${view3_attr}:${d[1][view3_attr]}  times:${d[1]['times']}`)
+
+
+                })
+
+        }
+
+
     }
 
 
