@@ -27,6 +27,7 @@ class App extends Component {
         this.select_computer = this.select_computer.bind(this)
         this.view2_gate_qual_extent = this.view2_gate_qual_extent.bind(this)
         this.view2_gate_qual_filter = this.view2_gate_qual_filter.bind(this)
+        this.handle_view1_attr_change = this.handle_view1_attr_change.bind(this)
         this.handle_view2_attr_change = this.handle_view2_attr_change.bind(this)
         this.handle_view3_attr_change = this.handle_view3_attr_change.bind(this)
 
@@ -34,6 +35,8 @@ class App extends Component {
         this.state = {
 
             selected_computer: '',
+
+            view1_attr: 'T1',
 
             view2_attr : 'gate',
 
@@ -90,6 +93,13 @@ class App extends Component {
             this.container_2);
     }
 
+    handle_view1_attr_change(e){
+
+        let attr = e.target.value
+        this.setState({view1_attr: attr})
+
+    }
+
 
     handle_view2_attr_change(e){
 
@@ -117,12 +127,28 @@ class App extends Component {
         this.link_12 = document.querySelector('#link12')
 
         /* View 1是Mount + Update渲染*/
-        ReactDOM.render(<View_1 select_computer={this.select_computer}/>, this.container_1);
+        ReactDOM.render(<View_1 select_computer={this.select_computer}
+                                view1_attr={this.state.view1_attr}
+            />,
+            this.container_1);
     }
 
 
 
     componentDidUpdate(prevProps, prevStates) {
+
+        /*情况0：控制view1 的 view1_attr 更新*/
+        if(prevStates['view1_attr'] != this.state.view1_attr ){
+            if(d3.select('.view1_svg').size() == 0){
+                return
+            }
+
+            /*渲染 view2*/
+            ReactDOM.render(<View_1 select_computer={this.select_computer}
+                                    view1_attr={this.state.view1_attr}
+                />,
+                this.container_1);
+        }
 
         /*情况1：控制view2 的 view2_attr 更新*/
         if(prevStates['view2_attr'] != this.state.view2_attr ){
@@ -207,12 +233,19 @@ class App extends Component {
                                 <Divider plain><Text style={{fontSize: '1em'}} strong>Computer Selection</Text></Divider>
                                 <span className="ant-form-text">Select your preferred computer:</span>
                                 <Input value={this.state.selected_computer} placeholder="Selected Computer" prefix={ <HddOutlined /> }  style={{margin:'0 0 10px 0'}}/>
+                                <Text>Qubit Attr.: </Text>
+                                <Radio.Group value={this.state.view1_attr} onChange={this.handle_view1_attr_change} style={{marginLeft: '20px'}} buttonStyle="solid">
+                                    <Radio.Button value="error_rate">Error Rate</Radio.Button>
+                                    <Radio.Button value="T1">T1</Radio.Button>
+                                    <Radio.Button value="T2">T2</Radio.Button>
+                                </Radio.Group>
+
                                 <Divider plain><Text style={{fontSize: '1em'}} strong>Circuit Overview</Text></Divider>
 
                                 <Form>
                                         <Form.Item label="Transpile times" >
                                             {/*<InputNumber id={'view2-button'} defaultValue={100} min={100} max={1000} step={100}/>*/}
-                                            <InputNumber id={'view2-button'} defaultValue={3} min={3} max={10} step={1}/>
+                                            <InputNumber id={'view2-button'} defaultValue={10} min={10} max={100} step={10}/>
                                             <Button  style={{margin:'5px'}} onClick={this.handle_View2_button}>Launch Transpilation</Button>
                                         </Form.Item>
 
@@ -222,16 +255,38 @@ class App extends Component {
                                         <Radio.Button value="qubit">Qubit</Radio.Button>
                                     </Radio.Group>
 
-                                    <Form.Item  label="Quality Filter" style={{margin: '10px 0'}}>
-                                        <Slider
-                                            range
-                                            step={0.01}
-                                            defaultValue={[0, 0]}
-                                            min={this.state.view2_gate_qual_extent[0]}
-                                            max={this.state.view2_gate_qual_extent[1]}
-                                            onAfterChange={this.view2_gate_qual_filter}
-                                            disabled={check1()}
-                                        />
+                                    <Form.Item  label="Quality filter" style={{margin: '10px 0'}}>
+                                        <Row>
+                                            <Col span={7}>
+                                                <InputNumber
+                                                    /*min={1}
+                                                    max={20}*/
+                                                    value={this.state.view2_gate_qual_filter[0]}                                                    style={{ width: '80%' }}
+                                                    style={{ width: '80%', padding: '0' }}
+                                                    controls={false}
+                                                />
+                                            </Col>
+                                            <Col span={10}>
+                                                <Slider
+                                                    range
+                                                    step={0.01}
+                                                    defaultValue={[0, 0]}
+                                                    min={this.state.view2_gate_qual_extent[0]}
+                                                    max={this.state.view2_gate_qual_extent[1]}
+                                                    onAfterChange={this.view2_gate_qual_filter}
+                                                    disabled={check1()}
+                                                />
+                                            </Col>
+                                            <Col span={7}>
+                                                <InputNumber
+                                                    /*min={1}
+                                                    max={20}*/
+                                                    value={this.state.view2_gate_qual_filter[1]}
+                                                    controls={false}
+                                                    style={{ width: '80%' }}
+                                                />
+                                            </Col>
+                                        </Row>
                                     </Form.Item>
 
                                 </Form>
@@ -247,7 +302,7 @@ class App extends Component {
                                 <Radio.Group value={this.state.view3_attr} onChange={this.handle_view3_attr_change} style={{marginLeft: '20px'}} buttonStyle="solid" disabled={check1()}>
                                     <Radio.Button value="T1">T1</Radio.Button>
                                     <Radio.Button value="T2">T2</Radio.Button>
-                                    <Radio.Button value="readout_error">Error Rate</Radio.Button>
+                                    <Radio.Button value="error_rate">Error Rate</Radio.Button>
                                 </Radio.Group>
 
                             </div>

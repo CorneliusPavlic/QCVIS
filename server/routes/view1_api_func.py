@@ -93,7 +93,7 @@ def temporal_data_function(db, backends, interval, timerange):
                     'qubit_id': 'q_{}'.format(arr[0]),
                     'T1': round(arr[1][0]['value'], 2) if arr[1][0]['name'] == 'T1' else 0,
                     'T2': round(arr[1][1]['value'], 2) if arr[1][1]['name'] == 'T2' else 0,
-                    'readout_error': round(arr[1][2]['value'], 4) if arr[1][2]['name'] == 'readout_error' else 0.02,
+                    'error_rate': round(arr[1][2]['value'], 4) if arr[1][2]['name'] == 'readout_error' else 0.02,
                 }
                                   , enumerate(value['qubits'])))
             })
@@ -102,8 +102,45 @@ def temporal_data_function(db, backends, interval, timerange):
 
             data[backend_name] = computer_arr
 
-    pprint(data)
-    return data
+
+    T1_arr = []
+    T2_arr = []
+    error_rate_arr = []
+
+    ref_value={
+        'T1': 0,
+        'T2': 0,
+        'error_rate': 0,
+    }
+
+
+    # 计算 平均值
+    for key, qcomputer in data.items():
+        for date in qcomputer:
+            for qubit in date['qubit']:
+                T1_arr.append(qubit['T1'])
+                T2_arr.append(qubit['T2'])
+                error_rate_arr.append(qubit['error_rate'])
+
+
+
+    ref_value['T1'] = cal_average(T1_arr)
+    ref_value['T2'] = cal_average(T2_arr)
+    ref_value['error_rate'] = cal_average(error_rate_arr)
+
+
+    return [data, ref_value]
+
+
+# 内部函数，用来计算一个数组的均值
+def cal_average(num):
+    sum_num = 0
+    for t in num:
+        sum_num = sum_num + t
+
+    avg = sum_num / len(num)
+    return round(avg, 6)
+
 
 
     # return 'default'

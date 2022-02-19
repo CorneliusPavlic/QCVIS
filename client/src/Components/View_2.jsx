@@ -31,6 +31,7 @@ class View_2 extends Component {
         let view2_attr = this.props.view2_attr
 
 
+
         let qual_avg = 6
 
 

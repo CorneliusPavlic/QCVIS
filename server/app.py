@@ -7,7 +7,6 @@ import os
 from functions.update_calidata import download_cali_data_to_latest
 
 from routes.view1_api_func import temporal_data_function
-from routes.view2_get_func import view2_get_func
 from routes.view2_post_func import view2_post_func
 
 
@@ -48,18 +47,28 @@ def find():
         print(e)
         return 'error'
 
-
+query_data = []
 
 @app.route('/view1_api/')
 @app.route('/view1_api/<int:timerange>/<int:interval>/<string:backends>') # e.g., localhost:5000/view1_api/1/ibm_lagos&ibmq_jakarta
-def view1_api(timerange=30, interval=1, backends='ibm_lagos'): # 默认路由参数: interval：temporal view 的 时间间隔， 默认 1 天
+def view1_api(timerange=30, interval=1, backends='ibm_lagos'):
+    # 默认路由参数: interval：temporal view 的 时间间隔， 默认 1 天
+
+    global query_data
     try:
 
         # get all backends from url
         # backends = [value for (key, value) in {**request.args}.items()] # 获取所有backend
         backends = backends.split('&')
 
-        data = temporal_data_function(db, backends, interval, timerange)
+        result = temporal_data_function(db, backends, interval, timerange)
+
+        data = {
+            'data': result[0],
+            'ref_value': result[1]
+        }
+
+        query_data = data # 将查找所得的数据传给query_data，用来在view_2中的计算attr的均值提供数据源
 
         return data
         # return 'success'
@@ -84,11 +93,11 @@ def view2_api():
                 return 'No request body found'
 
             # 获取请求体 Request Body
-            trans_times = request.get_json()['trans_times'] or 100
+            trans_times = request.get_json()['trans_times'] or 10
             backend_name = request.get_json()['backend_name'] or 'ibmq_jakarta' # 如果没有指定，默认用 ibmq_jakarta 来执行
 
 
-            result = view2_post_func(trans_times, backend_name)
+            result = view2_post_func(trans_times, backend_name, query_data)
 
             api_data = result[0]
             transpiled_data = result[1]

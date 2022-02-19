@@ -50,8 +50,7 @@ html, body{
 }
 
 #svg_container_1{
-    overflow-y: auto;
-    overflow-x: auto;
+
     height: 100%;
     max-width: 450px;
 }

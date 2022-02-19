@@ -3,6 +3,22 @@ import qiskit
 from qiskit import IBMQ
 from datetime import datetime
 
+print(sum([1,2,3,4,5]))
+exit()
+
+print('hello'[1])
+exit()
+
+for a, b in enumerate([10, 20, 30]):
+    print(a, b)
+
+exit()
+
+if 'nam' in {"name":'shaolun'}:
+    print(1)
+
+exit()
+
 def mapfunc(i):
     return i[0]
 arr = [1,2,4,6]

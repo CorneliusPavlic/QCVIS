@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import * as d3 from 'd3'
 import axios from "axios";
 
-import scales from '../functions/scales'
 import params from '../functions/preset_param'
 
 
@@ -22,21 +21,23 @@ class View_1 extends Component {
 
         let select_computer = this.props.select_computer
 
+        const _this = this
+
 
         // axios.get('/api/view1_api/30/7/ibm_lagos&ibm_perth&ibmq_belem&ibmq_bogota&ibmq_casablanca&ibmq_jakarta&ibmq_lima&ibmq_manila&ibmq_quito&ibmq_santiago&ibmq_armonk')
         axios.get('/api/view1_api/30/7/ibm_lagos&ibm_perth&ibmq_belem&ibmq_bogota&ibmq_casablanca&ibmq_jakarta&ibmq_lima&ibmq_manila&ibmq_quito&ibmq_armonk&ibmq_armonk')
             .then(d=>{
 
-                const data = d.data
+                const data = d.data['data']
+                const ref_value = d.data['ref_value']
 
                 // console.log(data)
 
                 d3.select('.view1_svg')
                     .remove('*')
 
-                const ref_value = 120
 
-                const attr = 'T1'
+                const attr = _this.props.view1_attr || 'T1'
 
                 const theta =0.8
 
@@ -57,6 +58,16 @@ class View_1 extends Component {
                     'q_5': view1_block_top + 5*2*view1_qubitMaxRadius,
                     'q_6': view1_block_top + 6*2*view1_qubitMaxRadius
                 }
+
+
+                let qubit_attr_arr = []
+                Object.values(data).map(d=>d.map(_d=>_d['qubit'])).map(d=>d.map(_d=>_d.map(__d=>__d[attr]))).forEach(d=>d.forEach(_d=>_d.forEach(__d=>qubit_attr_arr.push(Math.abs(__d - ref_value[attr])))))
+
+
+                let scale_qubit_attr = d3.scalePow()
+                    .exponent(0.6)
+                    .domain(d3.extent(qubit_attr_arr))
+                    .range([0, view1_qubitMaxRadius])
 
 
                 let svg = d3.select('#svg_container_1')
@@ -128,13 +139,11 @@ class View_1 extends Component {
                 block.selectAll('circle')
                     .data(d=>{return d['qubit']})
                     .join('circle')
+                    .attr('class', 'view1_circle')
                     .attr('cx', view1_qubit_padding_left*theta)
                     .attr('cy', (d,i)=>(view1_block_top + i*2*view1_qubitMaxRadius)*theta)
-                    .attr('r', d=>{
-                        let radius = scales['view1'][d['computer_id']][attr](Math.abs(d[attr] - ref_value))
-                        return radius*theta
-                    })
-                    .attr('fill', d=>d[attr]>=ref_value? '#14b3ff':'#fe5e0f')
+                    .attr('r', d=>scale_qubit_attr(Math.abs(d[attr] - ref_value[attr])))
+                    .attr('fill', d=>d[attr]>=ref_value[attr]? '#14b3ff':'#fe5e0f')
                     .append('title')
                     .text(d=>`${attr}: ${d[attr].toFixed(2)}`)
 
@@ -369,11 +378,57 @@ class View_1 extends Component {
     }
 
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps, prevStates) {
 
         console.log('view 1 updated')
 
-        this.render_view1()
+        let _this = this
+
+
+        /*情况1：控制view2 的 view2_attr 更新*/
+        if(this.props.view1_attr && prevProps['view1_attr'] != this.props.view1_attr){
+            axios.get('/api/view1_api/30/7/ibm_lagos&ibm_perth&ibmq_belem&ibmq_bogota&ibmq_casablanca&ibmq_jakarta&ibmq_lima&ibmq_manila&ibmq_quito&ibmq_armonk&ibmq_armonk')
+                .then(d=>{
+                    const data = d.data['data']
+                    const ref_value = d.data['ref_value']
+
+
+                    const attr = _this.props.view1_attr || 'T1'
+
+                    let qubit_attr_arr = []
+                    Object.values(data).map(d=>d.map(_d=>_d['qubit'])).map(d=>d.map(_d=>_d.map(__d=>__d[attr]))).forEach(d=>d.forEach(_d=>_d.forEach(__d=>qubit_attr_arr.push(Math.abs(__d - ref_value[attr])))))
+
+
+                    /*设置attr的比例尺，如果是error_rate的话，要单独设置，不然的话点太小了*/
+                    let scale_qubit_attr
+                    if(attr != 'error_rate'){
+                        scale_qubit_attr = d3.scalePow()
+                            .exponent(0.6)
+                            .domain(d3.extent(qubit_attr_arr))
+                            .range([0, params.view1_qubitMaxRadius])
+                    }else{
+                        scale_qubit_attr = d3.scalePow()
+                            .exponent(0.35)
+                            .domain(d3.extent(qubit_attr_arr))
+                            .range([0, params.view1_qubitMaxRadius])
+                    }
+
+                    d3.selectAll('.view1_circle')
+                        .attr('r', d=>scale_qubit_attr(Math.abs(d[attr] - ref_value[attr])))
+                        .attr('fill', d=>{
+                            if(attr != 'error_rate'){
+                                return d[attr]>=ref_value[attr]? '#14b3ff':'#fe5e0f'
+                            }else{
+                                return d[attr] < ref_value[attr]? '#14b3ff':'#fe5e0f'
+                            }
+                        })
+                        .select('title')
+                        .text(d=>`${attr}: ${d[attr].toFixed(2)}`)
+
+
+                })
+
+        }
     }
 
 
