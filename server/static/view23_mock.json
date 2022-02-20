@@ -1,0 +1,2642 @@
+{
+    "trans_0": {
+        "depth": 1638,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 125
+            },
+            "cx1_2": {
+                "error_rate": 0.0065,
+                "source": "q_1",
+                "target": "q_2",
+                "times": 41
+            },
+            "cx1_3": {
+                "error_rate": 0.00725,
+                "source": "q_1",
+                "target": "q_3",
+                "times": 318
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 54
+            },
+            "cx5_3": {
+                "error_rate": 0.012783,
+                "source": "q_5",
+                "target": "q_3",
+                "times": 271
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 53
+            }
+        },
+        "gates_quality": 7.23,
+        "id": "trans_0",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 125
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 484
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 41
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 589
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 54
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 378
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 53
+            }
+        },
+        "qubits_quality": 69.01743631049759
+    },
+    "trans_1": {
+        "depth": 1650,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 102
+            },
+            "cx1_3": {
+                "error_rate": 0.00725,
+                "source": "q_1",
+                "target": "q_3",
+                "times": 345
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 24
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 19
+            },
+            "cx5_3": {
+                "error_rate": 0.012783,
+                "source": "q_5",
+                "target": "q_3",
+                "times": 320
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 65
+            }
+        },
+        "gates_quality": 4.6,
+        "id": "trans_1",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 102
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 471
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 24
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 665
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 19
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 404
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 65
+            }
+        },
+        "qubits_quality": 67.95482875557894
+    },
+    "trans_10": {
+        "depth": 1681,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 147
+            },
+            "cx1_2": {
+                "error_rate": 0.0065,
+                "source": "q_1",
+                "target": "q_2",
+                "times": 10
+            },
+            "cx1_3": {
+                "error_rate": 0.00725,
+                "source": "q_1",
+                "target": "q_3",
+                "times": 334
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 39
+            },
+            "cx5_3": {
+                "error_rate": 0.012783,
+                "source": "q_5",
+                "target": "q_3",
+                "times": 303
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 72
+            }
+        },
+        "gates_quality": 3.37,
+        "id": "trans_10",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 147
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 491
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 10
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 637
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 39
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 414
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 72
+            }
+        },
+        "qubits_quality": 68.42182379467586
+    },
+    "trans_11": {
+        "depth": 1556,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 44
+            },
+            "cx1_2": {
+                "error_rate": 0.0065,
+                "source": "q_1",
+                "target": "q_2",
+                "times": 12
+            },
+            "cx1_3": {
+                "error_rate": 0.00725,
+                "source": "q_1",
+                "target": "q_3",
+                "times": 194
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 129
+            },
+            "cx5_3": {
+                "error_rate": 0.012783,
+                "source": "q_5",
+                "target": "q_3",
+                "times": 276
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 126
+            }
+        },
+        "gates_quality": 6.41,
+        "id": "trans_11",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 44
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 250
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 12
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 470
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 129
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 531
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 126
+            }
+        },
+        "qubits_quality": 68.04101679763691
+    },
+    "trans_12": {
+        "depth": 1635,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 146
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 33
+            },
+            "cx3_1": {
+                "error_rate": 0.00725,
+                "source": "q_3",
+                "target": "q_1",
+                "times": 338
+            },
+            "cx3_5": {
+                "error_rate": 0.012783,
+                "source": "q_3",
+                "target": "q_5",
+                "times": 269
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 63
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 10
+            }
+        },
+        "gates_quality": 8.69,
+        "id": "trans_12",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 146
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 517
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 33
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 607
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 63
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 342
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 10
+            }
+        },
+        "qubits_quality": 68.55401701400568
+    },
+    "trans_13": {
+        "depth": 1658,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 48
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 151
+            },
+            "cx3_1": {
+                "error_rate": 0.00725,
+                "source": "q_3",
+                "target": "q_1",
+                "times": 273
+            },
+            "cx3_5": {
+                "error_rate": 0.012783,
+                "source": "q_3",
+                "target": "q_5",
+                "times": 263
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 118
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 30
+            }
+        },
+        "gates_quality": 3.37,
+        "id": "trans_13",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 48
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 472
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 151
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 536
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 118
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 411
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 30
+            }
+        },
+        "qubits_quality": 70.43382329509765
+    },
+    "trans_14": {
+        "depth": 1650,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 30
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 66
+            },
+            "cx3_1": {
+                "error_rate": 0.00725,
+                "source": "q_3",
+                "target": "q_1",
+                "times": 277
+            },
+            "cx3_5": {
+                "error_rate": 0.012783,
+                "source": "q_3",
+                "target": "q_5",
+                "times": 333
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 103
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 67
+            }
+        },
+        "gates_quality": 3.99,
+        "id": "trans_14",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 30
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 373
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 66
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 610
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 103
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 503
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 67
+            }
+        },
+        "qubits_quality": 67.86221924330836
+    },
+    "trans_15": {
+        "depth": 1615,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 137
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 189
+            },
+            "cx3_1": {
+                "error_rate": 0.00725,
+                "source": "q_3",
+                "target": "q_1",
+                "times": 349
+            },
+            "cx3_5": {
+                "error_rate": 0.012783,
+                "source": "q_3",
+                "target": "q_5",
+                "times": 134
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 16
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 14
+            }
+        },
+        "gates_quality": 5.37,
+        "id": "trans_15",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 137
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 675
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 189
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 483
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 16
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 164
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 14
+            }
+        },
+        "qubits_quality": 74.54007706324533
+    },
+    "trans_16": {
+        "depth": 1697,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 132
+            },
+            "cx1_3": {
+                "error_rate": 0.00725,
+                "source": "q_1",
+                "target": "q_3",
+                "times": 331
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 56
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 6
+            },
+            "cx5_3": {
+                "error_rate": 0.012783,
+                "source": "q_5",
+                "target": "q_3",
+                "times": 305
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 92
+            }
+        },
+        "gates_quality": 9.73,
+        "id": "trans_16",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 132
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 519
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 56
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 636
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 6
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 403
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 92
+            }
+        },
+        "qubits_quality": 69.49029658827891
+    },
+    "trans_17": {
+        "depth": 1652,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 31
+            },
+            "cx1_2": {
+                "error_rate": 0.0065,
+                "source": "q_1",
+                "target": "q_2",
+                "times": 92
+            },
+            "cx3_1": {
+                "error_rate": 0.00725,
+                "source": "q_3",
+                "target": "q_1",
+                "times": 231
+            },
+            "cx3_5": {
+                "error_rate": 0.012783,
+                "source": "q_3",
+                "target": "q_5",
+                "times": 271
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 123
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 129
+            }
+        },
+        "gates_quality": 2.87,
+        "id": "trans_17",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 31
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 354
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 92
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 502
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 123
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 523
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 129
+            }
+        },
+        "qubits_quality": 70.0195743432631
+    },
+    "trans_18": {
+        "depth": 1643,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 134
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 88
+            },
+            "cx3_1": {
+                "error_rate": 0.00725,
+                "source": "q_3",
+                "target": "q_1",
+                "times": 343
+            },
+            "cx3_5": {
+                "error_rate": 0.012783,
+                "source": "q_3",
+                "target": "q_5",
+                "times": 247
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 6
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 50
+            }
+        },
+        "gates_quality": 1.12,
+        "id": "trans_18",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 134
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 565
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 88
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 590
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 6
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 303
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 50
+            }
+        },
+        "qubits_quality": 70.56478861760692
+    },
+    "trans_19": {
+        "depth": 1635,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 25
+            },
+            "cx1_2": {
+                "error_rate": 0.0065,
+                "source": "q_1",
+                "target": "q_2",
+                "times": 78
+            },
+            "cx1_3": {
+                "error_rate": 0.00725,
+                "source": "q_1",
+                "target": "q_3",
+                "times": 249
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 88
+            },
+            "cx5_3": {
+                "error_rate": 0.012783,
+                "source": "q_5",
+                "target": "q_3",
+                "times": 301
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 120
+            }
+        },
+        "gates_quality": 4.74,
+        "id": "trans_19",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 25
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 352
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 78
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 550
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 88
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 509
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 120
+            }
+        },
+        "qubits_quality": 69.13699881748431
+    },
+    "trans_2": {
+        "depth": 1621,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 29
+            },
+            "cx1_3": {
+                "error_rate": 0.00725,
+                "source": "q_1",
+                "target": "q_3",
+                "times": 168
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 48
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 141
+            },
+            "cx5_3": {
+                "error_rate": 0.012783,
+                "source": "q_5",
+                "target": "q_3",
+                "times": 319
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 142
+            }
+        },
+        "gates_quality": 6.28,
+        "id": "trans_2",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 29
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 245
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 48
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 487
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 141
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 602
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 142
+            }
+        },
+        "qubits_quality": 68.3508410744494
+    },
+    "trans_20": {
+        "depth": 1635,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 25
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 54
+            },
+            "cx3_1": {
+                "error_rate": 0.00725,
+                "source": "q_3",
+                "target": "q_1",
+                "times": 236
+            },
+            "cx3_5": {
+                "error_rate": 0.012783,
+                "source": "q_3",
+                "target": "q_5",
+                "times": 288
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 96
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 161
+            }
+        },
+        "gates_quality": 1.79,
+        "id": "trans_20",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 25
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 315
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 54
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 524
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 96
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 545
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 161
+            }
+        },
+        "qubits_quality": 69.28687052475298
+    },
+    "trans_21": {
+        "depth": 1626,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 24
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 46
+            },
+            "cx3_1": {
+                "error_rate": 0.00725,
+                "source": "q_3",
+                "target": "q_1",
+                "times": 244
+            },
+            "cx3_5": {
+                "error_rate": 0.012783,
+                "source": "q_3",
+                "target": "q_5",
+                "times": 328
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 85
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 125
+            }
+        },
+        "gates_quality": 6.87,
+        "id": "trans_21",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 24
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 314
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 46
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 572
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 85
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 538
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 125
+            }
+        },
+        "qubits_quality": 68.07200468098897
+    },
+    "trans_22": {
+        "depth": 1600,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 169
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 24
+            },
+            "cx3_1": {
+                "error_rate": 0.00725,
+                "source": "q_3",
+                "target": "q_1",
+                "times": 318
+            },
+            "cx3_5": {
+                "error_rate": 0.012783,
+                "source": "q_3",
+                "target": "q_5",
+                "times": 206
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 98
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 9
+            }
+        },
+        "gates_quality": 6.65,
+        "id": "trans_22",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 169
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 511
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 24
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 524
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 98
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 313
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 9
+            }
+        },
+        "qubits_quality": 69.42478532238715
+    },
+    "trans_23": {
+        "depth": 1628,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 26
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 53
+            },
+            "cx3_1": {
+                "error_rate": 0.00725,
+                "source": "q_3",
+                "target": "q_1",
+                "times": 248
+            },
+            "cx3_5": {
+                "error_rate": 0.012783,
+                "source": "q_3",
+                "target": "q_5",
+                "times": 311
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 125
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 90
+            }
+        },
+        "gates_quality": 2.41,
+        "id": "trans_23",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 26
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 327
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 53
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 559
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 125
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 526
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 90
+            }
+        },
+        "qubits_quality": 68.03369462442089
+    },
+    "trans_24": {
+        "depth": 1624,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 132
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 62
+            },
+            "cx3_1": {
+                "error_rate": 0.00725,
+                "source": "q_3",
+                "target": "q_1",
+                "times": 327
+            },
+            "cx3_5": {
+                "error_rate": 0.012783,
+                "source": "q_3",
+                "target": "q_5",
+                "times": 275
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 9
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 44
+            }
+        },
+        "gates_quality": 9.81,
+        "id": "trans_24",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 132
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 521
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 62
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 602
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 9
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 328
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 44
+            }
+        },
+        "qubits_quality": 69.42467145121768
+    },
+    "trans_25": {
+        "depth": 1612,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 74
+            },
+            "cx1_3": {
+                "error_rate": 0.00725,
+                "source": "q_1",
+                "target": "q_3",
+                "times": 212
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 39
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 94
+            },
+            "cx5_3": {
+                "error_rate": 0.012783,
+                "source": "q_5",
+                "target": "q_3",
+                "times": 299
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 119
+            }
+        },
+        "gates_quality": 9.76,
+        "id": "trans_25",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 74
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 325
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 39
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 511
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 94
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 512
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 119
+            }
+        },
+        "qubits_quality": 68.68267410616822
+    },
+    "trans_26": {
+        "depth": 1654,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 127
+            },
+            "cx1_3": {
+                "error_rate": 0.00725,
+                "source": "q_1",
+                "target": "q_3",
+                "times": 315
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 85
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 12
+            },
+            "cx5_3": {
+                "error_rate": 0.012783,
+                "source": "q_5",
+                "target": "q_3",
+                "times": 274
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 65
+            }
+        },
+        "gates_quality": 7.15,
+        "id": "trans_26",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 127
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 527
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 85
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 589
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 12
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 351
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 65
+            }
+        },
+        "qubits_quality": 70.16152013004334
+    },
+    "trans_27": {
+        "depth": 1575,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 25
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 64
+            },
+            "cx3_1": {
+                "error_rate": 0.00725,
+                "source": "q_3",
+                "target": "q_1",
+                "times": 221
+            },
+            "cx3_5": {
+                "error_rate": 0.012783,
+                "source": "q_3",
+                "target": "q_5",
+                "times": 299
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 96
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 96
+            }
+        },
+        "gates_quality": 5.27,
+        "id": "trans_27",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 25
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 310
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 64
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 520
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 96
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 491
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 96
+            }
+        },
+        "qubits_quality": 68.41658525648212
+    },
+    "trans_28": {
+        "depth": 1683,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 102
+            },
+            "cx1_2": {
+                "error_rate": 0.0065,
+                "source": "q_1",
+                "target": "q_2",
+                "times": 88
+            },
+            "cx1_3": {
+                "error_rate": 0.00725,
+                "source": "q_1",
+                "target": "q_3",
+                "times": 319
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 14
+            },
+            "cx5_3": {
+                "error_rate": 0.012783,
+                "source": "q_5",
+                "target": "q_3",
+                "times": 290
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 94
+            }
+        },
+        "gates_quality": 8.94,
+        "id": "trans_28",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 102
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 509
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 88
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 609
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 14
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 398
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 94
+            }
+        },
+        "qubits_quality": 70.1058737823742
+    },
+    "trans_29": {
+        "depth": 1686,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 141
+            },
+            "cx1_3": {
+                "error_rate": 0.00725,
+                "source": "q_1",
+                "target": "q_3",
+                "times": 328
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 34
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 48
+            },
+            "cx5_3": {
+                "error_rate": 0.012783,
+                "source": "q_5",
+                "target": "q_3",
+                "times": 269
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 90
+            }
+        },
+        "gates_quality": 5.48,
+        "id": "trans_29",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 141
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 503
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 34
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 597
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 48
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 407
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 90
+            }
+        },
+        "qubits_quality": 69.55019481506353
+    },
+    "trans_3": {
+        "depth": 1622,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 100
+            },
+            "cx1_3": {
+                "error_rate": 0.00725,
+                "source": "q_1",
+                "target": "q_3",
+                "times": 248
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 24
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 140
+            },
+            "cx5_3": {
+                "error_rate": 0.012783,
+                "source": "q_5",
+                "target": "q_3",
+                "times": 241
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 95
+            }
+        },
+        "gates_quality": 6.28,
+        "id": "trans_3",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 100
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 372
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 24
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 489
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 140
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 476
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 95
+            }
+        },
+        "qubits_quality": 69.1901742935575
+    },
+    "trans_4": {
+        "depth": 1672,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 25
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 124
+            },
+            "cx3_1": {
+                "error_rate": 0.00725,
+                "source": "q_3",
+                "target": "q_1",
+                "times": 348
+            },
+            "cx3_5": {
+                "error_rate": 0.012783,
+                "source": "q_3",
+                "target": "q_5",
+                "times": 312
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 78
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 9
+            }
+        },
+        "gates_quality": 9.73,
+        "id": "trans_4",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 25
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 497
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 124
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 660
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 78
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 399
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 9
+            }
+        },
+        "qubits_quality": 68.78692643046288
+    },
+    "trans_5": {
+        "depth": 1639,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 20
+            },
+            "cx1_2": {
+                "error_rate": 0.0065,
+                "source": "q_1",
+                "target": "q_2",
+                "times": 74
+            },
+            "cx1_3": {
+                "error_rate": 0.00725,
+                "source": "q_1",
+                "target": "q_3",
+                "times": 251
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 118
+            },
+            "cx5_3": {
+                "error_rate": 0.012783,
+                "source": "q_5",
+                "target": "q_3",
+                "times": 268
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 134
+            }
+        },
+        "gates_quality": 9.13,
+        "id": "trans_5",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 20
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 345
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 74
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 519
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 118
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 520
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 134
+            }
+        },
+        "qubits_quality": 69.64605792845087
+    },
+    "trans_6": {
+        "depth": 1631,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 25
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 163
+            },
+            "cx3_1": {
+                "error_rate": 0.00725,
+                "source": "q_3",
+                "target": "q_1",
+                "times": 346
+            },
+            "cx3_5": {
+                "error_rate": 0.012783,
+                "source": "q_3",
+                "target": "q_5",
+                "times": 250
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 62
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 9
+            }
+        },
+        "gates_quality": 5.63,
+        "id": "trans_6",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 25
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 534
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 163
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 596
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 62
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 321
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 9
+            }
+        },
+        "qubits_quality": 70.57278356887309
+    },
+    "trans_7": {
+        "depth": 1697,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 67
+            },
+            "cx1_3": {
+                "error_rate": 0.00725,
+                "source": "q_1",
+                "target": "q_3",
+                "times": 342
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 152
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 19
+            },
+            "cx5_3": {
+                "error_rate": 0.012783,
+                "source": "q_5",
+                "target": "q_3",
+                "times": 254
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 87
+            }
+        },
+        "gates_quality": 3.06,
+        "id": "trans_7",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 67
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 561
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 152
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 596
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 19
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 360
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 87
+            }
+        },
+        "qubits_quality": 71.62667245072137
+    },
+    "trans_8": {
+        "depth": 1629,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 179
+            },
+            "cx1_3": {
+                "error_rate": 0.00725,
+                "source": "q_1",
+                "target": "q_3",
+                "times": 328
+            },
+            "cx2_1": {
+                "error_rate": 0.0065,
+                "source": "q_2",
+                "target": "q_1",
+                "times": 26
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 83
+            },
+            "cx5_3": {
+                "error_rate": 0.012783,
+                "source": "q_5",
+                "target": "q_3",
+                "times": 228
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 10
+            }
+        },
+        "gates_quality": 3.1,
+        "id": "trans_8",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 179
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 533
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 26
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 556
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 83
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 321
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 10
+            }
+        },
+        "qubits_quality": 69.29278477519055
+    },
+    "trans_9": {
+        "depth": 1706,
+        "gates": {
+            "cx1_0": {
+                "error_rate": 0.0087,
+                "source": "q_1",
+                "target": "q_0",
+                "times": 18
+            },
+            "cx1_2": {
+                "error_rate": 0.0065,
+                "source": "q_1",
+                "target": "q_2",
+                "times": 102
+            },
+            "cx1_3": {
+                "error_rate": 0.00725,
+                "source": "q_1",
+                "target": "q_3",
+                "times": 348
+            },
+            "cx4_5": {
+                "error_rate": 0.00705,
+                "source": "q_4",
+                "target": "q_5",
+                "times": 100
+            },
+            "cx5_3": {
+                "error_rate": 0.012783,
+                "source": "q_5",
+                "target": "q_3",
+                "times": 353
+            },
+            "cx5_6": {
+                "error_rate": 0.008633,
+                "source": "q_5",
+                "target": "q_6",
+                "times": 9
+            }
+        },
+        "gates_quality": 4.47,
+        "id": "trans_9",
+        "qubits": {
+            "q_0": {
+                "T1": 133.373333,
+                "T2": 43.223333,
+                "error_rate": 0.014717,
+                "times": 18
+            },
+            "q_1": {
+                "T1": 101.038333,
+                "T2": 109.776667,
+                "error_rate": 0.010383,
+                "times": 468
+            },
+            "q_2": {
+                "T1": 105.45,
+                "T2": 113.963333,
+                "error_rate": 0.010233,
+                "times": 102
+            },
+            "q_3": {
+                "T1": 165.316667,
+                "T2": 107.716667,
+                "error_rate": 0.017767,
+                "times": 701
+            },
+            "q_4": {
+                "T1": 132.925,
+                "T2": 45.751667,
+                "error_rate": 0.012733,
+                "times": 100
+            },
+            "q_5": {
+                "T1": 120.36,
+                "T2": 77.051667,
+                "error_rate": 0.0162,
+                "times": 462
+            },
+            "q_6": {
+                "T1": 132.268333,
+                "T2": 155.321667,
+                "error_rate": 0.0079,
+                "times": 9
+            }
+        },
+        "qubits_quality": 67.75614911642155
+    }
+}

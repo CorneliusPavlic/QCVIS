@@ -17,7 +17,7 @@ html, body{
 .header{
     display:flex;
     flex-direction:row;
-    line-height: 50px;
+    line-height: 43px;
 }
 
 .header-title{
@@ -43,6 +43,18 @@ html, body{
     padding: 5px;
     height: 100%;
 
+}
+
+.view1_title{
+    fill: #6c6c6c;
+    font-size: 1em;
+    font-family: Arial;
+}
+
+.view1_title:hover {
+    fill: #1b1d1d;
+    text-decoration-line: underline;
+    cursor: pointer;
 }
 
 #svg_view{
@@ -73,7 +85,7 @@ html, body{
 
 #container_2{
     position: absolute;
-    left: 530px;
+    left: 730px;
 }
 
 .display-none{
@@ -118,6 +130,7 @@ html, body{
 #link12{
     position: absolute;
     height: 100%;
+    left: 590px;
 }
 
 #link12_svg_container{

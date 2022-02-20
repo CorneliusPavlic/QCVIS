@@ -93,11 +93,12 @@ def view2_api():
                 return 'No request body found'
 
             # 获取请求体 Request Body
+            algo = request.get_json()['view2_algo'] or 'shor'
             trans_times = request.get_json()['trans_times'] or 10
             backend_name = request.get_json()['backend_name'] or 'ibmq_jakarta' # 如果没有指定，默认用 ibmq_jakarta 来执行
 
 
-            result = view2_post_func(trans_times, backend_name, query_data)
+            result = view2_post_func(algo, trans_times, backend_name, query_data)
 
             api_data = result[0]
             transpiled_data = result[1]

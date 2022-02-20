@@ -26,9 +26,10 @@ class View_2 extends Component {
 
 
 
-        let trans_times = Number(document.getElementById('view2-button').value)
-        let backend_name = this.props.backend_name
-        let view2_attr = this.props.view2_attr
+        let trans_times = Number(document.getElementById('view2-button').value) || 10
+        let backend_name = this.props.backend_name || 'ibm_lagos'
+        let view2_attr = this.props.view2_attr || 'gate'
+        let view2_algo = this.props.view2_algo || 'shor'
 
 
 
@@ -37,7 +38,8 @@ class View_2 extends Component {
 
         const _this = this
 
-        axios.post(`/api/view2_api/`, {'trans_times': trans_times, 'backend_name': backend_name})
+        // axios.post(`/api/view2_api/`, {'view2_algo':view2_algo, 'trans_times': trans_times, 'backend_name': backend_name})
+        axios.get('/data/view23_mock.json') // TODO: fake data without compilation
             .then(function(res){
                 let data = res.data
 
@@ -156,8 +158,8 @@ class View_2 extends Component {
                     .on('click', function(d, item){
                         let x0 = view2_block_text_width + view2_margin_left + view2_chart_width + 15
                         let y0 = view2_margin_top + +d3.select(this.parentNode).attr('transform').split(/[\s,()]+/)[2] + view2_block_height/2
-                        let x1 = view3_margin_left + 50
-                        let y1 = +d3.selectAll('.linkpath23').size() * (view3_block_height + view3_block_padding_height) + view3_block_height/2
+                        let x1 = view3_margin_left + 40
+                        let y1 = +d3.selectAll('.linkpath23').size() * (view3_block_height) + (view3_block_height/2 + view3_block_padding_height/2)
 
                         d3.select('.view2_svg')
                             .append('path')
@@ -212,7 +214,7 @@ class View_2 extends Component {
 
                 const theta2 = 1
 
-                const view3_margin_top = view2_margin_top, view3_margin_left = 400
+                const view3_margin_top = view2_margin_top, view3_margin_left = 450
                 const view3_padding_left = 50
                 const view3_block_height = 185
                 const view3_bar_height_max = 60
@@ -220,8 +222,8 @@ class View_2 extends Component {
                 const view3_bar_width = 13, view3_barGap_width = 3, view3_gap_height = 20
 
 
-                const color_qubit_attr = ['#d1ffe0', '#44c45b']
-                const color_gate_error = ['#d1ffe0', '#44c45b']
+                const color_qubit_attr = ['#febe8d', '#a64c22']
+                const color_gate_error = ['#febe8d', '#a64c22']
 
 
 
@@ -318,30 +320,11 @@ class View_2 extends Component {
                     .attr("stop-opacity", 1);
 
 
-                let gradient2 = svg.append("defs")
-                    .append("linearGradient")
-                    .attr("id","gradient2")
-                    .attr("x1", "0%").attr("y1", "0%")
-                    .attr("x2", "100%").attr("y2", "0%");
 
-                gradient2.append("stop")
-                    .attr("offset", 0.2)
-                    .attr("stop-color", '#fe5e0f')
-                    .attr("stop-opacity", 1);
-
-                gradient2.append("stop")
-                    .attr("offset", 0.5)
-                    .attr("stop-color", "#ffffff")
-                    .attr("stop-opacity", 1);
-
-                gradient2.append("stop")
-                    .attr("offset", 1)
-                    .attr("stop-color", "#14b3ff")
-                    .attr("stop-opacity", 1);
 
                 let legend = svg.append('g')
                     .attr('class', 'view3_legend_1')
-                    .attr('transform', `translate(${(view23_svg_width - 250)},5)`)
+                    .attr('transform', `translate(${(view23_svg_width - 420)},15)`)
 
                 legend.append('text')
                     .text('Gate Quality: good -> bad')
@@ -355,17 +338,6 @@ class View_2 extends Component {
                     .attr('height', 15)
                     .attr('fill', 'url(#gradient1)')
 
-                legend.append('text')
-                    .text('Qubit Quality: good -> bad')
-                    .attr('transform', `translate(7, 35)`)
-                    .style('font-size', `0.7em`)
-
-                legend.append('rect')
-                    .attr('x', 145)
-                    .attr('y', 25)
-                    .attr('width', 100)
-                    .attr('height', 15)
-                    .attr('fill', 'url(#gradient2)')
 
 
                 /*用来画view3，触发方式：通过点击view2的圆点*/
@@ -586,7 +558,6 @@ class View_2 extends Component {
         if(this.props.view2_attr && prevProps['view2_attr'] != this.props.view2_attr){/*加this.props.view2_attr判断是因为避免由于未传参而触发这个条件的情况 */
 
 
-            console.log(prevProps['view2_attr'], this.props.view2_attr)
             /*更新 左边 view2_qual_extent*/
             let attr = this.props.view2_attr
             this.props.view2_gate_qual_extent(this.state[`${attr}s_qual_extent`])
@@ -601,7 +572,8 @@ class View_2 extends Component {
             const {circle_radius_min, circle_radius_max} = params
 
 
-            axios.get(`/api/view2_api/`)
+            // axios.get(`/api/view2_api/`)
+            axios.get('/data/view23_mock.json') // TODO: fake data without compilation
                 .then(function(res) {
                     let data = res.data
 
@@ -651,7 +623,8 @@ class View_2 extends Component {
         if(this.props.view3_attr && prevProps['view3_attr'] != this.props.view3_attr){
             let view3_attr = this.props.view3_attr
 
-            axios.get(`/api/view2_api/`)
+            // axios.get(`/api/view2_api/`)
+            axios.get('/data/view23_mock.json') // TODO: fake data without compilation
                 .then(function(res) {
                     let data = res.data
 

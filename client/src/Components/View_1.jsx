@@ -39,7 +39,7 @@ class View_1 extends Component {
 
                 const attr = _this.props.view1_attr || 'T1'
 
-                const theta =0.8
+                const theta = 0.9
 
                 /*size for View 1*/
                 const {view1_width, view1_height, view1_computer_height, view1_computer_width, view1_computer_block_width, view1_computer_block_height, view1_qubitMaxRadius, view1_qubitHeight, view1_legend_height, view1_legend_width} = params
@@ -263,8 +263,8 @@ class View_1 extends Component {
                         let arr = d[0]['qcomputer'].split('_')
                         return `${arr[0]}\n${arr[1]}`
                     })
-                    .attr('transform', (d,i)=>`translate(${(view1_margin_left/2-15)* theta}, ${(view1_computer_height/2+20)* theta})`)
-                    .style('font-size', '0.9em')
+                    .attr('class', 'view1_title')
+                    .attr('transform', (d,i)=>`translate(${(view1_margin_left/2-35)* theta}, ${(view1_computer_height/2+20)* theta})`)
                     .on('click', (d,item)=>{
                         select_computer(item[0]['qcomputer'])
                     })
@@ -320,7 +320,7 @@ class View_1 extends Component {
                 /* 在所有元素最上面的 view1_legend_height 空隙中， 画legend */
                 let legend_1 = view1.append('g')
                     .attr('class', 'legend_1')
-                    .attr('transform', `translate(${(view1_computer_width - view1_legend_width)* theta},0)`)
+                    .attr('transform', `translate(${400* theta},0)`)
 
                 legend_1.append('text')
                     .text('Good Qubit Quality')
@@ -333,14 +333,14 @@ class View_1 extends Component {
                     .style('font-size', `${0.7 * theta}em`)
 
                 legend_1.append('rect')
-                    .attr('fill', '#90ce90')
+                    .attr('fill', '#14b3ff')
                     .attr('x', 105* theta)
                     .attr('y', 9* theta)
                     .attr('width', 15* theta)
                     .attr('height', 15* theta)
 
                 legend_1.append('rect')
-                    .attr('fill', '#e18c8f')
+                    .attr('fill', '#fe5e0f')
                     .attr('x', 230* theta)
                     .attr('y', 9* theta)
                     .attr('width', 15* theta)
@@ -349,7 +349,7 @@ class View_1 extends Component {
                 /* legend 2*/
                 let legend_2 = view1.append('g')
                     .attr('class', 'legend_2')
-                    .attr('transform', `translate(${(view1_computer_width - view1_legend_width)* theta},${35 * theta})`)
+                    .attr('transform', `translate(${400* theta},${35 * theta})`)
 
                 legend_2.append('text')
                     .text('Gate Quality: good -> bad')

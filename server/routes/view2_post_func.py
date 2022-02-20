@@ -5,7 +5,7 @@ from functions.my_module_QC import ibmq_load_account
 from functions.quantum_algos import Shors_algo, example_algo
 from pprint import pprint
 
-def view2_post_func(trans_times, backend_name, query_data):
+def view2_post_func(algo, trans_times, backend_name, query_data):
 
 
     # 每种 qubit 的T1，T2， error rate的平均值是多少
@@ -70,7 +70,12 @@ def view2_post_func(trans_times, backend_name, query_data):
 
     # build a quantum circuit
 
-    qc = Shors_algo()
+    # 根据传进来的 algo 名称，决定algo
+    if algo == 'shor':
+        qc = Shors_algo()
+    else:
+        qc = Shors_algo()
+
 
 
 
