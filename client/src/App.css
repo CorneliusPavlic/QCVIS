@@ -85,7 +85,7 @@ html, body{
 
 #container_2{
     position: absolute;
-    left: 730px;
+    left: 680px;
 }
 
 .display-none{
@@ -115,9 +115,9 @@ html, body{
 
 .linkpath_vert {
     fill: none;
-    stroke: #686868;
-    stroke-opacity: 0.3;
-    stroke-width: 2px;
+    stroke: #000000;
+    stroke-opacity: 1;
+    stroke-width: 1px;
 }
 
 .link12{

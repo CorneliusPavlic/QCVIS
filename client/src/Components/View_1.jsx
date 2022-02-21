@@ -64,10 +64,19 @@ class View_1 extends Component {
                 Object.values(data).map(d=>d.map(_d=>_d['qubit'])).map(d=>d.map(_d=>_d.map(__d=>__d[attr]))).forEach(d=>d.forEach(_d=>_d.forEach(__d=>qubit_attr_arr.push(Math.abs(__d - ref_value[attr])))))
 
 
-                let scale_qubit_attr = d3.scalePow()
-                    .exponent(0.6)
-                    .domain(d3.extent(qubit_attr_arr))
-                    .range([0, view1_qubitMaxRadius])
+                /*设置attr的比例尺，如果是error_rate的话，要单独设置，不然的话点太小了*/
+                let scale_qubit_attr
+                if(attr != 'error_rate'){
+                    scale_qubit_attr = d3.scalePow()
+                        .exponent(0.6)
+                        .domain(d3.extent(qubit_attr_arr))
+                        .range([0, params.view1_qubitMaxRadius])
+                }else{
+                    scale_qubit_attr = d3.scalePow()
+                        .exponent(0.25)
+                        .domain(d3.extent(qubit_attr_arr))
+                        .range([0, params.view1_qubitMaxRadius])
+                }
 
 
                 let svg = d3.select('#svg_container_1')
@@ -143,9 +152,15 @@ class View_1 extends Component {
                     .attr('cx', view1_qubit_padding_left*theta)
                     .attr('cy', (d,i)=>(view1_block_top + i*2*view1_qubitMaxRadius)*theta)
                     .attr('r', d=>scale_qubit_attr(Math.abs(d[attr] - ref_value[attr])))
-                    .attr('fill', d=>d[attr]>=ref_value[attr]? '#14b3ff':'#fe5e0f')
+                    .attr('fill', d=>{
+                        if(attr != 'error_rate'){
+                            return d[attr]>=ref_value[attr]? '#08AEFF':'#FF5C0F'
+                        }else{
+                            return d[attr]>=ref_value[attr]? '#FF5C0F':'#08AEFF'
+                        }
+                    })
                     .append('title')
-                    .text(d=>`${attr}: ${d[attr].toFixed(2)}`)
+                    .text(d=>`${attr}: ${d[attr].toFixed(4)}`)
 
 
 
@@ -323,24 +338,24 @@ class View_1 extends Component {
                     .attr('transform', `translate(${400* theta},0)`)
 
                 legend_1.append('text')
-                    .text('Good Qubit Quality')
+                    .text('Bad Qubit Quality')
                     .attr('transform', `translate(${7* theta},${20* theta})`)
                     .style('font-size', `${0.7 * theta}em`)
 
                 legend_1.append('text')
-                    .text('Bad Qubit Quality')
+                    .text('Good Qubit Quality')
                     .attr('transform', `translate(${140* theta},${20* theta})`)
                     .style('font-size', `${0.7 * theta}em`)
 
                 legend_1.append('rect')
-                    .attr('fill', '#14b3ff')
+                    .attr('fill', '#FF5C0F')
                     .attr('x', 105* theta)
                     .attr('y', 9* theta)
                     .attr('width', 15* theta)
                     .attr('height', 15* theta)
 
                 legend_1.append('rect')
-                    .attr('fill', '#fe5e0f')
+                    .attr('fill', '#08AEFF')
                     .attr('x', 230* theta)
                     .attr('y', 9* theta)
                     .attr('width', 15* theta)
@@ -349,11 +364,11 @@ class View_1 extends Component {
                 /* legend 2*/
                 let legend_2 = view1.append('g')
                     .attr('class', 'legend_2')
-                    .attr('transform', `translate(${400* theta},${35 * theta})`)
+                    .attr('transform', `translate(${150* theta},0)`)
 
                 legend_2.append('text')
                     .text('Gate Quality: good -> bad')
-                    .attr('transform', `translate(${7* theta},${10* theta})`)
+                    .attr('transform', `translate(${7* theta},${20* theta})`)
                     .style('font-size', `${0.7 * theta}em`)
 
                 legend_2.append('rect')
@@ -408,7 +423,7 @@ class View_1 extends Component {
                             .range([0, params.view1_qubitMaxRadius])
                     }else{
                         scale_qubit_attr = d3.scalePow()
-                            .exponent(0.35)
+                            .exponent(0.25)
                             .domain(d3.extent(qubit_attr_arr))
                             .range([0, params.view1_qubitMaxRadius])
                     }
@@ -417,13 +432,13 @@ class View_1 extends Component {
                         .attr('r', d=>scale_qubit_attr(Math.abs(d[attr] - ref_value[attr])))
                         .attr('fill', d=>{
                             if(attr != 'error_rate'){
-                                return d[attr]>=ref_value[attr]? '#14b3ff':'#fe5e0f'
+                                return d[attr]>=ref_value[attr]? '#08AEFF':'#FF5C0F'
                             }else{
-                                return d[attr] < ref_value[attr]? '#14b3ff':'#fe5e0f'
+                                return d[attr]>=ref_value[attr]? '#FF5C0F':'#08AEFF'
                             }
                         })
                         .select('title')
-                        .text(d=>`${attr}: ${d[attr].toFixed(2)}`)
+                        .text(d=>`${attr}: ${d[attr].toFixed(4)}`)
 
 
                 })

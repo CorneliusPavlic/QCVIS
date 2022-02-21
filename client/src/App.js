@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import {Layout, Breadcrumb, Row, Col} from 'antd';
 import {Input} from 'antd';
-import {Divider, Form, InputNumber, Button, Slider, Radio, Typography, Select} from 'antd';
+import {Divider, Form, InputNumber, Button, Slider, Radio, Typography, Select, Switch } from 'antd';
 
 
 const {Text} = Typography;
@@ -28,35 +28,37 @@ class App extends Component {
         super(props);
         this.handle_View2_button = this.handle_View2_button.bind(this)
         this.select_computer = this.select_computer.bind(this)
-        this.view2_gate_qual_extent = this.view2_gate_qual_extent.bind(this)
+        this.view2_qual_extent = this.view2_qual_extent.bind(this)
         this.view2_gate_qual_filter = this.view2_gate_qual_filter.bind(this)
         this.handle_view1_attr_change = this.handle_view1_attr_change.bind(this)
         this.handle_view2_attr_change = this.handle_view2_attr_change.bind(this)
         this.handle_view3_attr_change = this.handle_view3_attr_change.bind(this)
         this.handle_view2_algo_change = this.handle_view2_algo_change.bind(this)
+        this.handleSort = this.handleSort.bind(this)
 
 
         this.state = {
 
             selected_computer: '',
 
-            view1_attr: 'T1',
+            view1_attr: 'error_rate',
 
             view2_algo: 'shor',
             view2_attr: 'gate',
+            view2_sort: false,
 
-            view3_attr: 'T1',
+            view3_attr: 'error_rate',
 
-            view2_gate_qual_extent: [0, 0],
+            view2_qual_extent: [0, 0],
             view2_gate_qual_filter: [],
 
         }
     }
 
 
-    view2_gate_qual_extent(extent) {
+    view2_qual_extent(extent) {
         this.setState({
-            view2_gate_qual_extent: extent
+            view2_qual_extent: extent
         })
     }
 
@@ -93,8 +95,9 @@ class App extends Component {
                                 view2_attr={this.state.view2_attr}
                                 view2_algo={this.state.view2_algo}
                                 view2_gate_qual_filter={this.state.view2_gate_qual_filter}
-                                view2_gate_qual_extent={this.view2_gate_qual_extent}
-                                backend_name={this.state.selected_computer}/>,
+                                view2_qual_extent={this.view2_qual_extent}
+                                backend_name={this.state.selected_computer}
+                                view2_sort={this.state.view2_sort}/>,
             this.container_2);
     }
 
@@ -125,6 +128,10 @@ class App extends Component {
     handle_view2_algo_change(e){
         let algo = e.target.value
         this.setState({view2_algo: algo})
+    }
+
+    handleSort(checked){
+        this.setState({view2_sort: checked})
     }
 
 
@@ -167,8 +174,9 @@ class App extends Component {
             /*渲染 view2*/
             ReactDOM.render(<View_2 view2_attr={this.state.view2_attr}
                                     view2_gate_qual_filter={this.state.view2_gate_qual_filter}
-                                    view2_gate_qual_extent={this.view2_gate_qual_extent}
-                                    backend_name={this.state.selected_computer}/>,
+                                    view2_qual_extent={this.view2_qual_extent}
+                                    backend_name={this.state.selected_computer}
+                                    view2_sort={this.state.view2_sort}/>,
                 this.container_2);
         }
 
@@ -180,13 +188,29 @@ class App extends Component {
             }
             ReactDOM.render(<View_2 view2_attr={this.state.view2_attr}
                                     view2_gate_qual_filter={this.state.view2_gate_qual_filter}
-                                    backend_name={this.state.selected_computer}/>,
+                                    backend_name={this.state.selected_computer}
+                                    view2_sort={this.state.view2_sort}/>,
                 this.container_2);
 
         }
 
 
-        /*情况3：控制view3 的 view3_attr 更新*/
+        /*情况3：控制 view2 的数据是否进行sorting*/
+        if (prevStates['view2_sort'] != this.state.view2_sort){
+            if (d3.select('.view2_svg').size() == 0) {
+                return
+            }
+            ReactDOM.render(<View_2 view2_attr={this.state.view2_attr}
+                                    view3_attr={this.state.view3_attr}
+                                    backend_name={this.state.selected_computer}
+                                    view2_sort={this.state.view2_sort}
+                                    view2_gate_qual_filter={this.state.view2_gate_qual_filter}
+                                    view2_qual_extent={this.view2_qual_extent}/>,
+                this.container_2);
+        }
+
+
+        /*情况4：控制view3 的 view3_attr 更新*/
         if (prevStates['view3_attr'] != this.state.view3_attr) {
             if (d3.select('.view3').size() == 0) {
                 return
@@ -196,6 +220,7 @@ class App extends Component {
                 this.container_2);
 
         }
+
 
     }
 
@@ -228,7 +253,7 @@ class App extends Component {
                     <p className="paper-title">QuantVis: A Quality-Aware Visualization System for Noise Mitigation in
                         Quantum Computing</p>
                 </Header>
-                <Content style={{padding: '0 25px', backgroundColor: '#ffffff'}}>
+                <Content style={{padding: '0 75px', backgroundColor: '#ffffff'}}>
                     <Breadcrumb separator=">" style={{margin: '4px 0'}}>
                         {breadcrumbItems}
                         {/*<Breadcrumb.Item>Quantum Computer</Breadcrumb.Item>
@@ -238,11 +263,11 @@ class App extends Component {
                     </Breadcrumb>
                     <div className="view">
                         <Row gutter={5} style={{height: '100%'}}>
-                            <Col className="gutter-row control-panel" span={4} style={{height: '100%'}}>
+                            <Col className="gutter-row control-panel" span={5} style={{height: '100%'}}>
                                 <div style={{background: "#ffffff"}}>
                                     <Form
                                         labelCol={{
-                                            span: 9,
+                                            span: 10,
                                         }}
                                         /*wrapperCol={{
                                             span: 12,
@@ -273,7 +298,7 @@ class App extends Component {
                                             </Select>
                                         </Form.Item>
                                         <Form.Item label={"Transpile times"}>
-                                            <InputNumber id={'view2-button'} defaultValue={10} min={10} max={100}
+                                            <InputNumber id={'view2-button'} defaultValue={3} min={3} max={100}
                                                          step={10}/>
                                         </Form.Item>
 
@@ -312,8 +337,8 @@ class App extends Component {
                                                         range
                                                         step={0.01}
                                                         defaultValue={[0, 0]}
-                                                        min={this.state.view2_gate_qual_extent[0]}
-                                                        max={this.state.view2_gate_qual_extent[1]}
+                                                        min={this.state.view2_qual_extent[0]}
+                                                        max={this.state.view2_qual_extent[1]}
                                                         onAfterChange={this.view2_gate_qual_filter}
                                                         disabled={check1()}
                                                     />
@@ -330,6 +355,10 @@ class App extends Component {
                                             </Row>
                                         </Form.Item>
 
+                                        <Form.Item label={'Sorting'}>
+                                            <Switch onChange={this.handleSort}></Switch>
+                                        </Form.Item>
+
                                         <Divider plain  style={{marginTop:'40px'}}><Text style={{fontSize: '0.8em'}} strong>Circuit Selection</Text></Divider>
 
                                         <Form.Item label={"Gate Attr.:"}>
@@ -343,9 +372,9 @@ class App extends Component {
                                             <Radio.Group value={this.state.view3_attr}
                                                          onChange={this.handle_view3_attr_change} buttonStyle="solid"
                                                          disabled={check1()}>
+                                                <Radio.Button value="error_rate">Error Rate</Radio.Button>
                                                 <Radio.Button value="T1">T1</Radio.Button>
                                                 <Radio.Button value="T2">T2</Radio.Button>
-                                                <Radio.Button value="error_rate">Error Rate</Radio.Button>
                                             </Radio.Group>
                                         </Form.Item>
                                         <Divider plain><Text style={{fontSize: '0.8em'}}
