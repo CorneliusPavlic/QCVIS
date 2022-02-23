@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
 import * as d3 from 'd3'
 import axios from "axios";
+import * as science from 'science'
 
 import params from '../functions/preset_param'
+import {kernelEpanechnikov, kernelDensityEstimator} from "../functions/kde";
 
 
 class View_1 extends Component {
@@ -39,24 +41,26 @@ class View_1 extends Component {
 
                 const attr = _this.props.view1_attr || 'T1'
 
-                const theta = 0.9
+                const theta = 1
 
                 /*size for View 1*/
                 const {view1_width, view1_height, view1_computer_height, view1_computer_width, view1_computer_block_width, view1_computer_block_height, view1_qubitMaxRadius, view1_qubitHeight, view1_legend_height, view1_legend_width} = params
                 const {view1_margin_top, view1_margin_left} = params
                 const {view1_block_top, view1_qubit_padding_left} = params
+                const view1_area_height = 12
+                const view1_computerGap_height = 35
 
 
 
                 /*qubit的位置字典*/
                 const qubit_position_dict= {
-                    'q_0': view1_block_top + 0*2*view1_qubitMaxRadius,
-                    'q_1': view1_block_top + 1*2*view1_qubitMaxRadius,
-                    'q_2': view1_block_top + 2*2*view1_qubitMaxRadius,
-                    'q_3': view1_block_top + 3*2*view1_qubitMaxRadius,
-                    'q_4': view1_block_top + 4*2*view1_qubitMaxRadius,
-                    'q_5': view1_block_top + 5*2*view1_qubitMaxRadius,
-                    'q_6': view1_block_top + 6*2*view1_qubitMaxRadius
+                    'q_0': 0*2*view1_qubitMaxRadius,
+                    'q_1': 1*2*view1_qubitMaxRadius,
+                    'q_2': 2*2*view1_qubitMaxRadius,
+                    'q_3': 3*2*view1_qubitMaxRadius,
+                    'q_4': 4*2*view1_qubitMaxRadius,
+                    'q_5': 5*2*view1_qubitMaxRadius,
+                    'q_6': 6*2*view1_qubitMaxRadius
                 }
 
 
@@ -96,11 +100,23 @@ class View_1 extends Component {
 
                 let computer_qubit_ref_line_data = Object.values(data).map(d=>{return d[0]['qubit'].length}).map(d=>{return d3.range(d)})
 
+
                 let ref_line = view1.selectAll('g')
                     .data(computer_qubit_ref_line_data)
                     .join('g')
                     .attr('class', 'ref_line')
-                    .attr('transform', (d,i)=>`translate(0,${(view1_legend_height * theta + i*(view1_computer_height+10))*theta})`)
+                    .attr('transform', (d,i)=>{
+
+                            let prev_height = 0
+                            for(let _i in d3.range(i)){
+                                let prev_num = computer_qubit_ref_line_data[_i].length
+                                let computer_height = view1_block_top+prev_num*2*view1_qubitMaxRadius+view1_area_height+view1_computerGap_height
+                                prev_height += computer_height
+                            }
+
+                            return `translate(0, ${view1_legend_height+prev_height})`
+
+                    })
 
                 ref_line.selectAll('line')
                     .data(d=>d)
@@ -110,29 +126,39 @@ class View_1 extends Component {
                     .attr('class', 'circuit_ref_line')
                     .attr('x1', view1_margin_left* theta)
                     .attr('x2', (view1_margin_left + view1_computer_width-20)* theta)
-                    .attr('y1', d=>(view1_margin_top + view1_block_top + d*2*view1_qubitMaxRadius)*theta)
-                    .attr('y2', d=>(view1_margin_top + view1_block_top + d*2*view1_qubitMaxRadius)*theta)
+                    .attr('y1', d=>(view1_block_top + d*2*view1_qubitMaxRadius)*theta)
+                    .attr('y2', d=>(view1_block_top + d*2*view1_qubitMaxRadius)*theta)
 
+                let qcomputer_data = Object.entries(data).map(d=>{
+                    let qcomputer_id = d[0]
+                    return d[1].map(_d=> {return {"qcomputer": d[0], ..._d} || 'Q_X'})
+                })
 
 
                 /*开始画除了ref_line 之外的元素*/
                 let qcomputer = view1.selectAll('.qcomputer')
-                    .data(Object.entries(data).map(d=>{
-                        let qcomputer_id = d[0]
-                        return d[1].map(_d=> {return {"qcomputer": d[0], ..._d} || 'Q_X'})
-                    }))
+                    .data(qcomputer_data)
                     .join('g')
                     .attr('class', d=>d[0]['qcomputer'])
                     .classed('qcomputer', true)
-                    .attr('transform', (d,i)=>`translate(0,${(view1_legend_height * theta + i*(view1_computer_height+10))*theta})`)
+                    .attr('transform', (d,i)=>{
+
+                            let prev_height = 0
+                            for(let _i in d3.range(i)){
+                                let prev_num = qcomputer_data[_i][0]['qubit'].length
+                                let computer_height = view1_block_top+prev_num*2*view1_qubitMaxRadius+view1_area_height+view1_computerGap_height
+                                prev_height += computer_height
+                            }
+
+                            return `translate(0, ${view1_legend_height+prev_height})`
+                    })
 
 
                 /*每个糖葫芦+电路线段组成的基本单位叫做一个 block*/
                 let block = qcomputer.selectAll('g')
                     .data(d=>d)
                     .join('g')
-                    .attr('transform', (_d,_i)=>`translate(${(view1_margin_left + _i*view1_computer_block_width)*theta},${view1_margin_top*theta})`)
-
+                    .attr('transform', (_d,_i)=>`translate(${(view1_margin_left + _i*view1_computer_block_width)*theta},${view1_block_top*theta})`)
 
                 /*画 block 中的串糖葫芦的棍*/
                 block.append('line')
@@ -140,8 +166,11 @@ class View_1 extends Component {
                     .style('stroke-width', 2* theta)
                     .attr('x1', view1_qubit_padding_left*theta)
                     .attr('x2', view1_qubit_padding_left*theta)
-                    .attr('y1', view1_block_top* theta)
-                    .attr('y2', (view1_block_top + view1_qubitHeight-10)* theta)
+                    .attr('y1', 0)
+                    .attr('y2', d=>{
+                        let height = (d['qubit'].length-1)*2*view1_qubitMaxRadius
+                        return height* theta
+                    })
 
 
                 /*画一串一串糖葫芦*/
@@ -150,7 +179,7 @@ class View_1 extends Component {
                     .join('circle')
                     .attr('class', 'view1_circle')
                     .attr('cx', view1_qubit_padding_left*theta)
-                    .attr('cy', (d,i)=>(view1_block_top + i*2*view1_qubitMaxRadius)*theta)
+                    .attr('cy', (d,i)=>(i*2*view1_qubitMaxRadius)*theta)
                     .attr('r', d=>scale_qubit_attr(Math.abs(d[attr] - ref_value[attr])))
                     .attr('fill', d=>{
                         if(attr != 'error_rate'){
@@ -168,15 +197,15 @@ class View_1 extends Component {
                 time_arr = Object.values(data).map(d=>{return d.map(_d=>{return _d['timestamp']})})
 
                 let timeline_g = qcomputer.append('g')
-                    .attr('transform', `translate(${view1_margin_left* theta}, ${(view1_margin_top+15)* theta})`)
+                    .attr('transform', `translate(${view1_margin_left* theta}, 0)`)
 
                 timeline_g.append('line')
                     .style('stroke', '#747474')
                     .style('stroke-width', 1)
                     .attr('x1', 0)
                     .attr('x2', d=>d.length*view1_computer_block_width* theta)
-                    .attr('y1', 8* theta)
-                    .attr('y2', 8* theta)
+                    .attr('y1', 8)
+                    .attr('y2', 8)
 
                 timeline_g.selectAll('text')
                     .data(d=>{return d.map(_d=>_d['timestamp'])})
@@ -194,18 +223,20 @@ class View_1 extends Component {
                     a[i].forEach(d=>{
                         d['gate'].forEach(_d=>{
                             arr.push(_d['error_rate'] * 100)
-                            if(_d['error_rate'] * 100 >=100){
-                                // console.log(_d)
-                            }
                         })
                     })
                 }
 
-                // console.log(arr)
+                /*删掉最大的值，平衡scale*/
+                arr.sort((x, y)=>{
+                    return x-y
+                }).pop()
+
 
 
                 let extent = d3.extent(arr)/* 现在用所有computer的统一extent，以后考虑单独extent*/
-                // console.log(extent)
+                console.log(extent)
+
 
                 let scale = d3.scaleLinear()
                     .domain([0, extent[1]])
@@ -218,10 +249,8 @@ class View_1 extends Component {
 
                 let bottom_axis_g = block.append('g')
                     .attr('transform', d=>{
-                        if(d['qubit'].length == 7){
-                            return `translate(${view1_qubit_padding_left* theta},${(view1_block_top + view1_computer_block_height+25)* theta})`
-                        }
-                        return `translate(${view1_qubit_padding_left* theta},${(view1_block_top + view1_computer_block_height)* theta})`
+                        let height = d['qubit'].length* 2*view1_qubitMaxRadius + view1_area_height
+                        return `translate(${view1_qubit_padding_left* theta},${height* theta})`
                     })
                     .call(bottom_axis)
 
@@ -240,9 +269,9 @@ class View_1 extends Component {
                     .attr('class', 'gate')
                     // .attr('transform', `translate(60, 0)`)
                     .style('stroke', '#ababab')
-                    .style('stroke-width', 1.5* theta)
-                    .attr('x1', d=>(scale(d['error_rate']*100)+view1_qubit_padding_left+15)* theta)
-                    .attr('x2', d=>(scale(d['error_rate']*100)+view1_qubit_padding_left+15)* theta)
+                    .style('stroke-width', 1* theta)
+                    .attr('x1', d=>(scale(d['error_rate']*100)+view1_qubit_padding_left)* theta)
+                    .attr('x2', d=>(scale(d['error_rate']*100)+view1_qubit_padding_left)* theta)
                     .attr('y1', d=>qubit_position_dict[d['source']]* theta)
                     .attr('y2', d=>qubit_position_dict[d['target']]* theta)
                     .append('title')
@@ -254,7 +283,7 @@ class View_1 extends Component {
                     .data(d=>d['gate'])
                     .join('circle')
                     .attr('class', 'source-dot')
-                    .attr('cx', d=>(scale(d['error_rate']*100)+view1_qubit_padding_left+15)* theta)
+                    .attr('cx', d=>(scale(d['error_rate']*100)+view1_qubit_padding_left)* theta)
                     .attr('cy', d=>qubit_position_dict[d['source']]* theta)
                     .attr('r', 2* theta)
                     .attr('fill', '#ababab')
@@ -265,7 +294,7 @@ class View_1 extends Component {
                     .data(d=>d['gate'])
                     .join('circle')
                     .attr('class', 'target-dot')
-                    .attr('cx', d=>(scale(d['error_rate']*100)+view1_qubit_padding_left+15)* theta)
+                    .attr('cx', d=>(scale(d['error_rate']*100)+view1_qubit_padding_left)* theta)
                     .attr('cy', d=>qubit_position_dict[d['target']]* theta)
                     .attr('r', 2* theta)
                     .attr('fill', '#ababab')
@@ -279,7 +308,10 @@ class View_1 extends Component {
                         return `${arr[0]}\n${arr[1]}`
                     })
                     .attr('class', 'view1_title')
-                    .attr('transform', (d,i)=>`translate(${(view1_margin_left/2-35)* theta}, ${(view1_computer_height/2+20)* theta})`)
+                    .attr('transform', (d,i)=>{
+                        let height = d[0]['qubit'].length * view1_qubitMaxRadius
+                        return `translate(${(view1_margin_left/2-30)* theta}, ${height})`
+                    })
                     .on('click', (d,item)=>{
                         select_computer(item[0]['qcomputer'])
                     })
@@ -288,47 +320,88 @@ class View_1 extends Component {
 
 
                 /*从这里开始画 填充折线图*/
-                /* let example_data = [{'date':0, "value":0},{'date':4, "value":3},{'date':10, "value":1},{'date':13, "value":3}]
 
 
-                 let gradient = view1.append("defs")
-                     .append("linearGradient")
-                     .attr("id","gradient")
-                     .attr("x1", "0%").attr("y1", "0%")
-                     .attr("x2", "100%").attr("y2", "0%");
-
-                 gradient.append("stop")
-                     .attr("offset", 0.2)
-                     .attr("stop-color", '#ffffff')
-                     .attr("stop-opacity", 1);
-
-                 gradient.append("stop")
-                     .attr("offset", 1)
-                     .attr("stop-color", "#eb8589")
-                     .attr("stop-opacity", 1);
+                 // let example_data = [{'date':0, "value":0},{'date':4, "value":3},{'date':10, "value":1},{'date':13, "value":3}]
 
 
-                 let scale_y_dist = d3.scaleLinear()
-                     .domain([0,4])
-                     .range([18, 0])
+                let gradient = svg.append("defs")
+                    .append("linearGradient")
+                    .attr("id","gradient")
+                    .attr("x1", "0%").attr("y1", "0%")
+                    .attr("x2", "100%").attr("y2", "0%");
 
-                 block.append('g')
-                     .attr('transform', d=>{
-                         if(d['qubit'].length == 7){
-                             return `translate(${view1_qubit_padding_left},${view1_block_top + view1_computer_block_height + 5})`
-                         }
-                         return `translate(${view1_qubit_padding_left},${view1_block_top + view1_computer_block_height - 20})`
-                     })
-                     .append('path')
-                     .datum(example_data)
-                     .attr("stroke-width", 1)
-                     .attr('fill', 'url(#gradient)')
-                     .attr('d', d3.area()
-                         .x(function(d){return scale(d['date'])})
-                         .y0(18)
-                         .y1(function(d){return scale_y_dist(d['value'])})
-                     )
-         */
+                gradient.append("stop")
+                    .attr("offset", 0)
+                    .attr("stop-color", "#08AEFF")
+                    .attr("stop-opacity", 1);
+
+                gradient.append("stop")
+                    .attr("offset", 0.5)
+                    .attr("stop-color", "#ffffff")
+                    .attr("stop-opacity", 0.5);
+
+                gradient.append("stop")
+                    .attr("offset", 1)
+                    .attr("stop-color", "#ff5c0f")
+                    .attr("stop-opacity", 1);
+
+                let gradient2 = svg.append("defs")
+                    .append("linearGradient")
+                    .attr("id","gradient2")
+                    .attr("x1", "0%").attr("y1", "0%")
+                    .attr("x2", "100%").attr("y2", "0%");
+
+                gradient2.append("stop")
+                    .attr("offset", 0)
+                    .attr("stop-color", "#08AEFF")
+                    .attr("stop-opacity", 1);
+
+                gradient2.append("stop")
+                    .attr("offset", 0.35)
+                    .attr("stop-color", "#ffffff")
+                    .attr("stop-opacity", 0.5);
+
+                gradient2.append("stop")
+                    .attr("offset", 1)
+                    .attr("stop-color", "#ff1700")
+                    .attr("stop-opacity", 1);
+
+
+
+                let x = scale
+
+                let y = d3.scalePow()
+                    .exponent(0.6)
+                    .domain([0, 0.2])
+                    .range([view1_area_height, 0])
+
+
+
+                /* kde */
+                var kde = kernelDensityEstimator(kernelEpanechnikov(1), x.ticks(20))
+
+                block.append("path")
+                    .attr("class", "mypath")
+                    .attr('transform', d=>{
+                        let height = d['qubit'].length* 2*view1_qubitMaxRadius
+                        return `translate(${view1_qubit_padding_left* theta},${height* theta})`
+                    })
+                    .datum(d=>{
+                        return kde(d['gate'].map(_d=>+(_d['error_rate']*100).toFixed(2)))
+                    })
+                    .attr("fill", 'url(#gradient2)')
+                    .attr("opacity", ".8")
+                    .attr("stroke", "#000")
+                    .attr("stroke-width", 1)
+                    .attr("stroke-linejoin", "round")
+                    .attr("d", d3.area()
+                            .curve(d3.curveBasis)
+                            .x(function (d) { return x(d[0]); })
+                            .y0(view1_area_height)
+                            .y1(function (d) { return y(d[1]); })
+
+                    )
 
 
 
@@ -388,6 +461,7 @@ class View_1 extends Component {
     }
 
     componentDidMount() {
+
 
         this.render_view1()
     }

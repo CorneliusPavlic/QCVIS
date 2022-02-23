@@ -87,9 +87,6 @@ class App extends Component {
         }
 
 
-        /*画link12*/
-        ReactDOM.render(<Link12 selected_computer={this.state.selected_computer}/>, this.link_12)
-
         /*渲染 view2*/
         ReactDOM.render(<View_2 view3_attr={this.state.view3_attr}
                                 view2_attr={this.state.view2_attr}
@@ -99,6 +96,12 @@ class App extends Component {
                                 backend_name={this.state.selected_computer}
                                 view2_sort={this.state.view2_sort}/>,
             this.container_2);
+
+
+        /*画link12*/
+        ReactDOM.render(<Link12 selected_computer={this.state.selected_computer}/>, this.link_12)
+
+
     }
 
 
@@ -173,6 +176,7 @@ class App extends Component {
 
             /*渲染 view2*/
             ReactDOM.render(<View_2 view2_attr={this.state.view2_attr}
+                                    view3_attr={this.state.view3_attr}
                                     view2_gate_qual_filter={this.state.view2_gate_qual_filter}
                                     view2_qual_extent={this.view2_qual_extent}
                                     backend_name={this.state.selected_computer}
@@ -187,6 +191,7 @@ class App extends Component {
                 return
             }
             ReactDOM.render(<View_2 view2_attr={this.state.view2_attr}
+                                    view3_attr={this.state.view3_attr}
                                     view2_gate_qual_filter={this.state.view2_gate_qual_filter}
                                     backend_name={this.state.selected_computer}
                                     view2_sort={this.state.view2_sort}/>,

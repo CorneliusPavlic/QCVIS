@@ -175,14 +175,34 @@ def view2_post_func(algo, trans_times, backend_name, query_data):
         trans['id'] = trans_name
         trans['depth'] = len(qc)
         trans['qubits_quality'] = cal_overall_qubit_quality(q)
-        trans['gates_quality'] = round(uniform(0, 10),2)
+        trans['gates_quality'] = cal_overall_gate_quality(g)
         trans['qubits'] = q
         trans['gates'] = g
 
         data[trans_name] = trans
 
-    pprint(data)
+    # pprint(data)
 
+    # 开始构造 ref_value ，用来计算每个transpile circuit的qubit quality和gate quality的均值
+    ref_value = {}
+
+    qubit_qual_arr = []
+    gate_qual_arr = []
+
+    for _, trans in data.items():
+        qubit_qual_arr.append(trans['qubits_quality'])
+        gate_qual_arr.append(trans['gates_quality'])
+
+    ref_value['qubit_qual_avg'] = cal_average(qubit_qual_arr)
+    ref_value['gate_qual_avg'] = cal_average(gate_qual_arr)
+
+    pprint(ref_value)
+
+
+
+    # 左边返回的是用来响应 POST 请求的数据 画图用的， 右边的是编译得到的 circuit 数组, 最后 execute 用的
+    return [data, trans_data, ref_value]
+    # return data
 
 
     # data = {
@@ -469,9 +489,6 @@ def view2_post_func(algo, trans_times, backend_name, query_data):
 
 
 
-    # 左边返回的是用来响应 POST 请求的数据 画图用的， 右边的是编译得到的 circuit 数组, 最后 execute 用的
-    return [data, trans_data]
-    # return data
 
 
 # 内部函数，用来计算一个数组的均值
@@ -497,14 +514,14 @@ def cal_overall_qubit_quality(q):
     return overall_qubit_qual
 
 # 内部函数，计算一个 circuit 的 overall gate quality
-def cal_overall_qubit_quality(g):
+def cal_overall_gate_quality(g):
     num = 0
     summary = []
     for _, gate in g.items():
         num += gate['times']
         summary.append(gate['error_rate'] * gate['times'])
 
-    overall_qubit_qual = 1/(sum(summary)/num)
+    overall_gate_qual = 1/(sum(summary)/num)
 
-    return overall_qubit_qual
+    return overall_gate_qual
 

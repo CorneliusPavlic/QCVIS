@@ -100,7 +100,10 @@ def view2_api():
 
             result = view2_post_func(algo, trans_times, backend_name, query_data)
 
-            api_data = result[0]
+            api_data = {
+                'data': result[0],
+                'ref_value': result[2]
+            }
             transpiled_data = result[1]
 
     

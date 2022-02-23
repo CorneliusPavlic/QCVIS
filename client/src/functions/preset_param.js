@@ -5,14 +5,14 @@ const params = {
     'view1_computer_width': 500,
     'view1_computer_block_width' : 80,
     'view1_computer_block_height' : 100,
-    'view1_qubitMaxRadius' : 9,
+    'view1_qubitMaxRadius' : 8,
     'view1_qubitHeight' : 100,
-    'view1_legend_height' :  40,
+    'view1_legend_height' :  30,
     'view1_legend_width' :  230,
 
-    'view1_margin_top' : 20,
-    'view1_margin_left' : 170,
-    'view1_block_top' : 40,
+    'view1_margin_top' : 15,
+    'view1_margin_left' :120,
+    'view1_block_top' : 20,
     'view1_qubit_padding_left' : 10,
 
 

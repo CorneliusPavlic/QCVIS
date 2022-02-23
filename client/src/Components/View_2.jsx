@@ -393,8 +393,7 @@ class View_2 extends Component {
                 qubit_attr_arr = qubit_attr_arr.concat(T1_arr)
             })
 
-            let qubit_attr_sort = qubit_attr_arr.sort((x,y)=>x-y)
-            let scale_qubit_attr = d3.scaleLinear().domain([qubit_attr_sort[0], qubit_attr_sort[Math.round(qubit_attr_sort.length / 2)], qubit_attr_sort[qubit_attr_sort.length-1]]).range(color_qubit_attr)
+            let scale_qubit_attr = d3.scaleLinear().domain([d3.extent(qubit_attr_arr)[0], d3.median(qubit_attr_arr), d3.extent(qubit_attr_arr)[1]]).range(color_qubit_attr)
 
 
 
@@ -414,8 +413,7 @@ class View_2 extends Component {
             /*height*/
             let scale_gates_times = d3.scaleLinear().domain(d3.extent(gate_times_arr)).range([view3_bar_height_max, 0])
             /*color*/
-            let gate_errorRate_sort = gate_errorRate_arr.sort((x,y)=>x-y)
-            let scale_gates_errorGate = d3.scaleLinear().domain([gate_errorRate_sort[0], gate_errorRate_sort[Math.round(gate_errorRate_sort.length / 2)], gate_errorRate_sort[gate_errorRate_sort.length-1]]).range(color_gate_error)
+            let scale_gates_errorGate = d3.scaleLinear().domain([d3.extent(gate_errorRate_arr)[0], d3.median(gate_errorRate_arr), d3.extent(gate_errorRate_arr)[1]]).range(color_gate_error)
 
 
             let view3 = d3.select('.view2_svg')
@@ -674,7 +672,7 @@ class View_2 extends Component {
         if(this.props.view2_sort != undefined &&  prevProps['view2_sort'] != this.props.view2_sort){
 
             this.render_view2()
-            
+
 
         }
 
@@ -698,13 +696,14 @@ class View_2 extends Component {
                         qubit_attr_arr = qubit_attr_arr.concat(T1_arr)
                     })
 
+                    console.log('view2')
 
-                    let qubit_attr_sort = qubit_attr_arr.sort((x,y)=>x-y)
+
                     let scale_qubit_attr
                     if(view3_attr == 'error_rate'){
-                        scale_qubit_attr = d3.scaleLinear().domain([qubit_attr_sort[0], qubit_attr_sort[Math.round(qubit_attr_sort.length / 2)],qubit_attr_sort[qubit_attr_sort.length-1]]).range(color_qubit_attr)
+                        scale_qubit_attr = d3.scaleLinear().domain([d3.extent(qubit_attr_arr)[0], d3.median(qubit_attr_arr),d3.extent(qubit_attr_arr)[1]]).range(color_qubit_attr)
                     }else{
-                        scale_qubit_attr = d3.scaleLinear().domain([qubit_attr_sort[qubit_attr_sort.length-1], qubit_attr_sort[Math.round(qubit_attr_sort.length / 2)],qubit_attr_sort[0]]).range(color_qubit_attr)
+                        scale_qubit_attr = d3.scaleLinear().domain([d3.extent(qubit_attr_arr)[1], d3.median(qubit_attr_arr),d3.extent(qubit_attr_arr)[0]]).range(color_qubit_attr)
                     }
 
 

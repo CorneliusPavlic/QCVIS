@@ -38,8 +38,10 @@ class Link12 extends Component {
 
                 let x0 = 0
                 let y0 = +d3.select(`.${backend_name}`).attr('transform').split(/[\s,()]+/)[2] + 100
-                let x1 = lin12_svg_width
-                let y1 = d3.selectAll('.view2_block').size() * circle_radius_max + view2_margin_top
+                let x1 = lin12_svg_width-20
+                // let y1 = d3.selectAll('.view2_block').size() * circle_radius_max + view2_margin_top
+                let y1 = 500
+
 
                 return "M" + x0 + "," + y0
                     + "C" + (x0+100) + "," + y0
