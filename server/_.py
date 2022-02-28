@@ -1,7 +1,11 @@
 
-import qiskit
-from qiskit import IBMQ
-from datetime import datetime
+a = {
+    (1,2):'shaolun',
+}
+
+print(map(lambda x: set(x),a.keys()))
+print(set((2,1)) in map(lambda x: set(x),a.keys()))
+exit()
 
 print(sum([1,2,3,4,5]))
 exit()

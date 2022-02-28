@@ -196,7 +196,42 @@ def view2_post_func(algo, trans_times, backend_name, query_data):
     ref_value['qubit_qual_avg'] = cal_average(qubit_qual_arr)
     ref_value['gate_qual_avg'] = cal_average(gate_qual_arr)
 
-    pprint(ref_value)
+
+    # 开始计算每一个 qubit, gate 在所有compiled circuit中的平均使用次数
+    qubit_times_arr = {}
+    gate_times_arr = {}
+
+    for _, trans in data.items():
+        # qubit
+        for qname, qubit in trans['qubits'].items():
+            if qname not in qubit_times_arr:
+                qubit_times_arr[qname] = []
+                qubit_times_arr[qname].append(qubit['times'])
+            else:
+                qubit_times_arr[qname].append(qubit['times'])
+        # gate
+        for gname, gate in trans['gates'].items():
+            src = int(gname[2])
+            tgt = int(gname[4])
+
+            if gname in gate_times_arr:
+                gate_times_arr[gname].append(gate['times'])
+            elif 'cx{}_{}'.format(tgt, src) in gate_times_arr:
+                gate_times_arr['cx{}_{}'.format(tgt, src)].append(gate['times'])
+            else:
+                gate_times_arr[gname] = []
+                gate_times_arr[gname].append(gate['times'])
+
+    # 根据 gname 求平均数
+    for gname, arr in gate_times_arr.items():
+        gate_times_arr[gname] = cal_average(arr)
+
+    # 根据 qname 求平均数
+    for qname, arr in qubit_times_arr.items():
+        qubit_times_arr[qname] = cal_average(arr)
+
+    ref_value['qubit_times_avg'] = qubit_times_arr
+    ref_value['gate_times_avg'] = gate_times_arr
 
 
 

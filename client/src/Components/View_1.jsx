@@ -4,6 +4,7 @@ import axios from "axios";
 import * as science from 'science'
 
 import params from '../functions/preset_param'
+import QV from '../functions/QV.js'
 import {kernelEpanechnikov, kernelDensityEstimator} from "../functions/kde";
 
 
@@ -23,11 +24,14 @@ class View_1 extends Component {
 
         let select_computer = this.props.select_computer
 
+        let time_range = this.props.time_range || Number(document.getElementById('time_range').value)
+        let interval = this.props.interval|| Number(document.getElementById('interval').value)
+
+
         const _this = this
 
 
-        // axios.get('/api/view1_api/30/7/ibm_lagos&ibm_perth&ibmq_belem&ibmq_bogota&ibmq_casablanca&ibmq_jakarta&ibmq_lima&ibmq_manila&ibmq_quito&ibmq_santiago&ibmq_armonk')
-        axios.get('/api/view1_api/30/7/ibm_lagos&ibm_perth&ibmq_belem&ibmq_bogota&ibmq_casablanca&ibmq_jakarta&ibmq_lima&ibmq_manila&ibmq_quito&ibmq_armonk&ibmq_armonk')
+        axios.get(`/api/view1_api/${time_range}/${interval}/ibm_lagos&ibm_perth&ibmq_belem&ibmq_bogota&ibmq_casablanca&ibmq_jakarta&ibmq_lima&ibmq_manila&ibmq_quito&ibmq_armonk&ibmq_santiago`)
             .then(d=>{
 
                 const data = d.data['data']
@@ -44,11 +48,13 @@ class View_1 extends Component {
                 const theta = 1
 
                 /*size for View 1*/
-                const {view1_width, view1_height, view1_computer_height, view1_computer_width, view1_computer_block_width, view1_computer_block_height, view1_qubitMaxRadius, view1_qubitHeight, view1_legend_height, view1_legend_width} = params
+                const {view1_height, view1_computer_height, view1_computer_block_width, view1_computer_block_height, view1_qubitMaxRadius, view1_qubitHeight, view1_legend_height, view1_legend_width} = params
                 const {view1_margin_top, view1_margin_left} = params
                 const {view1_block_top, view1_qubit_padding_left} = params
                 const view1_area_height = 12
                 const view1_computerGap_height = 35
+                const view1_computer_width = view1_computer_block_width * Math.round(time_range/interval)
+                const view1_width = view1_computer_width + view1_margin_left + 2*view1_computer_block_width
 
 
 
@@ -227,25 +233,21 @@ class View_1 extends Component {
                     })
                 }
 
-                /*删掉最大的值，平衡scale*/
-                arr.sort((x, y)=>{
-                    return x-y
-                }).pop()
 
 
 
                 let extent = d3.extent(arr)/* 现在用所有computer的统一extent，以后考虑单独extent*/
-                console.log(extent)
 
+                let value_max = d3.min([extent[1], 4.6])
 
                 let scale = d3.scaleLinear()
-                    .domain([0, extent[1]])
+                    .domain([0, value_max])/*坐标值上限在这里设置*/
                     .range([5, (view1_computer_block_width - view1_qubit_padding_left)* theta])
 
 
                 let bottom_axis = d3.axisTop()
                     .scale(scale)
-                    .tickValues([0, extent[1]]);/*TODO: 格式化*/
+                    .tickValues([0, value_max]);/*TODO: 格式化*/
 
                 let bottom_axis_g = block.append('g')
                     .attr('transform', d=>{
@@ -303,10 +305,7 @@ class View_1 extends Component {
                 /* 现在给每个 qcomputer 里面画一个代表 computer 编号的字母 */
                 qcomputer
                     .append('text')
-                    .text(d=>{
-                        let arr = d[0]['qcomputer'].split('_')
-                        return `${arr[0]}\n${arr[1]}`
-                    })
+                    .html(d=>d[0]['qcomputer'])
                     .attr('class', 'view1_title')
                     .attr('transform', (d,i)=>{
                         let height = d[0]['qubit'].length * view1_qubitMaxRadius
@@ -315,6 +314,20 @@ class View_1 extends Component {
                     .on('click', (d,item)=>{
                         select_computer(item[0]['qcomputer'])
                     })
+
+                qcomputer
+                    .append('text')
+                    .attr('dy', '1em')
+                    .text(d=>`(${QV[d[0]['qcomputer']]})`)
+                    .attr('class', 'view1_title')
+                    .attr('transform', (d,i)=>{
+                        let height = d[0]['qubit'].length * view1_qubitMaxRadius
+                        return `translate(${(view1_margin_left/2-30)* theta}, ${height})`
+                    })
+                    .on('click', (d,item)=>{
+                        select_computer(item[0]['qcomputer'])
+                    })
+
 
 
 
@@ -373,13 +386,13 @@ class View_1 extends Component {
 
                 let y = d3.scalePow()
                     .exponent(0.6)
-                    .domain([0, 0.2])
+                    .domain([0, 0.3])
                     .range([view1_area_height, 0])
 
 
 
                 /* kde */
-                var kde = kernelDensityEstimator(kernelEpanechnikov(1), x.ticks(20))
+                var kde = kernelDensityEstimator(kernelEpanechnikov(0.7), x.ticks(20))
 
                 block.append("path")
                     .attr("class", "mypath")
@@ -517,6 +530,19 @@ class View_1 extends Component {
 
                 })
 
+        }
+
+
+        /*情况2: interval 改变*/
+        if(this.props.interval && prevProps['interval'] != this.props.interval){
+
+            this.render_view1()
+        }
+
+        /*情况3: time_range 改变*/
+        if(this.props.time_range && prevProps['time_range'] != this.props.time_range){
+
+            this.render_view1()
         }
     }
 

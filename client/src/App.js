@@ -34,6 +34,8 @@ class App extends Component {
         this.handle_view2_attr_change = this.handle_view2_attr_change.bind(this)
         this.handle_view3_attr_change = this.handle_view3_attr_change.bind(this)
         this.handle_view2_algo_change = this.handle_view2_algo_change.bind(this)
+        this.handle_view1_timerange = this.handle_view1_timerange.bind(this)
+        this.handle_view1_interval = this.handle_view1_interval.bind(this)
         this.handleSort = this.handleSort.bind(this)
 
 
@@ -137,6 +139,33 @@ class App extends Component {
         this.setState({view2_sort: checked})
     }
 
+    handle_view1_interval(e){
+        if(e.key == 'Enter'){
+
+            let interval = Number(document.getElementById('interval').value) || 7
+
+            ReactDOM.render(<View_1 select_computer={this.select_computer}
+                                    view1_attr={this.state.view1_attr}
+                                    interval={interval}
+                />,
+                this.container_1);
+        }
+    }
+
+
+    handle_view1_timerange(e){
+        if(e.key == 'Enter'){
+
+            let time_range = Number(document.getElementById('time_range').value) ||30
+
+            ReactDOM.render(<View_1 select_computer={this.select_computer}
+                                    view1_attr={this.state.view1_attr}
+                                    time_range={time_range}
+                />,
+                this.container_1);
+        }
+    }
+
 
     componentDidMount() {
         console.log('main mounted')
@@ -145,9 +174,15 @@ class App extends Component {
         this.container_2 = document.querySelector("#container_2");
         this.link_12 = document.querySelector('#link12')
 
-        /* View 1是Mount + Update渲染*/
+
+        let time_range = Number(document.getElementById('time_range').value) ||30
+        let interval = Number(document.getElementById('interval').value) || 7
+
+        /* View 1是Mount + 改变时间参数 渲染*/
         ReactDOM.render(<View_1 select_computer={this.select_computer}
                                 view1_attr={this.state.view1_attr}
+                                time_range={time_range}
+                                interval={interval}
             />,
             this.container_1);
     }
@@ -271,8 +306,9 @@ class App extends Component {
                             <Col className="gutter-row control-panel" span={5} style={{height: '100%'}}>
                                 <div style={{background: "#ffffff"}}>
                                     <Form
+                                        className={'control-panel-form'}
                                         labelCol={{
-                                            span: 10,
+                                            span: 9,
                                         }}
                                         /*wrapperCol={{
                                             span: 12,
@@ -283,18 +319,32 @@ class App extends Component {
                                         <Divider plain style={{marginTop:'40px'}}><Text style={{fontSize: '0.8em'}} strong>Computer
                                             Selection</Text></Divider>
 
-                                        <Form.Item label={'Select computer:'}>
+                                        <Form.Item label={'Selected computer:'}>
                                             <Input style={{width: '180px'}} value={this.state.selected_computer}
                                                    placeholder="Selected Computer:" prefix={<HddOutlined/>}/>
+                                        </Form.Item>
+                                        <Form.Item label={'Time Range'}>
+                                            <InputNumber id={'time_range'} defaultValue={30} min={3} max={100}
+                                                         step={1}
+                                                         onKeyDown={this.handle_view1_timerange}
+                                                         controls={false}
+                                            />
+                                            <span style={{marginLeft: '15px'}}>Interval: </span>
+                                            <InputNumber style={{width: '50px'}} id={'interval'} defaultValue={7} min={1} max={10}
+                                                         step={1}
+                                                         onKeyDown={this.handle_view1_interval}
+                                                         controls={false}
+                                            />
                                         </Form.Item>
                                         <Form.Item label={"Qubit Attr.:"}>
                                             <Radio.Group value={this.state.view1_attr}
                                                          onChange={this.handle_view1_attr_change} buttonStyle="solid">
-                                                <Radio.Button value="error_rate">Error Rate</Radio.Button>
+                                                <Radio.Button value="error_rate">Readout Error</Radio.Button>
                                                 <Radio.Button value="T1">T1</Radio.Button>
                                                 <Radio.Button value="T2">T2</Radio.Button>
                                             </Radio.Group>
                                         </Form.Item>
+
 
 
                                         <Form.Item label={"Quantum Algo.:"}>
@@ -302,8 +352,8 @@ class App extends Component {
                                                 <Select.Option value="shor">Shor's Algorithm</Select.Option>
                                             </Select>
                                         </Form.Item>
-                                        <Form.Item label={"Transpile times"}>
-                                            <InputNumber id={'view2-button'} defaultValue={3} min={3} max={100}
+                                        <Form.Item label={"Compilation Times"}>
+                                            <InputNumber id={'view2-button'} defaultValue={50} min={3} max={100}
                                                          step={10}/>
                                         </Form.Item>
 
@@ -325,14 +375,13 @@ class App extends Component {
                                             </Radio.Group>
                                         </Form.Item>
 
-                                        <Form.Item label="Quality filter">
+                                        <Form.Item label="Quality Filter">
                                             <Row>
                                                 <Col span={7}>
                                                     <InputNumber
                                                         /*min={1}
                                                         max={20}*/
                                                         value={this.state.view2_gate_qual_filter[0]}
-                                                        style={{width: '80%'}}
                                                         style={{width: '80%', padding: '0'}}
                                                         controls={false}
                                                     />
@@ -386,8 +435,8 @@ class App extends Component {
                                                              strong>Execution</Text></Divider>
 
 
-                                        <Form.Item wrapperCol={{offset: 1}}>
-                                            <Button danger style={{width: '270px'}}
+                                        <Form.Item wrapperCol={{offset: 2}}>
+                                            <Button danger style={{width: '300px'}}
                                                     onClick={this.handle_View2_button}>Run</Button>
                                         </Form.Item>
                                     </Form>

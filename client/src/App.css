@@ -64,7 +64,8 @@ html, body{
 #svg_container_1{
 
     height: 100%;
-    max-width: 450px;
+    max-width: 670px;
+    overflow-x: auto;/*TODO*/
 }
 
 #svg_container_2{
@@ -81,6 +82,11 @@ html, body{
     border: solid 1px #808080;
     border-radius: 8px;
     margin: 0 5px;
+    /*background-color: #f9f9f9;*/
+}
+
+.control-panel-form{
+    /*background-color: #f9f9f9;*/
 }
 
 #container_2{
@@ -141,4 +147,19 @@ html, body{
     stroke: #af5d60;
     stroke-dasharray: 2;
     stroke-width: 2px;
+}
+
+.view3_ref{
+    opacity: 0.3;
+}
+
+.view3_block_for_click{
+    cursor: pointer;
+    stroke: #9d9d9d;
+    stroke-width: 2px;
+}
+
+.view3_block_for_click:focus{
+    stroke-width: 6px;
+
 }

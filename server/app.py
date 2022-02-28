@@ -51,7 +51,7 @@ query_data = []
 
 @app.route('/view1_api/')
 @app.route('/view1_api/<int:timerange>/<int:interval>/<string:backends>') # e.g., localhost:5000/view1_api/1/ibm_lagos&ibmq_jakarta
-def view1_api(timerange=30, interval=1, backends='ibm_lagos'):
+def view1_api(timerange=30, interval=7, backends='ibm_lagos'):
     # 默认路由参数: interval：temporal view 的 时间间隔， 默认 1 天
 
     global query_data

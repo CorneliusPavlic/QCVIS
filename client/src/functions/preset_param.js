@@ -1,6 +1,6 @@
 const params = {
-    'view1_width' : 1000,
-    'view1_height' : 2000,
+    'view1_width' : 640,
+    'view1_height' : 1700,
     'view1_computer_height' : 160,
     'view1_computer_width': 500,
     'view1_computer_block_width' : 80,

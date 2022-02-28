@@ -39,338 +39,327 @@ class View_2 extends Component {
 
         const _this = this
 
-        // axios.post(`/api/view2_api/`, {'view2_algo':view2_algo, 'trans_times': trans_times, 'backend_name': backend_name})
-        axios.get('/data/view23_mock.json') // TODO: fake data without compilation
-            .then(function(res){
-                let data = res.data['data']
+        /*判断 这一次调用时 是不是第一次mount，还是更新的update*/
+        if(d3.select('.view2_svg').size()==0){
+            // axios.post(`/api/view2_api/`, {'view2_algo':view2_algo, 'trans_times': trans_times, 'backend_name': backend_name})
+            axios.get('/data/view23_mock.json') // TODO: fake data without compilation
+                .then(res=>draw_view2(res))
+        }else{
+            axios.get(`/api/view2_api/`)
+                .then(res=>draw_view2(res))
 
+        }
 
-                let qual_avg = {
-                    "qubit_qual_avg": res.data['ref_value']['qubit_qual_avg'],
-                    "gate_qual_avg": res.data['ref_value']['gate_qual_avg']
-                }
+        function draw_view2(res){
+            let data = res.data['data']
 
 
-                /*如果 view2_sort 为true, 对data进行排序*/
-                if(_this.props.view2_sort){
-                    console.log('sorting')
-                    data = Object.fromEntries(Object.entries(data).sort((x, y)=>{
-                        return +y[1][`${view2_attr}s_quality`] - +x[1][`${view2_attr}s_quality`]
-                    }))
-                }
+            let qual_avg = {
+                "qubit_qual_avg": res.data['ref_value']['qubit_qual_avg'],
+                "gate_qual_avg": res.data['ref_value']['gate_qual_avg']
+            }
 
+            let times_avg = {
+                qubit_times_avg: res.data['ref_value']['qubit_times_avg'],
+                gate_times_avg: res.data['ref_value']['gate_times_avg'],
+            }
 
 
 
-                const {view23_svg_width, view23_svg_height} = params
-                const {view2_margin_top, view2_padding_bottom, view2_margin_left, view2_margin_right} = params
-                const {circle_radius_min, circle_radius_max, view2_block_text_width} = params
-                const view3_block_padding_height = view2_margin_top, view2_block_height = circle_radius_max * 2
+            /*如果 view2_sort 为true, 对data进行排序*/
+            if(_this.props.view2_sort){
+                console.log('sorting')
+                data = Object.fromEntries(Object.entries(data).sort((x, y)=>{
+                    return +y[1][`${view2_attr}s_quality`] - +x[1][`${view2_attr}s_quality`]
+                }))
+            }
 
 
-                /* 搭建View 2*/
 
-                const theta = 1
 
-                /*开始搭建d3*/
+            const {view23_svg_width, view23_svg_height} = params
+            const {view2_margin_top, view2_padding_bottom, view2_margin_left, view2_margin_right} = params
+            const {circle_radius_min, circle_radius_max, view2_block_text_width} = params
+            const view3_block_padding_height = view2_margin_top, view2_block_height = circle_radius_max * 2
 
-                d3.select('.view2_svg')
-                    .remove('*')
 
-                let svg = d3.select('#svg_container_2')
-                    .append('svg')
-                    .attr('class', 'view2_svg')
-                    .attr('width', view23_svg_width * theta)
-                    .attr('height', view23_svg_height* theta)
+            const view3_margin_left = 420, view3_block_height = 185
 
+            /* 搭建View 2*/
 
+            const theta = 1
 
-                let gates_qual_extent = d3.extent(Object.values(data).map(d=>d['gates_quality']))
+            /*开始搭建d3*/
 
-                let qual_extent = d3.extent(Object.values(data).map(d=>Math.abs(d[`${view2_attr}s_quality`] - qual_avg[`${view2_attr}_qual_avg`])))
+            d3.select('.view2_svg')
+                .remove('*')
 
-                let qubits_qual_extent = d3.extent(Object.values(data).map(d=>d['qubits_quality']))
+            let svg = d3.select('#svg_container_2')
+                .append('svg')
+                .attr('class', 'view2_svg')
+                .attr('width', view23_svg_width * theta)
+                .attr('height', view23_svg_height* theta)
 
-                let depth_extent = d3.extent(Object.values(data).map(d=>d['depth']))
 
-                let view2_chart_width = view23_svg_width - view2_margin_left - view2_margin_right
 
-/*                let qubit_scale = d3.scaleLinear()
-                    .domain(qubits_qual_extent)
-                    .range(color_view2_circle)*/
+            let gates_qual_extent = d3.extent(Object.values(data).map(d=>d['gates_quality']))
 
+            let qual_extent = d3.extent(Object.values(data).map(d=>Math.abs(d[`${view2_attr}s_quality`] - qual_avg[`${view2_attr}_qual_avg`])))
 
-                let depth_scale = d3.scaleLinear()
-                    .domain(depth_extent)
-                    .range([0, view2_chart_width * theta])
+            let qubits_qual_extent = d3.extent(Object.values(data).map(d=>d['qubits_quality']))
 
+            let depth_extent = d3.extent(Object.values(data).map(d=>d['depth']))
 
-                let qual_scale = d3.scaleLinear()
-                    .domain(qual_extent)
-                    .range([circle_radius_min, circle_radius_max])
+            let view2_chart_width = view23_svg_width - view2_margin_left - view2_margin_right
 
+            /*                let qubit_scale = d3.scaleLinear()
+                                .domain(qubits_qual_extent)
+                                .range(color_view2_circle)*/
 
 
-                _this.setState({
-                    gates_qual_extent: gates_qual_extent.map(d=>+d.toFixed(2)),
-                    qubits_qual_extent: qubits_qual_extent.map(d=>+d.toFixed(2))
-                })
+            let depth_scale = d3.scaleLinear()
+                .domain(depth_extent)
+                .range([0, view2_chart_width * theta])
 
 
-                /*更改control panel里面的range control slider*/
-                view2_qual_extent(_this.state[`${_this.props.view2_attr}s_qual_extent`])
+            let qual_scale = d3.scaleLinear()
+                .domain(qual_extent)
+                .range([circle_radius_min, circle_radius_max])
 
 
 
-                let chart = d3.select('.view2_svg')
-                    .append('g')
-                    .attr('transform', `translate(${view2_margin_left* theta}, ${view2_margin_top* theta})`)
-
-
-                /*画每个circuit代表的 g*/
-                let block = chart
-                    .selectAll('.view2_block')
-                    .data(Object.entries(data))
-                    .join('g')
-                    .attr('class', 'view2_block')
-                    .attr('transform', (d, i)=>`translate(0, ${i * view2_block_height})`)
-
-
-                /*画 从左边指到circle的线*/
-                block.append('line')
-                    .attr('x1',  view2_block_text_width)
-                    .attr('y1', view2_block_height/2)
-                    .attr('x2', d=>depth_scale(d[1]['depth']) + view2_block_text_width)
-                    .attr('y2', view2_block_height/2)
-                    .attr('stroke', '#a0a0a0')
-
-
-                /*画 left-border的线*/
-                block.append('line')
-                    .attr('x1',  view2_block_text_width)
-                    .attr('y1', 2)
-                    .attr('x2',  view2_block_text_width)
-                    .attr('y2', view2_block_height - 2)
-                    .attr('stroke', '#a0a0a0')
-
-
-                /*画 right-border的线*/
-                block.append('line')
-                    .attr('x1',  view2_chart_width + view2_block_text_width)
-                    .attr('y1', 1)
-                    .attr('x2',  view2_chart_width + view2_block_text_width)
-                    .attr('y2', view2_block_height - 1)
-                    .attr('stroke', '#a0a0a0')
-
-
-                /*画 代表circuit的circle*/
-                block.append('circle')
-                    .attr('class', 'view2_circle')
-                    .attr('cx', d=>depth_scale(d[1]['depth']) + view2_block_text_width)
-                    .attr('cy', view2_block_height/2)
-                    .attr('r', d=>qual_scale(Math.abs(d[1][`${view2_attr}s_quality`] - qual_avg[`${view2_attr}_qual_avg`])))
-                    .attr('fill', d=>d[1][`${view2_attr}s_quality`] > qual_avg[`${view2_attr}_qual_avg`]? "#08AEFF":'#FF5C0F')
-                    .on('click', function(d, item){
-                        let x0 = view2_block_text_width + view2_margin_left + view2_chart_width + 15
-                        let y0 = view2_margin_top + +d3.select(this.parentNode).attr('transform').split(/[\s,()]+/)[2] + view2_block_height/2
-                        let x1 = view3_margin_left+30
-                        let y1 = +d3.selectAll('.linkpath23').size() * (view3_block_height) + (view3_block_height/2 + view3_block_padding_height/2)
-
-                        d3.select('.view2_svg')
-                            .append('path')
-                            .attr('class', 'linkpath23')
-                            .attr("d", function(d) {
-                                return "M" + x0 + "," + y0
-                                    + "C" + (x0 + 80) + "," + y0
-                                    + " " + (x1 - 80) + "," + y1
-                                    + " " + x1 + "," + y1;
-                            })
-                            .style('stroke', d=>d3.select(this).attr('fill'))
-
-                        /*给 view3 增加一个 block*/
-                        _this.append_block(data, item)
-                    })
-
-
-                /*画每个block之前的名称*/
-                block.append('text')
-                    .text(d=>d[1]['id'])
-                    .attr('transform', `translate(0, ${view2_block_height/2})`)
-
-
-                block.append('title')
-                    .text(d=>{
-                        return `${d[0]}, qubit_qual: ${d[1]['qubits_quality'].toFixed(4)}, gate_qual: ${d[1]['gates_quality'].toFixed(4)}`
-                    })
-
-
-                let depth_arr = Object.values(data).map(d=>d['depth']).sort()
-
-
-
-                /*画横向的坐标轴*/
-                let bottom_axis = d3.axisBottom()
-                    .scale(depth_scale)
-                    .tickValues([ depth_arr[0], depth_arr[Math.round(depth_arr.length*(1/3))], depth_arr[Math.round(depth_arr.length*(2/3))], depth_arr[depth_arr.length-1]])
-
-                let bottom_axis_g = svg.append('g')
-                    .attr('transform', `translate(${view2_margin_left + view2_block_text_width}, ${d3.selectAll('.view2_block').size()*view2_block_height + view2_margin_top  + 10})`)
-                    .call(bottom_axis)
-
-
-                /* 在所有元素最上面的 view1_legend_height 空隙中， 画legend */
-                let legend_1 = svg.append('g')
-                    .attr('class', 'legend_1')
-                    .attr('transform', `translate(${50* theta},20)`)
-
-                legend_1.append('text')
-                    .text('Bad Quality')
-                    .attr('transform', `translate(${25* theta},0)`)
-                    .style('font-size', `${1 * theta}em`)
-
-                legend_1.append('text')
-                    .text('Good Quality')
-                    .attr('transform', `translate(${140* theta},0)`)
-                    .style('font-size', `${1 * theta}em`)
-
-                legend_1.append('rect')
-                    .attr('fill', '#FF5C0F')
-                    .attr('x', 105* theta)
-                    .attr('y', -10)
-                    .attr('width', 15* theta)
-                    .attr('height', 15* theta)
-
-                legend_1.append('rect')
-                    .attr('fill', '#08AEFF')
-                    .attr('x', 230* theta)
-                    .attr('y', -10)
-                    .attr('width', 15* theta)
-                    .attr('height', 15* theta)
-
-
-
-
-
-
-
-                /**********************/
-
-                /*搭建View 3*/
-
-
-                const theta2 = 1
-
-                const view3_margin_top = view2_margin_top, view3_margin_left = 420
-                const view3_padding_left = 50
-                const view3_block_height = 185
-                const view3_bar_height_max = 60
-
-                const view3_bar_width = 13, view3_barGap_width = 3, view3_gap_height = 20
-
-
-
-                /*画 legend*/
-                /* legend 1*/
-                let gradient1 = svg.append("defs")
-                    .append("linearGradient")
-                    .attr("id","gradient1")
-                    .attr("x1", "0%").attr("y1", "0%")
-                    .attr("x2", "100%").attr("y2", "0%");
-
-                gradient1.append("stop")
-                    .attr("offset", 0)
-                    .attr("stop-color", '#FF5C0F')
-                    .attr("stop-opacity", 1);
-
-                gradient1.append("stop")
-                    .attr("offset", 0.5)
-                    .attr("stop-color", "#fff")
-                    .attr("stop-opacity", 1);
-
-                gradient1.append("stop")
-                    .attr("offset", 1)
-                    .attr("stop-color", "#08AEFF")
-                    .attr("stop-opacity", 1);
-
-
-
-
-                let legend = svg.append('g')
-                    .attr('class', 'view3_legend_1')
-                    .attr('transform', `translate(${(view23_svg_width - 300)},20)`)
-
-                legend.append('rect')
-                    .attr('x', 0)
-                    .attr('y', -10)
-                    .attr('width', 100)
-                    .attr('height', 15)
-                    .attr('fill', 'url(#gradient1)')
-
-                legend.append('text')
-                    .text('Bad Quality')
-                    .attr('transform', `translate(-40, 20)`)
-                    .style('font-size', `1em`)
-
-                legend.append('text')
-                    .text('Good Quality')
-                    .attr('transform', `translate(70, 20)`)
-                    .style('font-size', `1em`)
-
-
-
+            _this.setState({
+                gates_qual_extent: gates_qual_extent.map(d=>+d.toFixed(2)),
+                qubits_qual_extent: qubits_qual_extent.map(d=>+d.toFixed(2))
             })
 
 
+            /*更改control panel里面的range control slider*/
+            view2_qual_extent(_this.state[`${_this.props.view2_attr}s_qual_extent`])
+
+
+
+            let chart = d3.select('.view2_svg')
+                .append('g')
+                .attr('transform', `translate(${view2_margin_left* theta}, ${view2_margin_top* theta})`)
+
+
+            /*画每个circuit代表的 g*/
+            let block = chart
+                .selectAll('.view2_block')
+                .data(Object.entries(data))
+                .join('g')
+                .attr('class', 'view2_block')
+                .attr('transform', (d, i)=>`translate(0, ${i * view2_block_height})`)
+
+
+            /*画 从左边指到circle的线*/
+            block.append('line')
+                .attr('x1',  view2_block_text_width)
+                .attr('y1', view2_block_height/2)
+                .attr('x2', d=>depth_scale(d[1]['depth']) + view2_block_text_width)
+                .attr('y2', view2_block_height/2)
+                .attr('stroke', '#a0a0a0')
+
+
+            /*画 left-border的线*/
+            block.append('line')
+                .attr('x1',  view2_block_text_width)
+                .attr('y1', 2)
+                .attr('x2',  view2_block_text_width)
+                .attr('y2', view2_block_height - 2)
+                .attr('stroke', '#a0a0a0')
+
+
+            /*画 right-border的线*/
+            block.append('line')
+                .attr('x1',  view2_chart_width + view2_block_text_width)
+                .attr('y1', 1)
+                .attr('x2',  view2_chart_width + view2_block_text_width)
+                .attr('y2', view2_block_height - 1)
+                .attr('stroke', '#a0a0a0')
+
+
+            /*画 代表circuit的circle*/
+            block.append('circle')
+                .attr('class', 'view2_circle')
+                .attr('cx', d=>depth_scale(d[1]['depth']) + view2_block_text_width)
+                .attr('cy', view2_block_height/2)
+                .attr('r', d=>qual_scale(Math.abs(d[1][`${view2_attr}s_quality`] - qual_avg[`${view2_attr}_qual_avg`])))
+                .attr('fill', d=>d[1][`${view2_attr}s_quality`] > qual_avg[`${view2_attr}_qual_avg`]? "#08AEFF":'#FF5C0F')
+                .on('click', function(d, item){
+                    let x0 = view2_block_text_width + view2_margin_left + view2_chart_width + 15
+                    let y0 = view2_margin_top + +d3.select(this.parentNode).attr('transform').split(/[\s,()]+/)[2] + view2_block_height/2
+                    let x1 = view3_margin_left+30
+                    let y1 = +d3.selectAll('.linkpath23').size() * (view3_block_height) + (view3_block_height/2 + view3_block_padding_height/2)
+
+                    d3.select('.view2_svg')
+                        .append('path')
+                        .attr('class', 'linkpath23')
+                        .attr("d", function(d) {
+                            return "M" + x0 + "," + y0
+                                + "C" + (x0 + 80) + "," + y0
+                                + " " + (x1 - 80) + "," + y1
+                                + " " + x1 + "," + y1;
+                        })
+                        .style('stroke', d=>d3.select(this).attr('fill'))
+
+                    /*给 view3 增加一个 block*/
+                    _this.append_block(data, item, times_avg)
+                })
+
+
+            /*画每个block之前的名称*/
+            block.append('text')
+                .text(d=>d[1]['id'])
+                .attr('transform', `translate(0, ${view2_block_height/2})`)
+
+
+            block.append('title')
+                .text(d=>{
+                    return `${d[0]}, qubit_qual: ${d[1]['qubits_quality'].toFixed(4)}, gate_qual: ${d[1]['gates_quality'].toFixed(4)}`
+                })
+
+
+            let depth_arr = Object.values(data).map(d=>d['depth']).sort()
+
+
+
+            /*画横向的坐标轴*/
+            let bottom_axis = d3.axisBottom()
+                .scale(depth_scale)
+                .tickValues([ depth_arr[0], depth_arr[Math.round(depth_arr.length*(1/3))], depth_arr[Math.round(depth_arr.length*(2/3))], depth_arr[depth_arr.length-1]])
+
+            let bottom_axis_g = svg.append('g')
+                .attr('transform', `translate(${view2_margin_left + view2_block_text_width}, ${d3.selectAll('.view2_block').size()*view2_block_height + view2_margin_top  + 10})`)
+                .call(bottom_axis)
+
+
+            /* 在所有元素最上面的 view1_legend_height 空隙中， 画legend */
+            let legend_1 = svg.append('g')
+                .attr('class', 'legend_1')
+                .attr('transform', `translate(${50* theta},20)`)
+
+            legend_1.append('text')
+                .text('Bad Quality')
+                .attr('transform', `translate(${25* theta},0)`)
+                .style('font-size', `${1 * theta}em`)
+
+            legend_1.append('text')
+                .text('Good Quality')
+                .attr('transform', `translate(${140* theta},0)`)
+                .style('font-size', `${1 * theta}em`)
+
+            legend_1.append('rect')
+                .attr('fill', '#FF5C0F')
+                .attr('x', 105* theta)
+                .attr('y', -10)
+                .attr('width', 15* theta)
+                .attr('height', 15* theta)
+
+            legend_1.append('rect')
+                .attr('fill', '#08AEFF')
+                .attr('x', 230* theta)
+                .attr('y', -10)
+                .attr('width', 15* theta)
+                .attr('height', 15* theta)
+
+
+
+        }
 
     }
 
 
 
-    append_block(data, item){
+    append_block(data, item, times_avg){
 
+
+
+
+        console.log('times_avg', times_avg)
+
+
+
+        /**********************/
+
+        /*搭建View 3*/
+
+
+        const theta2 = 1
 
         const _this = this
 
 
-            let block_data = data[item[0]]
-            let index = d3.selectAll('.view3_block').size()
+        let block_data = data[item[0]]
+        let index = d3.selectAll('.view3_block').size()
 
 
-            const view3_margin_top = params['view2_margin_top'], view3_margin_left = 420
-            const view3_padding_left = 50
-            const view3_block_height = 185
-            const view3_bar_height_max = 60
+        const {view23_svg_width} = params
+        const view3_margin_top = params['view2_margin_top'], view3_margin_left = 420
+        const view3_padding_left = 50
+        const view3_block_height = 185
+        const view3_bar_height_max = 60
 
-            const view3_bar_width = 13, view3_barGap_width = 3, view3_gap_height = 20
-
-
-            const color_qubit_attr = ['#08AEFF', '#fff', '#FF5C0F']
-            const color_gate_error = ['#08AEFF', '#fff', '#FF5C0F']
+        const view3_bar_width = 13, view3_barGap_width = 3, view3_gap_height = 20
 
 
+        const color_qubit_attr = ['#08AEFF', '#fff', '#FF5C0F']
+        const color_gate_error = ['#08AEFF', '#fff', '#FF5C0F']
 
-            /*构造一个对象，用来装 gate qubit均值的假数据*/
-            const ref_value = {
-                'gates_times_avg': {
-                    'cx0_1': 110,
-                    'cx1_2': 110,
-                    'cx1_3': 110,
-                    'cx3_5': 110,
-                    'cx4_5': 110,
-                    'cx5_6': 110,
-                    'rz': 110,
-                    'sx': 110,
-                },
-                'qubits_times_avg': {
-                    'q_0': 130,
-                    'q_1': 130,
-                    'q_2': 130,
-                    'q_3': 130,
-                    'q_4': 130,
-                    'q_5': 130,
-                    'q_6': 130
-                }
-            }
+
+        if(d3.select('.view3_legend_1').size()==0){
+            /*画 legend*/
+
+            let svg = d3.select('.view2_svg')
+            /* legend 1*/
+            let gradient1 = svg
+                .append("defs")
+                .append("linearGradient")
+                .attr("id","gradient1")
+                .attr("x1", "0%").attr("y1", "0%")
+                .attr("x2", "100%").attr("y2", "0%");
+
+            gradient1.append("stop")
+                .attr("offset", 0)
+                .attr("stop-color", '#FF5C0F')
+                .attr("stop-opacity", 1);
+
+            gradient1.append("stop")
+                .attr("offset", 0.5)
+                .attr("stop-color", "#fff")
+                .attr("stop-opacity", 1);
+
+            gradient1.append("stop")
+                .attr("offset", 1)
+                .attr("stop-color", "#08AEFF")
+                .attr("stop-opacity", 1);
+
+
+
+
+            let legend = svg.append('g')
+                .attr('class', 'view3_legend_1')
+                .attr('transform', `translate(${(view23_svg_width - 300)},20)`)
+
+            legend.append('rect')
+                .attr('x', 0)
+                .attr('y', -10)
+                .attr('width', 100)
+                .attr('height', 15)
+                .attr('fill', 'url(#gradient1)')
+
+            legend.append('text')
+                .text('Bad Quality')
+                .attr('transform', `translate(-40, 20)`)
+                .style('font-size', `1em`)
+
+            legend.append('text')
+                .text('Good Quality')
+                .attr('transform', `translate(70, 20)`)
+                .style('font-size', `1em`)
+        }
+
 
 
             /*获取view3的attr (T1, T2, error_rate)*/
@@ -448,11 +437,11 @@ class View_2 extends Component {
                 .attr('y', -10)
                 .attr('width', d=>Math.max(Object.keys(d['gates']).length, Object.keys(d['qubits']).length) * (view3_bar_width+view3_barGap_width) + 20)
                 .attr('height', 2*view3_bar_height_max + view3_gap_height+20)
-                .attr('fill', 'none')
-                .attr('stroke', '#9d9d9d')
-                .attr('stroke-width', 2)
+                .attr('class', 'view3_block_for_click')
+                .attr('tabindex', '1')
+                .attr('fill', '#fff')
 
-
+            let view3_ref_bar_color = '#4b4b4b'
 
             /*为每个block 添加bar， 一个bar用一个 g 元素实现*/
             let bar_g = block3.selectAll('.each_bars')
@@ -462,16 +451,36 @@ class View_2 extends Component {
                 .attr('transform', (d, i)=>`translate(${view3_padding_left + i*(view3_bar_width+view3_barGap_width)}, 0)`)
 
 
-            /*TODO: 待确定 画 gate 高出来的一截 代表平均值的 没颜色的 bar*/
-            /*                    bar_g.append('rect')
-                                    .attr('x', 0)
-                                    .attr('y', d=>scale_gates_times(ref_value['gates_times_avg'][d[0]]))
-                                    .attr('width', view3_bar_width)
-                                    .attr('height', d=>ref_value['gates_times_avg'][d[0]] > d[1]['times']?view3_bar_height_max - scale_gates_times(ref_value['gates_times_avg'][d[0]]):null)
-                                    .attr('fill', d=>ref_value['gates_times_avg'][d[0]] > d[1]['times']? '#d6d6d6': null)*/
+            /*画 gate 高出来的一截 代表平均值的 没颜色的 bar*/
+            bar_g.append('rect')
+                .attr('x', 0)
+                .attr('y', d=>{
+                    let gname = ''
+                    if(d[0] in times_avg['gate_times_avg']){
+                        gname = d[0]
+                    }else if(`cx${d[0][4]}_${d[0][2]}` in times_avg['gate_times_avg']){
+                        gname = `cx${d[0][4]}_${d[0][2]}`
+                    }
+                    return scale_gates_times(times_avg['gate_times_avg'][gname])
+                })
+                .attr('width', view3_bar_width)
+                .attr('height', d=>{
+                    let gname = ''
+                    if(d[0] in times_avg['gate_times_avg']){
+                        gname = d[0]
+                    }else if(`cx${d[0][4]}_${d[0][2]}` in times_avg['gate_times_avg']){
+                        gname = `cx${d[0][4]}_${d[0][2]}`
+                    }
+                    return times_avg['gate_times_avg'][gname] > d[1]['times']?view3_bar_height_max - scale_gates_times(times_avg['gate_times_avg'][gname]):null
+                })
+                .attr('fill', view3_ref_bar_color)
+                .attr('class', 'view3_ref')
+                .append('title')
+                .text(d=> `ref value: ${times_avg['gate_times_avg'][d[0]]}`)
 
 
-            /*画 gate 本身实际值的 有颜色的bar*/
+
+        /*画 gate 本身实际值的 有颜色的bar*/
             bar_g.append('rect')
                 .attr('x', 0)
                 .attr('y', d=>scale_gates_times(d[1]['times']))
@@ -484,46 +493,61 @@ class View_2 extends Component {
                 .append('title')
                 .text(d=>`${d[0]}  Error:${d[1]['error_rate']}  times:${d[1]['times']}`)
 
-            /*画 代表ref-value的虚线*/
-            bar_g
-                .append('line')
-                .attr('x1', 0)
-                .attr('class', 'ref_line')
-                .attr('y1', d=>scale_gates_times(ref_value['gates_times_avg'][d[0]]))
-                .attr('x2', view3_bar_width)
-                .attr('y2', d=>scale_gates_times(ref_value['gates_times_avg'][d[0]]))
 
 
-            /*TODO: 待确定 画 gate 矮的一截 代表平均值的 没颜色的 bar*/
-            /*                    bar_g.append('rect')
-                                    .attr('x', 1)
-                                    .attr('y', d=>scale_gates_times(ref_value['gates_times_avg'][d[0]]))
-                                    .attr('width', view3_bar_width-2)
-                                    .attr('height', d=>ref_value['gates_times_avg'][d[0]] <= d[1]['times']?view3_bar_height_max - scale_gates_times(ref_value['gates_times_avg'][d[0]]):null)
-                                    .attr('fill', d=>ref_value['gates_times_avg'][d[0]] <= d[1]['times']? '#d6d6d6': null)*/
+            // 待确定 画 gate 矮的一截 代表平均值的 没颜色的 bar
+            bar_g.append('rect')
+                .attr('x', 1)
+                .attr('y', d=>{
+                    let gname = ''
+                    if(d[0] in times_avg['gate_times_avg']){
+                        gname = d[0]
+                    }else if(`cx${d[0][4]}_${d[0][2]}` in times_avg['gate_times_avg']){
+                        gname = `cx${d[0][4]}_${d[0][2]}`
+                    }
+                    return scale_gates_times(times_avg['gate_times_avg'][gname])
+                })
+                .attr('width', view3_bar_width-2)
+                .attr('height', d=>{
+                    let gname = ''
+                    if(d[0] in times_avg['gate_times_avg']){
+                        gname = d[0]
+                    }else if(`cx${d[0][4]}_${d[0][2]}` in times_avg['gate_times_avg']){
+                        gname = `cx${d[0][4]}_${d[0][2]}`
+                    }
+                    return times_avg['gate_times_avg'][gname] <= d[1]['times']?view3_bar_height_max - scale_gates_times(times_avg['gate_times_avg'][gname]):null
+                })
+                .attr('fill', view3_ref_bar_color)
+                .attr('class', 'view3_ref')
+                .append('title')
+                .text(d=> `ref value: ${times_avg['gate_times_avg'][d[0]]}`)
 
 
 
 
 
-            /*为每个block 添加bar， 一个bar用一个 g 元素实现*/
+        /*为每个block 添加bar， 一个bar用一个 g 元素实现*/
             let bar_g2 = block3.selectAll('.each_bars2')
                 .data(d=>Object.entries(d['qubits']))
                 .join('g')
                 .attr('transform', (d, i)=>`translate(${view3_padding_left + i*(view3_bar_width+view3_barGap_width)}, ${view3_bar_height_max+view3_gap_height})`)
                 .attr('class', d=>`trans_${index+1}_${d[0]}`)
 
-            /*画 gate 高出来的一截 代表平均值的 没颜色的 bar*/
-            /*                    bar_g2.append('rect')
-                                    .attr('x', 0)
-                                    .attr('y', 0)
-                                    .attr('width', view3_bar_width)
-                                    .attr('height', d=>ref_value['qubits_times_avg'][d[0]] > d[1]['times']?view3_bar_height_max - scale_qubits_times(ref_value['qubits_times_avg'][d[0]]): null)
-                                    .attr('fill', d=> '#d6d6d6')*/
+            // 画 qubit 高出来的一截 代表平均值的 没颜色的 bar
+            bar_g2.append('rect')
+                .attr('x', 0)
+                .attr('y', 0)
+                .attr('width', view3_bar_width)
+                .attr('height', d=>times_avg['qubit_times_avg'][d[0]] > d[1]['times']?view3_bar_height_max - scale_qubits_times(times_avg['qubit_times_avg'][d[0]]): null)
+                .attr('fill', view3_ref_bar_color)
+                .attr('class', 'view3_ref')
+                .append('title')
+                .text(d=> `ref value: ${times_avg['qubit_times_avg'][d[0]]}`)
 
 
 
-            /*TODO: 待确定 画 qubit 本身实际值的 有颜色的bar*/
+
+        /*待确定 画 qubit 本身实际值的 有颜色的bar*/
             bar_g2.append('rect')
                 .attr('x', 0)
                 .attr('y', 0)
@@ -539,24 +563,16 @@ class View_2 extends Component {
                 .text(d=>`${d[0]}  ${view3_attr}:${d[1][view3_attr]}  times:${d[1]['times']}`)
 
 
-            /*画 代表ref-value的虚线*/
-            bar_g2.append('line')
-                .attr('x1', 0)
-                .attr('class', 'ref_line')
-                .attr('y1', d=>scale_gates_times(ref_value['qubits_times_avg'][d[0]]))
-                .attr('x2', view3_bar_width)
-                .attr('y2', d=>scale_gates_times(ref_value['qubits_times_avg'][d[0]]))
-
-
-            /*TODO: 待确定 画 gate 高出来的一截 代表平均值的 没颜色的 bar*/
-            /*
-                                bar_g2.append('rect')
-                                    .attr('x', 1)
-                                    .attr('y', 0)
-                                    .attr('width', view3_bar_width-2)
-                                    .attr('height', d=>ref_value['qubits_times_avg'][d[0]] <= d[1]['times']?view3_bar_height_max - scale_qubits_times(ref_value['qubits_times_avg'][d[0]]): null)
-                                    .attr('fill', d=> '#d6d6d6')
-            */
+            /*画 qubit 矮的一截 代表平均值的 没颜色的 bar*/
+            bar_g2.append('rect')
+                .attr('x', 1)
+                .attr('y', 0)
+                .attr('width', view3_bar_width-2)
+                .attr('height', d=>times_avg['qubit_times_avg'][d[0]] <= d[1]['times']?view3_bar_height_max - scale_qubits_times(times_avg['qubit_times_avg'][d[0]]): null)
+                .attr('fill',view3_ref_bar_color)
+                .attr('class', 'view3_ref')
+                .append('title')
+                .text(d=> `ref value: ${times_avg['qubit_times_avg'][d[0]]}`)
 
 
 
@@ -681,8 +697,8 @@ class View_2 extends Component {
         if(this.props.view3_attr && prevProps['view3_attr'] != this.props.view3_attr){
             let view3_attr = this.props.view3_attr
 
-            // axios.get(`/api/view2_api/`)
-            axios.get('/data/view23_mock.json') // TODO: fake data without compilation
+            axios.get(`/api/view2_api/`)
+            // axios.get('/data/view23_mock.json') // TODO: fake data without compilation
                 .then(function(res) {
                     let data = res.data['data']
 
