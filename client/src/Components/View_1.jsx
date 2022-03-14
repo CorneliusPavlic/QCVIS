@@ -4,7 +4,7 @@ import axios from "axios";
 import * as science from 'science'
 
 import params from '../functions/preset_param'
-import QV from '../functions/QV.js'
+import pending_jobs from '../functions/pending_jobs.js'
 import {kernelEpanechnikov, kernelDensityEstimator} from "../functions/kde";
 
 
@@ -31,7 +31,8 @@ class View_1 extends Component {
         const _this = this
 
 
-        axios.get(`/api/view1_api/${time_range}/${interval}/ibm_lagos&ibm_perth&ibmq_belem&ibmq_bogota&ibmq_casablanca&ibmq_jakarta&ibmq_lima&ibmq_manila&ibmq_quito&ibmq_armonk&ibmq_santiago`)
+        // axios.get(`/api/view1_api/${time_range}/${interval}/ibm_lagos&ibm_perth&ibmq_belem&ibmq_bogota&ibmq_casablanca&ibmq_jakarta&ibmq_lima&ibmq_manila&ibmq_quito&ibmq_armonk&ibmq_santiago`)
+        axios.get(`/api/view1_api_datafile/${time_range}/${interval}/`)
             .then(d=>{
 
                 const data = d.data['data']
@@ -55,6 +56,7 @@ class View_1 extends Component {
                 const view1_computerGap_height = 35
                 const view1_computer_width = view1_computer_block_width * Math.round(time_range/interval)
                 const view1_width = view1_computer_width + view1_margin_left + 2*view1_computer_block_width
+                const view1_pendingJob_bar_height = 4, view1_pendingJob_bar_width = 85, view1_pendingJob_bar_radius = 3
 
 
 
@@ -104,7 +106,7 @@ class View_1 extends Component {
                 /*!* 先画qubit对齐线, 因为在最下面 */
                 let time_arr = Object.values(data).map(d=>{return d.map(_d=>{return _d['timestamp']})})
 
-                let computer_qubit_ref_line_data = Object.values(data).map(d=>{return d[0]['qubit'].length}).map(d=>{return d3.range(d)})
+/*                let computer_qubit_ref_line_data = Object.values(data).map(d=>{return d[0]['qubit'].length}).map(d=>{return d3.range(d)})
 
 
                 let ref_line = view1.selectAll('g')
@@ -133,7 +135,7 @@ class View_1 extends Component {
                     .attr('x1', view1_margin_left* theta)
                     .attr('x2', (view1_margin_left + view1_computer_width-20)* theta)
                     .attr('y1', d=>(view1_block_top + d*2*view1_qubitMaxRadius)*theta)
-                    .attr('y2', d=>(view1_block_top + d*2*view1_qubitMaxRadius)*theta)
+                    .attr('y2', d=>(view1_block_top + d*2*view1_qubitMaxRadius)*theta)*/
 
                 let qcomputer_data = Object.entries(data).map(d=>{
                     let qcomputer_id = d[0]
@@ -160,11 +162,38 @@ class View_1 extends Component {
                     })
 
 
+                /*画每个qubit的名称*/
+                qcomputer.selectAll('.view1_qubitNameSet')
+                    .data(d=>d3.range(d[0]['qubit'].length))
+                    .join('text')
+                    .attr('class', 'view1_qubitNameSet')
+                    .text(d=>`q${d}`)
+                    .attr('transform', d=>`translate(${view1_margin_left-10}, ${view1_block_top + d*2*view1_qubitMaxRadius})`)
+                    .style('font-size', '0.8em')
+                    .attr('fill', '#535353')
+
+
+
+
                 /*每个糖葫芦+电路线段组成的基本单位叫做一个 block*/
                 let block = qcomputer.selectAll('g')
                     .data(d=>d)
                     .join('g')
                     .attr('transform', (_d,_i)=>`translate(${(view1_margin_left + _i*view1_computer_block_width)*theta},${view1_block_top*theta})`)
+
+
+                /*画代表电路的ref line*/
+                block.selectAll('.view1_ref_line')
+                    .data(d=>{return d['qubit']})
+                    .join('line')
+                    .attr('class', 'view1_ref_line')
+                    .attr('x1', view1_qubit_padding_left*theta)
+                    .attr('y1', (d,i)=>(i*2*view1_qubitMaxRadius)*theta)
+                    .attr('x2', (view1_qubit_padding_left + view1_computer_block_width-15)*theta)
+                    .attr('y2', (d,i)=>(i*2*view1_qubitMaxRadius)*theta)
+                    .attr('stroke', '#a3e1e8')
+                    .attr('stroke-width', 1)
+
 
                 /*画 block 中的串糖葫芦的棍*/
                 block.append('line')
@@ -195,7 +224,9 @@ class View_1 extends Component {
                         }
                     })
                     .append('title')
-                    .text(d=>`${attr}: ${d[attr].toFixed(4)}`)
+                    .text(d=>`${d['qubit_id']}  ${attr}: ${d[attr].toFixed(4)}`)
+
+
 
 
 
@@ -309,24 +340,44 @@ class View_1 extends Component {
                     .attr('class', 'view1_title')
                     .attr('transform', (d,i)=>{
                         let height = d[0]['qubit'].length * view1_qubitMaxRadius
-                        return `translate(${(view1_margin_left/2-30)* theta}, ${height})`
+                        return `translate(${(view1_margin_left/2-40)* theta}, ${height})`
                     })
                     .on('click', (d,item)=>{
                         select_computer(item[0]['qcomputer'])
                     })
 
+
+                /*画代表排队数的bar chart*/
                 qcomputer
-                    .append('text')
-                    .attr('dy', '1em')
-                    .text(d=>`(${QV[d[0]['qcomputer']]})`)
-                    .attr('class', 'view1_title')
+                    .append('rect')
+                    .attr('width', view1_pendingJob_bar_width)
+                    .attr('height', view1_pendingJob_bar_height)
+                    .attr('fill', '#d9d9d9')
+                    .attr('rx', view1_pendingJob_bar_radius)
                     .attr('transform', (d,i)=>{
                         let height = d[0]['qubit'].length * view1_qubitMaxRadius
-                        return `translate(${(view1_margin_left/2-30)* theta}, ${height})`
+                        return `translate(${(view1_margin_left/2-40)* theta}, ${height+5})`
                     })
-                    .on('click', (d,item)=>{
-                        select_computer(item[0]['qcomputer'])
+                    .append('title')
+                    .text(d=>`queuing jobs: ${pending_jobs[d[0]['qcomputer']]}`)
+
+
+                let pendingjob_max = d3.max(Object.values(pending_jobs))
+
+
+                qcomputer
+                    .append('rect')
+                    .attr('width', d=>view1_pendingJob_bar_width * (pending_jobs[d[0]['qcomputer']]/pendingjob_max))
+                    .attr('height', view1_pendingJob_bar_height)
+                    .attr('fill', '#515757')
+                    .attr('rx', view1_pendingJob_bar_radius)
+                    .attr('transform', (d,i)=>{
+                        let height = d[0]['qubit'].length * view1_qubitMaxRadius
+                        return `translate(${(view1_margin_left/2-40)* theta}, ${height+5})`
                     })
+                    .append('title')
+                    .text(d=>`queuing jobs: ${pending_jobs[d[0]['qcomputer']]}`)
+
 
 
 
@@ -419,50 +470,53 @@ class View_1 extends Component {
 
 
                 /* 在所有元素最上面的 view1_legend_height 空隙中， 画legend */
-                let legend_1 = view1.append('g')
-                    .attr('class', 'legend_1')
-                    .attr('transform', `translate(${400* theta},0)`)
-
-                legend_1.append('text')
-                    .text('Bad Qubit Quality')
-                    .attr('transform', `translate(${7* theta},${20* theta})`)
-                    .style('font-size', `${0.7 * theta}em`)
-
-                legend_1.append('text')
-                    .text('Good Qubit Quality')
-                    .attr('transform', `translate(${140* theta},${20* theta})`)
-                    .style('font-size', `${0.7 * theta}em`)
-
-                legend_1.append('rect')
-                    .attr('fill', '#FF5C0F')
-                    .attr('x', 105* theta)
-                    .attr('y', 9* theta)
-                    .attr('width', 15* theta)
-                    .attr('height', 15* theta)
-
-                legend_1.append('rect')
-                    .attr('fill', '#08AEFF')
-                    .attr('x', 230* theta)
-                    .attr('y', 9* theta)
-                    .attr('width', 15* theta)
-                    .attr('height', 15* theta)
 
                 /* legend 2*/
                 let legend_2 = view1.append('g')
                     .attr('class', 'legend_2')
-                    .attr('transform', `translate(${150* theta},0)`)
+                    .attr('transform', `translate(${330* theta},0)`)
 
                 legend_2.append('text')
-                    .text('Gate Quality: good -> bad')
-                    .attr('transform', `translate(${7* theta},${20* theta})`)
-                    .style('font-size', `${0.7 * theta}em`)
+                    .text('Good Qual.')
+                    .attr('transform', `translate(${-20* theta},${42* theta})`)
+                    .style('font-size', `${0.8 * theta}em`)
+
+
+                legend_2.append('text')
+                    .text('Bad Qual.')
+                    .attr('transform', `translate(${80* theta},${42* theta})`)
+                    .style('font-size', `${0.8 * theta}em`)
 
                 legend_2.append('rect')
-                    .attr('x', 145* theta)
-                    .attr('y', 0)
+                    .attr('x', 7* theta)
+                    .attr('y', 12)
                     .attr('width', 100* theta)
                     .attr('height', 15* theta)
                     .attr('fill', 'url(#gradient)')
+
+                /*表示qubit的 legand*/
+                let lengend_data = [-8, -6, -4,  4, 6, 8].map(d=>d*2.5)
+                legend_2.selectAll('.view1_legend_qubit')
+                    .data(lengend_data)
+                    .join('circle')
+                    .attr('class', 'view1_legend_qubit')
+                    .attr('fill', d=>d<0? '#FF5C0F':'#08AEFF')
+                    .attr('cx', (d,i)=>200+Math.abs(d/2)+lengend_data.slice(0, i).reduce((partialSum, a) => partialSum + Math.abs(a), 0))
+                    .attr('cy', d=>20)
+                    .attr('r', d=>Math.abs(d/2))
+
+
+                legend_2.append('text')
+                    .text('Good Qual.')
+                    .attr('transform', `translate(${180* theta},${42* theta})`)
+                    .style('font-size', `${0.8 * theta}em`)
+
+
+                legend_2.append('text')
+                    .text('Bad Qual.')
+                    .attr('transform', `translate(${260* theta},${42* theta})`)
+                    .style('font-size', `${0.8 * theta}em`)
+
 
 
             })
@@ -487,9 +541,14 @@ class View_1 extends Component {
         let _this = this
 
 
+        let time_range = this.props.time_range || Number(document.getElementById('time_range').value)
+        let interval = this.props.interval|| Number(document.getElementById('interval').value)
+
+
         /*情况1：控制view2 的 view2_attr 更新*/
         if(this.props.view1_attr && prevProps['view1_attr'] != this.props.view1_attr){
-            axios.get('/api/view1_api/30/7/ibm_lagos&ibm_perth&ibmq_belem&ibmq_bogota&ibmq_casablanca&ibmq_jakarta&ibmq_lima&ibmq_manila&ibmq_quito&ibmq_armonk&ibmq_armonk')
+            // axios.get('/api/view1_api/30/7/ibm_lagos&ibm_perth&ibmq_belem&ibmq_bogota&ibmq_casablanca&ibmq_jakarta&ibmq_lima&ibmq_manila&ibmq_quito&ibmq_armonk&ibmq_armonk')
+            axios.get(`/api/view1_api_datafile/${time_range}/${interval}/`)
                 .then(d=>{
                     const data = d.data['data']
                     const ref_value = d.data['ref_value']

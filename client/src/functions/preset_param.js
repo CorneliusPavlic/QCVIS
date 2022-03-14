@@ -7,7 +7,7 @@ const params = {
     'view1_computer_block_height' : 100,
     'view1_qubitMaxRadius' : 8,
     'view1_qubitHeight' : 100,
-    'view1_legend_height' :  30,
+    'view1_legend_height' :  60,
     'view1_legend_width' :  230,
 
     'view1_margin_top' : 15,
@@ -17,7 +17,7 @@ const params = {
 
 
     'view23_svg_width': 780,
-    'view23_svg_height' : 1050,
+    'view23_svg_height' : 1600,
     'view2_margin_top' : 70,
     'view2_margin_left' : 50,
     'view2_margin_right' : 550,

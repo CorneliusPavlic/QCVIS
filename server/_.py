@@ -1,4 +1,74 @@
+from collections import defaultdict
+from qiskit.quantum_info.analysis import hellinger_fidelity
+import difflib
+import numpy as np
+import random
 
+arr = [1,2,3,4,5,6]
+print(random.choice(arr))
+exit()
+
+
+obj = {'name':'shaolun', 'age':18}
+for key, v in obj.items():
+    if v != 18:
+        del obj[key]
+
+print(obj)
+exit()
+
+print(np.ceil(np.log2(15)))
+exit()
+
+
+
+s1=[0, 0, 100, 0]
+s2=[10, 10, 80, 0]
+sm=difflib.SequenceMatcher(None,s1,s2)
+print(sm.ratio())
+exit()
+
+arr = [1,2,3,4]
+for i, d in enumerate(arr):
+    if d%2==0:
+        del arr[i]
+
+print(arr)
+exit()
+
+c1 = {'01 00': 500, '10 00': 500,}
+c2 = {'00 00': 72, '01 00': 400, '10 00': 400, '11 00': 28}
+
+print(hellinger_fidelity(c1, c2))
+exit()
+
+def merge_result_counts(c1, c2):
+
+    key_arr = list(set(list(c1.keys()) + list(c2.keys())))
+
+    merge_dict = {}
+
+    for key in key_arr:
+        merge_dict[key] = []
+        for d in (c1, c2):
+            if key not in d:
+                merge_dict[key].append(0)
+            else:
+                merge_dict[key].append(d[key])
+
+    return merge_dict
+
+
+print(merge_result_counts(c1, c2))
+
+#
+# def merge_two_counts(c1, c2):
+#
+#
+#
+# merge_two_counts(c1, c2)
+
+exit()
 a = {
     (1,2):'shaolun',
 }

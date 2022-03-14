@@ -32,13 +32,15 @@ class Link12 extends Component {
             .style('height', '100%')
 
 
+        let x2_position = lin12_svg_width-20
+
         svg.append('path')
             .attr('class', 'link12')
             .attr("d", function(d, i){
 
                 let x0 = 0
-                let y0 = +d3.select(`.${backend_name}`).attr('transform').split(/[\s,()]+/)[2] + 100
-                let x1 = lin12_svg_width-20
+                let y0 = +d3.select(`.${backend_name}`).attr('transform').split(/[\s,()]+/)[2] + 70
+                let x1 = x2_position
                 // let y1 = d3.selectAll('.view2_block').size() * circle_radius_max + view2_margin_top
                 let y1 = 500
 
@@ -48,6 +50,28 @@ class Link12 extends Component {
                     + " " + (x1-100) + "," + y1
                     + " " + x1 + "," + y1;
             })
+
+
+
+        svg.append('line')
+            .attr('x1', 2)
+            .attr('x2', 2)
+            .attr('y1', +d3.select(`.${backend_name}`).attr('transform').split(/[\s,()]+/)[2] + 10)
+            .attr('y2', +d3.select(`.${backend_name}`).attr('transform').split(/[\s,()]+/)[2] + 130)
+            .attr('stroke', 'rgba(0, 233, 191, 0.67)')
+            .attr('stroke-width', '3px')
+            .style('stroke-linecap', 'round')
+
+
+        svg.append('line')
+            .attr('x1', x2_position)
+            .attr('x2', x2_position)
+            .attr('y1', 65)
+            .attr('y2', '100%')
+            .attr('stroke', 'rgba(0, 233, 191, 0.67)')
+            .attr('stroke-width', '3px')
+            .style('stroke-linecap', 'round')
+
     }
 
 
@@ -56,6 +80,8 @@ class Link12 extends Component {
             <div id="link12_svg_container"></div>
         )
     }
-}
+    }
+
+
 
 export default Link12

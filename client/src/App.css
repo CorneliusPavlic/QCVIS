@@ -81,7 +81,6 @@ html, body{
 .control-panel{
     border: solid 1px #808080;
     border-radius: 8px;
-    margin: 0 5px;
     /*background-color: #f9f9f9;*/
 }
 
@@ -91,7 +90,7 @@ html, body{
 
 #container_2{
     position: absolute;
-    left: 650px;
+    left: 747px;
 }
 
 .display-none{
@@ -114,8 +113,8 @@ html, body{
 
 .linkpath23 {
     fill: none;
-    stroke-opacity: 0.6;
-    stroke-width: 8px;
+    stroke-width: 4px;
+    stroke: rgba(0, 233, 191, 0.67);
 }
 
 
@@ -128,15 +127,14 @@ html, body{
 
 .link12{
     fill: none;
-    stroke: #1890ff;
-    stroke-opacity: 0.3;
-    stroke-width: 12px;
+    stroke: rgba(0, 233, 191, 0.67);
+    stroke-width: 4px;
 }
 
 #link12{
     position: absolute;
     height: 100%;
-    left: 590px;
+    left: 680px;
 }
 
 #link12_svg_container{
@@ -150,16 +148,44 @@ html, body{
 }
 
 .view3_ref{
-    opacity: 0.3;
 }
 
-.view3_block_for_click{
+.view3_block_border{
     cursor: pointer;
-    stroke: #9d9d9d;
+    stroke: #b0b0b0;
     stroke-width: 2px;
 }
 
-.view3_block_for_click:focus{
-    stroke-width: 6px;
+.view3_block_for_click{
+    stroke: #3d3d3d;
+border-radius: 10px;
+    stroke-width: 2px;
+}
 
+
+.ant-form-item {
+    margin-bottom: 8px;
+}
+
+.ant-divider-horizontal.ant-divider-with-text::before, .ant-divider-horizontal.ant-divider-with-text::after{
+    border-top: 0px;
+}
+
+.ant-divider{
+    background-color: #dddddd;
+}
+
+.ant-divider-horizontal.ant-divider-with-text{
+
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+#svg_container_fidelity{
+    /*background-color: #f0f0f0;*/
+    height: 160px
+}
+
+.viewFidelity_node{
+    transform: translate(-50%, -50%);
 }

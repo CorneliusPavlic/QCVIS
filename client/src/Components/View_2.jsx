@@ -26,11 +26,13 @@ class View_2 extends Component {
 
         /*更改gate_qual extent 的函数*/
         let view2_qual_extent = this.props.view2_qual_extent
+        let get_all_circuits = this.props.get_all_circuits
 
 
 
         let trans_times = Number(document.getElementById('view2-button').value) || 10
         let backend_name = this.props.backend_name || 'ibm_lagos'
+
         let view2_attr = this.props.view2_attr || 'gate'
         let view2_algo = this.props.view2_algo || 'shor'
 
@@ -40,15 +42,24 @@ class View_2 extends Component {
         const _this = this
 
         /*判断 这一次调用时 是不是第一次mount，还是更新的update*/
-        if(d3.select('.view2_svg').size()==0){
-            // axios.post(`/api/view2_api/`, {'view2_algo':view2_algo, 'trans_times': trans_times, 'backend_name': backend_name})
-            axios.get('/data/view23_mock.json') // TODO: fake data without compilation
-                .then(res=>draw_view2(res))
-        }else{
-            axios.get(`/api/view2_api/`)
-                .then(res=>draw_view2(res))
-
-        }
+        // if(d3.select('.view2_svg').size()==0){
+        axios.post(`/api/view2_api_datafile/`, {'view2_algo':view2_algo, 'trans_times': trans_times, 'backend_name': backend_name})
+        // axios.get('/data/view23_mock.json') // TODO: fake data without compilation
+            .then(res=>draw_view2(res))
+            .catch(err=>{
+                d3.select('main').remove('*')
+                alert('Error occurs when compile.\nPlease check the qubit-count of the selected computer.')
+            })
+        // }else{
+        //     axios.get(`/api/view2_api_data/`)
+        //     // axios.get('/data/view23_mock.json') // TODO: fake data without compilation
+        //         .then(res=>draw_view2(res))
+        //         .catch(err=>{
+        //             d3.select('main').remove('*')
+        //             alert('Error occurs when compile.\nPlease check the qubit-count of the selected computer.')
+        //         })
+        //
+        // }
 
         function draw_view2(res){
             let data = res.data['data']
@@ -188,7 +199,7 @@ class View_2 extends Component {
                 .attr('r', d=>qual_scale(Math.abs(d[1][`${view2_attr}s_quality`] - qual_avg[`${view2_attr}_qual_avg`])))
                 .attr('fill', d=>d[1][`${view2_attr}s_quality`] > qual_avg[`${view2_attr}_qual_avg`]? "#08AEFF":'#FF5C0F')
                 .on('click', function(d, item){
-                    let x0 = view2_block_text_width + view2_margin_left + view2_chart_width + 15
+                    let x0 = view2_block_text_width + view2_margin_left + view2_chart_width
                     let y0 = view2_margin_top + +d3.select(this.parentNode).attr('transform').split(/[\s,()]+/)[2] + view2_block_height/2
                     let x1 = view3_margin_left+30
                     let y1 = +d3.selectAll('.linkpath23').size() * (view3_block_height) + (view3_block_height/2 + view3_block_padding_height/2)
@@ -202,10 +213,10 @@ class View_2 extends Component {
                                 + " " + (x1 - 80) + "," + y1
                                 + " " + x1 + "," + y1;
                         })
-                        .style('stroke', d=>d3.select(this).attr('fill'))
 
                     /*给 view3 增加一个 block*/
                     _this.append_block(data, item, times_avg)
+                    get_all_circuits(item[0])
                 })
 
 
@@ -277,10 +288,6 @@ class View_2 extends Component {
 
 
 
-        console.log('times_avg', times_avg)
-
-
-
         /**********************/
 
         /*搭建View 3*/
@@ -288,7 +295,10 @@ class View_2 extends Component {
 
         const theta2 = 1
 
+
         const _this = this
+
+        let select_circuit = this.props.select_circuit
 
 
         let block_data = data[item[0]]
@@ -375,7 +385,7 @@ class View_2 extends Component {
             let scale_qubits_times = d3.scaleLinear().domain(d3.extent(qubit_times_arr)).range([view3_bar_height_max, 0])
 
 
-            /*计算一个scale来支持qubit bar的 attr 的颜色的渐变*/
+        /*计算一个scale来支持qubit bar的 attr 的颜色的渐变*/
             let qubit_attr_arr = []
             Object.entries(data).forEach(trans=>{
                 let T1_arr = Object.values(trans[1]['qubits']).map(q=>q[view3_attr])
@@ -400,9 +410,11 @@ class View_2 extends Component {
 
 
             /*height*/
-            let scale_gates_times = d3.scaleLinear().domain(d3.extent(gate_times_arr)).range([view3_bar_height_max, 0])
+        // let scale_gates_times = d3.scaleLinear().domain(d3.extent(gate_times_arr)).range([view3_bar_height_max, 0])
+        let scale_gates_times = d3.scaleLinear().domain(d3.extent(gate_times_arr)).range([view3_bar_height_max, 0])
             /*color*/
-            let scale_gates_errorGate = d3.scaleLinear().domain([d3.extent(gate_errorRate_arr)[0], d3.median(gate_errorRate_arr), d3.extent(gate_errorRate_arr)[1]]).range(color_gate_error)
+        // let scale_gates_errorGate = d3.scaleLinear().domain([d3.extent(gate_errorRate_arr)[0], d3.median(gate_errorRate_arr), d3.extent(gate_errorRate_arr)[1]]).range(color_gate_error)
+        let scale_gates_errorGate = d3.scaleLinear().domain([0.005, 0.0075, 0.010]).range(color_gate_error)
 
 
             let view3 = d3.select('.view2_svg')
@@ -437,9 +449,14 @@ class View_2 extends Component {
                 .attr('y', -10)
                 .attr('width', d=>Math.max(Object.keys(d['gates']).length, Object.keys(d['qubits']).length) * (view3_bar_width+view3_barGap_width) + 20)
                 .attr('height', 2*view3_bar_height_max + view3_gap_height+20)
-                .attr('class', 'view3_block_for_click')
-                .attr('tabindex', '1')
+                .attr('class', 'view3_block_border')
+                // .attr('tabindex', '1')
                 .attr('fill', '#fff')
+                .on('click', function(_,d){
+                    select_circuit(d['id'])
+                    d3.select(this).classed('view3_block_for_click', !d3.select(this).classed('view3_block_for_click'))
+                })
+
 
             let view3_ref_bar_color = '#4b4b4b'
 
@@ -451,7 +468,7 @@ class View_2 extends Component {
                 .attr('transform', (d, i)=>`translate(${view3_padding_left + i*(view3_bar_width+view3_barGap_width)}, 0)`)
 
 
-            /*画 gate 高出来的一截 代表平均值的 没颜色的 bar*/
+/*            /!*画 gate 高出来的一截 代表平均值的 没颜色的 bar*!/
             bar_g.append('rect')
                 .attr('x', 0)
                 .attr('y', d=>{
@@ -476,7 +493,7 @@ class View_2 extends Component {
                 .attr('fill', view3_ref_bar_color)
                 .attr('class', 'view3_ref')
                 .append('title')
-                .text(d=> `ref value: ${times_avg['gate_times_avg'][d[0]]}`)
+                .text(d=> `ref value: ${times_avg['gate_times_avg'][d[0]]}`)*/
 
 
 
@@ -488,8 +505,6 @@ class View_2 extends Component {
                 .attr('height', d=>view3_bar_height_max - scale_gates_times(d[1]['times']))
                 .attr('fill', d=>scale_gates_errorGate(d[1]['error_rate']))
                 .attr('class', 'view3_gate_bar')
-                .attr('stroke', '#474747')
-                .attr('stroke-width', 2)
                 .append('title')
                 .text(d=>`${d[0]}  Error:${d[1]['error_rate']}  times:${d[1]['times']}`)
 
@@ -515,12 +530,26 @@ class View_2 extends Component {
                     }else if(`cx${d[0][4]}_${d[0][2]}` in times_avg['gate_times_avg']){
                         gname = `cx${d[0][4]}_${d[0][2]}`
                     }
-                    return times_avg['gate_times_avg'][gname] <= d[1]['times']?view3_bar_height_max - scale_gates_times(times_avg['gate_times_avg'][gname]):null
+                    // return times_avg['gate_times_avg'][gname] < d[1]['times']?view3_bar_height_max - scale_gates_times(times_avg['gate_times_avg'][gname]):null
+                    return view3_bar_height_max - scale_gates_times(times_avg['gate_times_avg'][gname])
                 })
-                .attr('fill', view3_ref_bar_color)
+                .attr('fill', "transparent")
                 .attr('class', 'view3_ref')
+                .attr('stroke', '#3a4040')
+                .attr('stroke-width', 1)
                 .append('title')
                 .text(d=> `ref value: ${times_avg['gate_times_avg'][d[0]]}`)
+
+            bar_g.append('text')
+                .text(d=>{
+                    let [p,q] = d[0].slice(-3).split('_')
+                    if(p>q){
+                        return `[${q},${p}]`
+                    }
+                    return `[${p},${q}]`
+                })
+                .attr('dx', -2)
+                .style('font-size', '0.7em')
 
 
 
@@ -533,6 +562,7 @@ class View_2 extends Component {
                 .attr('transform', (d, i)=>`translate(${view3_padding_left + i*(view3_bar_width+view3_barGap_width)}, ${view3_bar_height_max+view3_gap_height})`)
                 .attr('class', d=>`trans_${index+1}_${d[0]}`)
 
+/*
             // 画 qubit 高出来的一截 代表平均值的 没颜色的 bar
             bar_g2.append('rect')
                 .attr('x', 0)
@@ -543,6 +573,7 @@ class View_2 extends Component {
                 .attr('class', 'view3_ref')
                 .append('title')
                 .text(d=> `ref value: ${times_avg['qubit_times_avg'][d[0]]}`)
+*/
 
 
 
@@ -557,8 +588,6 @@ class View_2 extends Component {
                     return scale_qubit_attr(d[1][view3_attr])
                 })
                 .attr('class', 'view3_qubit_bar')
-                .attr('stroke', '#474747')
-                .attr('stroke-width', 2)
                 .append('title')
                 .text(d=>`${d[0]}  ${view3_attr}:${d[1][view3_attr]}  times:${d[1]['times']}`)
 
@@ -568,12 +597,21 @@ class View_2 extends Component {
                 .attr('x', 1)
                 .attr('y', 0)
                 .attr('width', view3_bar_width-2)
-                .attr('height', d=>times_avg['qubit_times_avg'][d[0]] <= d[1]['times']?view3_bar_height_max - scale_qubits_times(times_avg['qubit_times_avg'][d[0]]): null)
-                .attr('fill',view3_ref_bar_color)
+                .attr('height', d=>view3_bar_height_max - scale_qubits_times(times_avg['qubit_times_avg'][d[0]]))
+                .attr('fill', "transparent")
                 .attr('class', 'view3_ref')
+                .attr('stroke', '#3a4040')
+                .attr('stroke-width', 1)
                 .append('title')
                 .text(d=> `ref value: ${times_avg['qubit_times_avg'][d[0]]}`)
 
+
+        bar_g2.append('text')
+            .text(d=>d[0].slice(-1))
+            .attr('transform', `translate(0, ${view3_bar_height_max})`)
+            .attr('dx', 4)
+            .attr('dy', 8)
+            .style('font-size', '0.8em')
 
 
             /*画上下bars之间的，用来连接gate所属qubit的曲线*/
@@ -687,6 +725,7 @@ class View_2 extends Component {
         /*情况3：控制 view2 的数据是否进行sorting*/
         if(this.props.view2_sort != undefined &&  prevProps['view2_sort'] != this.props.view2_sort){
 
+
             this.render_view2()
 
 
@@ -697,13 +736,32 @@ class View_2 extends Component {
         if(this.props.view3_attr && prevProps['view3_attr'] != this.props.view3_attr){
             let view3_attr = this.props.view3_attr
 
-            axios.get(`/api/view2_api/`)
+
+            let trans_times = Number(document.getElementById('view2-button').value) || 10
+            let backend_name = this.props.backend_name || 'ibm_lagos'
+            let view2_algo = this.props.view2_algo || 'shor'
+
+
+            axios.post(`/api/view2_api_datafile/`, {'view2_algo':view2_algo, 'trans_times': trans_times, 'backend_name': backend_name})
+
             // axios.get('/data/view23_mock.json') // TODO: fake data without compilation
                 .then(function(res) {
                     let data = res.data['data']
 
 
                     const color_qubit_attr = ['#08AEFF', '#fff', '#FF5C0F']
+
+                    let qual_avg = {
+                        "qubit_qual_avg": res.data['ref_value']['qubit_qual_avg'],
+                        "gate_qual_avg": res.data['ref_value']['gate_qual_avg']
+                    }
+
+                    let times_avg = {
+                        qubit_times_avg: res.data['ref_value']['qubit_times_avg'],
+                        gate_times_avg: res.data['ref_value']['gate_times_avg'],
+                    }
+
+
 
                     /*计算一个scale来支持qubit bar的 attr 的颜色的渐变*/
                     let qubit_attr_arr = []
@@ -712,7 +770,8 @@ class View_2 extends Component {
                         qubit_attr_arr = qubit_attr_arr.concat(T1_arr)
                     })
 
-                    console.log('view2')
+
+
 
 
                     let scale_qubit_attr
@@ -721,6 +780,7 @@ class View_2 extends Component {
                     }else{
                         scale_qubit_attr = d3.scaleLinear().domain([d3.extent(qubit_attr_arr)[1], d3.median(qubit_attr_arr),d3.extent(qubit_attr_arr)[0]]).range(color_qubit_attr)
                     }
+
 
 
 

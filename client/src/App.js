@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
-import {Layout, Breadcrumb, Row, Col} from 'antd';
+import {Layout, Row, Col} from 'antd';
 import {Input} from 'antd';
 import {Divider, Form, InputNumber, Button, Slider, Radio, Typography, Select, Switch } from 'antd';
 
@@ -17,6 +17,7 @@ import './App.css'
 import View_1 from './Components/View_1'
 import View_2 from "./Components/View_2";
 import Link12 from "./Components/Link12";
+import View_counts from "./Components/View_counts";
 
 
 const {Header, Content} = Layout;
@@ -28,6 +29,7 @@ class App extends Component {
         super(props);
         this.handle_View2_button = this.handle_View2_button.bind(this)
         this.select_computer = this.select_computer.bind(this)
+        this.select_circuit = this.select_circuit.bind(this)
         this.view2_qual_extent = this.view2_qual_extent.bind(this)
         this.view2_gate_qual_filter = this.view2_gate_qual_filter.bind(this)
         this.handle_view1_attr_change = this.handle_view1_attr_change.bind(this)
@@ -37,11 +39,15 @@ class App extends Component {
         this.handle_view1_timerange = this.handle_view1_timerange.bind(this)
         this.handle_view1_interval = this.handle_view1_interval.bind(this)
         this.handleSort = this.handleSort.bind(this)
+        this.get_all_circuits = this.get_all_circuits.bind(this)
+        this.handle_execution = this.handle_execution.bind(this)
 
 
         this.state = {
 
             selected_computer: '',
+            selected_circuit: [],
+            all_circuits: [],
 
             view1_attr: 'error_rate',
 
@@ -79,6 +85,19 @@ class App extends Component {
     }
 
 
+    select_circuit(item) {
+        this.setState({
+            selected_circuit: [...this.state.selected_circuit, item]
+        })
+    }
+
+    get_all_circuits(item){
+        this.setState({
+            all_circuits: [...this.state.all_circuits, item]
+        })
+    }
+
+
     handle_View2_button() {/* View 2是 点击Control Panel按钮 渲染*/
 
 
@@ -96,6 +115,8 @@ class App extends Component {
                                 view2_gate_qual_filter={this.state.view2_gate_qual_filter}
                                 view2_qual_extent={this.view2_qual_extent}
                                 backend_name={this.state.selected_computer}
+                                select_circuit={this.select_circuit}
+                                get_all_circuits={this.get_all_circuits}
                                 view2_sort={this.state.view2_sort}/>,
             this.container_2);
 
@@ -131,8 +152,8 @@ class App extends Component {
     }
 
     handle_view2_algo_change(e){
-        let algo = e.target.value
-        this.setState({view2_algo: algo})
+
+        this.setState({view2_algo: e})
     }
 
     handleSort(checked){
@@ -157,13 +178,49 @@ class App extends Component {
         if(e.key == 'Enter'){
 
             let time_range = Number(document.getElementById('time_range').value) ||30
+            let interval = Number(document.getElementById('interval').value) || 7
 
             ReactDOM.render(<View_1 select_computer={this.select_computer}
                                     view1_attr={this.state.view1_attr}
                                     time_range={time_range}
+                                    interval={interval}
                 />,
                 this.container_1);
         }
+    }
+
+
+    handle_execution(){
+
+/*        let data = {
+            'trans_0':{ "00 00": [ 40, 33 ], "01 00": [ 200, 180 ], "10 00": [ 1000, 931 ], "11 00": [ 0, 28 ] },
+            'trans_1':{ "00 00": [ 40, 33 ], "01 00": [ 200, 180 ], "10 00": [ 500, 931 ], "11 00": [ 0, 28 ] },
+            'trans_2':{ "00 00": [ 40, 33 ], "01 00": [ 200, 180 ], "10 00": [ 1000, 931 ], "11 00": [ 0, 28 ] },
+
+        }
+
+        ReactDOM.render(<View_counts data={data}
+            />,
+            this.container_counts);*/
+
+
+        // 如果啥都没选，run 个毛线
+        if(!this.state.selected_circuit || !this.state.selected_computer){
+            alert('Please select a backend and circuit before RUN')
+        }
+
+        axios.post(`/api/execution_api_datafile/`, {'backend': this.state.selected_computer, 'algo': this.state.view2_algo, 'circuit': this.state.all_circuits})
+            .then(res=>{
+                let data = res['data']
+
+
+
+                ReactDOM.render(<View_counts
+                        data={data}
+                        selected_circuit={this.state.selected_circuit}
+                    />,
+                    this.container_counts);
+            })
     }
 
 
@@ -173,6 +230,7 @@ class App extends Component {
         this.container_1 = document.querySelector("#container_1");
         this.container_2 = document.querySelector("#container_2");
         this.link_12 = document.querySelector('#link12')
+        this.container_counts = document.querySelector('#container_counts')
 
 
         let time_range = Number(document.getElementById('time_range').value) ||30
@@ -196,9 +254,15 @@ class App extends Component {
                 return
             }
 
+
+            let time_range = this.props.time_range || Number(document.getElementById('time_range').value)
+            let interval = this.props.interval|| Number(document.getElementById('interval').value)
+
             /*渲染 view2*/
             ReactDOM.render(<View_1 select_computer={this.select_computer}
                                     view1_attr={this.state.view1_attr}
+                                    time_range={time_range}
+                                    interval={interval}
                 />,
                 this.container_1);
         }
@@ -212,9 +276,12 @@ class App extends Component {
             /*渲染 view2*/
             ReactDOM.render(<View_2 view2_attr={this.state.view2_attr}
                                     view3_attr={this.state.view3_attr}
+                                    view2_algo={this.state.view2_algo}
                                     view2_gate_qual_filter={this.state.view2_gate_qual_filter}
                                     view2_qual_extent={this.view2_qual_extent}
                                     backend_name={this.state.selected_computer}
+                                    select_circuit={this.select_circuit}
+                                    get_all_circuits={this.get_all_circuits}
                                     view2_sort={this.state.view2_sort}/>,
                 this.container_2);
         }
@@ -227,8 +294,11 @@ class App extends Component {
             }
             ReactDOM.render(<View_2 view2_attr={this.state.view2_attr}
                                     view3_attr={this.state.view3_attr}
+                                    view2_algo={this.state.view2_algo}
                                     view2_gate_qual_filter={this.state.view2_gate_qual_filter}
                                     backend_name={this.state.selected_computer}
+                                    select_circuit={this.select_circuit}
+                                    get_all_circuits={this.get_all_circuits}
                                     view2_sort={this.state.view2_sort}/>,
                 this.container_2);
 
@@ -243,7 +313,10 @@ class App extends Component {
             ReactDOM.render(<View_2 view2_attr={this.state.view2_attr}
                                     view3_attr={this.state.view3_attr}
                                     backend_name={this.state.selected_computer}
+                                    select_circuit={this.select_circuit}
+                                    get_all_circuits={this.get_all_circuits}
                                     view2_sort={this.state.view2_sort}
+                                    view2_algo={this.state.view2_algo}
                                     view2_gate_qual_filter={this.state.view2_gate_qual_filter}
                                     view2_qual_extent={this.view2_qual_extent}/>,
                 this.container_2);
@@ -256,7 +329,12 @@ class App extends Component {
                 return
             }
 
-            ReactDOM.render(<View_2 view3_attr={this.state.view3_attr}/>,
+            ReactDOM.render(<View_2 view3_attr={this.state.view3_attr}
+                                    select_circuit={this.select_circuit}
+                                    get_all_circuits={this.get_all_circuits}
+                                    view2_algo={this.state.view2_algo}
+                                    backend_name={this.state.selected_computer}
+                />,
                 this.container_2);
 
         }
@@ -267,13 +345,6 @@ class App extends Component {
 
     render() {
 
-        let extraBreadcrumbItems = []
-        if (document.getElementById('svg_container_2')) {
-            extraBreadcrumbItems.push(<Breadcrumb.Item key={'quantum_circuit_overview'}>Quantum Circuit
-                Overview</Breadcrumb.Item>)
-        }
-        let breadcrumbItems = [<Breadcrumb.Item key={'quantum_computer'}>Quantum
-            Computer</Breadcrumb.Item>].concat(extraBreadcrumbItems)
 
         /*检查有没有 view2，没有的话禁用左边的控制模块*/
         let check1 = () => {
@@ -294,15 +365,15 @@ class App extends Component {
                         Quantum Computing</p>
                 </Header>
                 <Content style={{padding: '0 75px', backgroundColor: '#ffffff'}}>
-                    <Breadcrumb separator=">" style={{margin: '4px 0'}}>
-                        {breadcrumbItems}
-                        {/*<Breadcrumb.Item>Quantum Computer</Breadcrumb.Item>
-                    <Breadcrumb.Item>Quantum Circuit Overview</Breadcrumb.Item>
-                    <Breadcrumb.Item>Quantum Circuit</Breadcrumb.Item>
-                    <Breadcrumb.Item>Run</Breadcrumb.Item>*/}
-                    </Breadcrumb>
                     <div className="view">
-                        <Row gutter={5} style={{height: '100%'}}>
+                        <Row gutter={0} style={{height: '100%'}}>
+                            <Col className="gutter-row" span={19} style={{height: '100%'}}>
+                                <div style={{background: "#fcfcfc", height: '100%'}}>
+                                    <div id="container_1"></div>
+                                    <div id="link12"></div>
+                                    <div id="container_2"></div>
+                                </div>
+                            </Col>
                             <Col className="gutter-row control-panel" span={5} style={{height: '100%'}}>
                                 <div style={{background: "#ffffff"}}>
                                     <Form
@@ -316,21 +387,17 @@ class App extends Component {
                                         layout="horizontal"
 
                                     >
-                                        <Divider plain style={{marginTop:'40px'}}><Text style={{fontSize: '0.8em'}} strong>Computer
+                                        <Divider plain><Text style={{fontSize: '0.8em'}} strong>Computer
                                             Selection</Text></Divider>
 
-                                        <Form.Item label={'Selected computer:'}>
-                                            <Input style={{width: '180px'}} value={this.state.selected_computer}
-                                                   placeholder="Selected Computer:" prefix={<HddOutlined/>}/>
-                                        </Form.Item>
                                         <Form.Item label={'Time Range'}>
-                                            <InputNumber id={'time_range'} defaultValue={30} min={3} max={100}
+                                            <InputNumber id={'time_range'} defaultValue={10} min={3} max={90}
                                                          step={1}
                                                          onKeyDown={this.handle_view1_timerange}
                                                          controls={false}
                                             />
                                             <span style={{marginLeft: '15px'}}>Interval: </span>
-                                            <InputNumber style={{width: '50px'}} id={'interval'} defaultValue={7} min={1} max={10}
+                                            <InputNumber style={{width: '50px'}} id={'interval'} defaultValue={1} min={1} max={90}
                                                          step={1}
                                                          onKeyDown={this.handle_view1_interval}
                                                          controls={false}
@@ -348,22 +415,27 @@ class App extends Component {
 
 
                                         <Form.Item label={"Quantum Algo.:"}>
-                                            <Select defaultValue={this.state.view2_algo} style={{width: '150px'}}>
+                                            <Select className={'view2_algo'} defaultValue={this.state.view2_algo} onChange={this.handle_view2_algo_change} style={{width: '150px'}}>
                                                 <Select.Option value="shor">Shor's Algorithm</Select.Option>
+                                                <Select.Option value="two">Example Algorithm</Select.Option>
+                                                <Select.Option value="QFT">QFT Algorithm</Select.Option>
+                                                <Select.Option value="BV">Bernstein-Vazirani Algorithm</Select.Option>
                                             </Select>
                                         </Form.Item>
                                         <Form.Item label={"Compilation Times"}>
                                             <InputNumber id={'view2-button'} defaultValue={50} min={3} max={100}
                                                          step={10}/>
+                                            <Button danger style={{width: '120px', marginLeft: "10px"}} onClick={this.handle_View2_button}>
+                                                Compile</Button>
                                         </Form.Item>
 
-                                        <Form.Item wrapperCol={{offset: 9}}>
-                                            <Button danger style={{width: '180px'}} onClick={this.handle_View2_button}>Launch
-                                                Compilation</Button>
-                                        </Form.Item>
+                                        {/*<Form.Item wrapperCol={{offset: 9}}>*/}
+                                        {/*    <Button danger style={{width: '180px'}} onClick={this.handle_View2_button}>Launch*/}
+                                        {/*        Compilation</Button>*/}
+                                        {/*</Form.Item>*/}
 
 
-                                        <Divider plain style={{marginTop:'40px'}}><Text style={{fontSize: '0.8em'}} strong>Circuit Overview</Text></Divider>
+                                        <Divider plain><Text style={{fontSize: '0.8em'}} strong>Circuit Overview</Text></Divider>
 
 
                                         <Form.Item label={"Building Block: "}>
@@ -413,7 +485,7 @@ class App extends Component {
                                             <Switch onChange={this.handleSort}></Switch>
                                         </Form.Item>
 
-                                        <Divider plain  style={{marginTop:'40px'}}><Text style={{fontSize: '0.8em'}} strong>Circuit Selection</Text></Divider>
+                                        <Divider plain ><Text style={{fontSize: '0.8em'}} strong>Circuit Selection</Text></Divider>
 
                                         <Form.Item label={"Gate Attr.:"}>
                                             <Radio.Group defaultValue="gate" buttonStyle="solid" disabled={check1()}>
@@ -434,22 +506,28 @@ class App extends Component {
                                         <Divider plain><Text style={{fontSize: '0.8em'}}
                                                              strong>Execution</Text></Divider>
 
+                                        <Form.Item label={'Selected computer:'}>
+                                            <Input style={{width: '180px'}} value={this.state.selected_computer}
+                                                   placeholder="Selected Computer:" prefix={<HddOutlined/>}/>
+                                        </Form.Item>
+                                        <Form.Item label={'Selected circuit:'}>
+                                            <Input style={{width: '180px'}} value={this.state.selected_circuit}
+                                                   placeholder="Selected Circuit:" prefix={<HddOutlined/>}/>
+                                        </Form.Item>
 
                                         <Form.Item wrapperCol={{offset: 2}}>
                                             <Button danger style={{width: '300px'}}
-                                                    onClick={this.handle_View2_button}>Run</Button>
+                                                    onClick={this.handle_execution}>Run</Button>
                                         </Form.Item>
                                     </Form>
+                                    <Divider plain><Text style={{fontSize: '0.8em'}} strong>Fidelity Comparison</Text></Divider>
+
+                                    <div id="container_counts"></div>
+
 
                                 </div>
                             </Col>
-                            <Col className="gutter-row" span={18.5} style={{height: '100%'}}>
-                                <div style={{background: "#fcfcfc", height: '100%'}}>
-                                    <div id="container_1"></div>
-                                    <div id="link12"></div>
-                                    <div id="container_2"></div>
-                                </div>
-                            </Col>
+
                         </Row>
                     </div>
                 </Content>
