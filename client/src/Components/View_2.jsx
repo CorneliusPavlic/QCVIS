@@ -36,6 +36,7 @@ class View_2 extends Component {
         let view2_attr = this.props.view2_attr || 'gate'
         let view2_algo = this.props.view2_algo || 'shor'
 
+        let view2_sortByDepth = this.props.view2_sortByDepth || false
 
 
 
@@ -79,9 +80,15 @@ class View_2 extends Component {
 
             /*如果 view2_sort 为true, 对data进行排序*/
             if(_this.props.view2_sort){
-                console.log('sorting')
                 data = Object.fromEntries(Object.entries(data).sort((x, y)=>{
                     return +y[1][`${view2_attr}s_quality`] - +x[1][`${view2_attr}s_quality`]
+                }))
+            }
+
+            /*如果 view2_sortByDepth 为true, 对data进行排序*/
+            if(view2_sortByDepth){
+                data = Object.fromEntries(Object.entries(data).sort((x, y)=>{
+                    return +x[1][`depth`] - +y[1][`depth`]
                 }))
             }
 
@@ -223,7 +230,8 @@ class View_2 extends Component {
             /*画每个block之前的名称*/
             block.append('text')
                 .text(d=>d[1]['id'])
-                .attr('transform', `translate(0, ${view2_block_height/2})`)
+                .attr('class', 'view2_circuitName')
+                .attr('transform', `translate(0, ${view2_block_height/2+5})`)
 
 
             block.append('title')
@@ -247,33 +255,33 @@ class View_2 extends Component {
 
 
             /* 在所有元素最上面的 view1_legend_height 空隙中， 画legend */
-            let legend_1 = svg.append('g')
-                .attr('class', 'legend_1')
-                .attr('transform', `translate(${50* theta},20)`)
+            /*表示qubit的 legand*/
+            let legend_2 = svg.append('g')
+                .attr('class', 'legend_2')
+                .attr('transform', `translate(${80* theta},0)`)
 
-            legend_1.append('text')
-                .text('Bad Quality')
-                .attr('transform', `translate(${25* theta},0)`)
-                .style('font-size', `${1 * theta}em`)
+            let lengend_data = [-8, -6, -4, -3, 3,  4, 6, 8].map(d=>d*2.4)
+            legend_2.selectAll('.view1_legend_qubit')
+                .data(lengend_data)
+                .join('circle')
+                .attr('class', 'view1_legend_qubit')
+                .attr('fill', d=>d<0? '#FF5C0F':'#08AEFF')
+                .attr('cx', (d,i)=>60+Math.abs(d/2)+lengend_data.slice(0, i).reduce((partialSum, a) => partialSum + Math.abs(a), 0))
+                .attr('cy', d=>20)
+                .attr('r', d=>Math.abs(d/2))
 
-            legend_1.append('text')
-                .text('Good Quality')
-                .attr('transform', `translate(${140* theta},0)`)
-                .style('font-size', `${1 * theta}em`)
 
-            legend_1.append('rect')
-                .attr('fill', '#FF5C0F')
-                .attr('x', 105* theta)
-                .attr('y', -10)
-                .attr('width', 15* theta)
-                .attr('height', 15* theta)
+            legend_2.append('text')
+                .text('Worst Qual.')
+                .attr('transform', `translate(${0* theta},${25* theta})`)
+                .style('font-size', `${0.75 * theta}em`)
 
-            legend_1.append('rect')
-                .attr('fill', '#08AEFF')
-                .attr('x', 230* theta)
-                .attr('y', -10)
-                .attr('width', 15* theta)
-                .attr('height', 15* theta)
+
+
+            legend_2.append('text')
+                .text('Best Qual.')
+                .attr('transform', `translate(${168* theta},${25* theta})`)
+                .style('font-size', `${0.75 * theta}em`)
 
 
 
@@ -549,6 +557,7 @@ class View_2 extends Component {
                     return `[${p},${q}]`
                 })
                 .attr('dx', -2)
+                .style('font-family', 'Arial')
                 .style('font-size', '0.7em')
 
 
@@ -724,6 +733,16 @@ class View_2 extends Component {
 
         /*情况3：控制 view2 的数据是否进行sorting*/
         if(this.props.view2_sort != undefined &&  prevProps['view2_sort'] != this.props.view2_sort){
+
+
+            this.render_view2()
+
+
+        }
+
+
+        /*情况3.1：控制 view2 的数据是否进行sorting*/
+        if(this.props.view2_sortByDepth != undefined &&  prevProps['view2_sortByDepth'] != this.props.view2_sortByDepth){
 
 
             this.render_view2()

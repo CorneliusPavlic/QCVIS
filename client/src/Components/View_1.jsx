@@ -33,6 +33,7 @@ class View_1 extends Component {
 
         // axios.get(`/api/view1_api/${time_range}/${interval}/ibm_lagos&ibm_perth&ibmq_belem&ibmq_bogota&ibmq_casablanca&ibmq_jakarta&ibmq_lima&ibmq_manila&ibmq_quito&ibmq_armonk&ibmq_santiago`)
         axios.get(`/api/view1_api_datafile/${time_range}/${interval}/`)
+        // axios.get(`http://131.123.39.100:5000/view1_api_datafile/30/7/`)
             .then(d=>{
 
                 const data = d.data['data']
@@ -472,50 +473,55 @@ class View_1 extends Component {
                 /* 在所有元素最上面的 view1_legend_height 空隙中， 画legend */
 
                 /* legend 2*/
+                let legend_1 = view1.append('g')
+                    .attr('class', 'legend_2')
+                    .attr('transform', `translate(${10* theta},0)`)
+
                 let legend_2 = view1.append('g')
                     .attr('class', 'legend_2')
-                    .attr('transform', `translate(${330* theta},0)`)
+                    .attr('transform', `translate(${370* theta},0)`)
 
-                legend_2.append('text')
-                    .text('Good Qual.')
-                    .attr('transform', `translate(${-20* theta},${42* theta})`)
+                legend_1.append('text')
+                    .text('Worst Gate Qual.')
+                    .attr('transform', `translate(${20* theta},${25* theta})`)
                     .style('font-size', `${0.8 * theta}em`)
 
 
-                legend_2.append('text')
-                    .text('Bad Qual.')
-                    .attr('transform', `translate(${80* theta},${42* theta})`)
+                legend_1.append('text')
+                    .text('Best Gate Qual.')
+                    .attr('transform', `translate(${205* theta},${25* theta})`)
                     .style('font-size', `${0.8 * theta}em`)
 
-                legend_2.append('rect')
-                    .attr('x', 7* theta)
+                legend_1.append('rect')
+                    .attr('x', 108* theta)
                     .attr('y', 12)
-                    .attr('width', 100* theta)
+                    .attr('width', 90* theta)
                     .attr('height', 15* theta)
                     .attr('fill', 'url(#gradient)')
 
                 /*表示qubit的 legand*/
-                let lengend_data = [-8, -6, -4,  4, 6, 8].map(d=>d*2.5)
+                let lengend_data = [-8, -6, -4, -3, 3,  4, 6, 8].map(d=>d*2.4)
                 legend_2.selectAll('.view1_legend_qubit')
                     .data(lengend_data)
                     .join('circle')
                     .attr('class', 'view1_legend_qubit')
                     .attr('fill', d=>d<0? '#FF5C0F':'#08AEFF')
-                    .attr('cx', (d,i)=>200+Math.abs(d/2)+lengend_data.slice(0, i).reduce((partialSum, a) => partialSum + Math.abs(a), 0))
+                    .attr('cx', (d,i)=>90+Math.abs(d/2)+lengend_data.slice(0, i).reduce((partialSum, a) => partialSum + Math.abs(a), 0))
                     .attr('cy', d=>20)
                     .attr('r', d=>Math.abs(d/2))
 
 
                 legend_2.append('text')
-                    .text('Good Qual.')
-                    .attr('transform', `translate(${180* theta},${42* theta})`)
-                    .style('font-size', `${0.8 * theta}em`)
+                    .text('Worst Qubit Qual.')
+                    .attr('transform', `translate(${0* theta},${25* theta})`)
+                    .style('font-size', `${0.75 * theta}em`)
+
 
 
                 legend_2.append('text')
-                    .text('Bad Qual.')
-                    .attr('transform', `translate(${260* theta},${42* theta})`)
-                    .style('font-size', `${0.8 * theta}em`)
+                    .text('Best Qubit Qual.')
+                    .attr('transform', `translate(${198* theta},${25* theta})`)
+                    .style('font-size', `${0.75 * theta}em`)
 
 
 

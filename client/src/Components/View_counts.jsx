@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import * as d3 from 'd3'
-import axios from "axios";
 
 import params from '../functions/preset_param'
 import {Divider, Select, Typography} from "antd";

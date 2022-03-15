@@ -39,6 +39,7 @@ class App extends Component {
         this.handle_view1_timerange = this.handle_view1_timerange.bind(this)
         this.handle_view1_interval = this.handle_view1_interval.bind(this)
         this.handleSort = this.handleSort.bind(this)
+        this.handleSortByDepth = this.handleSortByDepth.bind(this)
         this.get_all_circuits = this.get_all_circuits.bind(this)
         this.handle_execution = this.handle_execution.bind(this)
 
@@ -54,6 +55,7 @@ class App extends Component {
             view2_algo: 'shor',
             view2_attr: 'gate',
             view2_sort: false,
+            view2_sortByDepth: false,
 
             view3_attr: 'error_rate',
 
@@ -117,7 +119,8 @@ class App extends Component {
                                 backend_name={this.state.selected_computer}
                                 select_circuit={this.select_circuit}
                                 get_all_circuits={this.get_all_circuits}
-                                view2_sort={this.state.view2_sort}/>,
+                                view2_sort={this.state.view2_sort}
+                                view2_sortByDepth={this.state.view2_sortByDepth}/>,
             this.container_2);
 
 
@@ -189,6 +192,11 @@ class App extends Component {
         }
     }
 
+    handleSortByDepth(checked){
+        this.setState({view2_sortByDepth: checked})
+
+    }
+
 
     handle_execution(){
 
@@ -222,6 +230,7 @@ class App extends Component {
                     this.container_counts);
             })
     }
+
 
 
     componentDidMount() {
@@ -282,7 +291,8 @@ class App extends Component {
                                     backend_name={this.state.selected_computer}
                                     select_circuit={this.select_circuit}
                                     get_all_circuits={this.get_all_circuits}
-                                    view2_sort={this.state.view2_sort}/>,
+                                    view2_sort={this.state.view2_sort}
+                                    view2_sortByDepth={this.state.view2_sortByDepth}/>,
                 this.container_2);
         }
 
@@ -299,7 +309,8 @@ class App extends Component {
                                     backend_name={this.state.selected_computer}
                                     select_circuit={this.select_circuit}
                                     get_all_circuits={this.get_all_circuits}
-                                    view2_sort={this.state.view2_sort}/>,
+                                    view2_sort={this.state.view2_sort}
+                                    view2_sortByDepth={this.state.view2_sortByDepth}/>,
                 this.container_2);
 
         }
@@ -310,12 +321,47 @@ class App extends Component {
             if (d3.select('.view2_svg').size() == 0) {
                 return
             }
+
+
+            if(this.state.view2_sortByDepth == true && this.state.view2_sort == true){
+                this.setState({view2_sortByDepth: false})
+            }
+
+
             ReactDOM.render(<View_2 view2_attr={this.state.view2_attr}
                                     view3_attr={this.state.view3_attr}
                                     backend_name={this.state.selected_computer}
                                     select_circuit={this.select_circuit}
                                     get_all_circuits={this.get_all_circuits}
                                     view2_sort={this.state.view2_sort}
+                                    view2_sortByDepth={this.state.view2_sortByDepth}
+                                    view2_algo={this.state.view2_algo}
+                                    view2_gate_qual_filter={this.state.view2_gate_qual_filter}
+                                    view2_qual_extent={this.view2_qual_extent}/>,
+                this.container_2);
+        }
+
+
+        /*情况3.1：控制 view2 的数据是否进行sortingByDepth*/
+        if (prevStates['view2_sortByDepth'] != this.state.view2_sortByDepth){
+            if (d3.select('.view2_svg').size() == 0) {
+                return
+            }
+
+
+
+            if(this.state.view2_sort == true && this.state.view2_sortByDepth==true){
+                this.setState({view2_sort: false})
+            }
+
+
+            ReactDOM.render(<View_2 view2_attr={this.state.view2_attr}
+                                    view3_attr={this.state.view3_attr}
+                                    backend_name={this.state.selected_computer}
+                                    select_circuit={this.select_circuit}
+                                    get_all_circuits={this.get_all_circuits}
+                                    view2_sort={this.state.view2_sort}
+                                    view2_sortByDepth={this.state.view2_sortByDepth}
                                     view2_algo={this.state.view2_algo}
                                     view2_gate_qual_filter={this.state.view2_gate_qual_filter}
                                     view2_qual_extent={this.view2_qual_extent}/>,
@@ -333,11 +379,14 @@ class App extends Component {
                                     select_circuit={this.select_circuit}
                                     get_all_circuits={this.get_all_circuits}
                                     view2_algo={this.state.view2_algo}
+                                    view2_sortByDepth={this.state.view2_sortByDepth}
                                     backend_name={this.state.selected_computer}
                 />,
                 this.container_2);
 
         }
+
+
 
 
     }
@@ -360,11 +409,11 @@ class App extends Component {
                 <Header className="header" style={{height: '42px'}}>
                     <span><DeploymentUnitOutlined
                         style={{fontSize: '15px', color: '#d8d8d8', margin: '0 14px 0 0'}}/></span>
-                    <p className="header-title">QCVIS</p>
-                    <p className="paper-title">QuantVis: A Quality-Aware Visualization System for Noise Mitigation in
+                    <p className="header-title">QUIET</p>
+                    <p className="paper-title">A Quality-Aware Visualization System for Noise Mitigation in
                         Quantum Computing</p>
                 </Header>
-                <Content style={{padding: '0 75px', backgroundColor: '#ffffff'}}>
+                <Content style={{padding: '0 75px', backgroundColor: '#ffffff', marginTop: '10px'}}>
                     <div className="view">
                         <Row gutter={0} style={{height: '100%'}}>
                             <Col className="gutter-row" span={19} style={{height: '100%'}}>
@@ -442,8 +491,8 @@ class App extends Component {
                                             <Radio.Group value={this.state.view2_attr} defaultValue="gate"
                                                          onChange={this.handle_view2_attr_change} buttonStyle="solid"
                                                          disabled={check1()}>
-                                                <Radio.Button value="gate">Gate</Radio.Button>
-                                                <Radio.Button value="qubit">Qubit</Radio.Button>
+                                                <Radio.Button value="gate">Gate Score</Radio.Button>
+                                                <Radio.Button value="qubit">Qubit Score</Radio.Button>
                                             </Radio.Group>
                                         </Form.Item>
 
@@ -481,8 +530,12 @@ class App extends Component {
                                             </Row>
                                         </Form.Item>
 
-                                        <Form.Item label={'Sorting'}>
-                                            <Switch onChange={this.handleSort}></Switch>
+                                        <Form.Item label={'Sorting by attr.'}>
+                                            <Switch onChange={this.handleSort} checked={this.state.view2_sort}></Switch>
+                                            &nbsp;&nbsp;
+                                            &nbsp;
+                                            <span>Sorting by depth: </span>
+                                            <Switch onChange={this.handleSortByDepth} checked={this.state.view2_sortByDepth}></Switch>
                                         </Form.Item>
 
                                         <Divider plain ><Text style={{fontSize: '0.8em'}} strong>Circuit Selection</Text></Divider>

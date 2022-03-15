@@ -58,8 +58,7 @@ class Link12 extends Component {
             .attr('x2', 2)
             .attr('y1', +d3.select(`.${backend_name}`).attr('transform').split(/[\s,()]+/)[2] + 10)
             .attr('y2', +d3.select(`.${backend_name}`).attr('transform').split(/[\s,()]+/)[2] + 130)
-            .attr('stroke', 'rgba(0, 233, 191, 0.67)')
-            .attr('stroke-width', '3px')
+            .attr('class', 'link12')
             .style('stroke-linecap', 'round')
 
 
@@ -68,8 +67,7 @@ class Link12 extends Component {
             .attr('x2', x2_position)
             .attr('y1', 65)
             .attr('y2', '100%')
-            .attr('stroke', 'rgba(0, 233, 191, 0.67)')
-            .attr('stroke-width', '3px')
+            .attr('class', 'link12')
             .style('stroke-linecap', 'round')
 
     }

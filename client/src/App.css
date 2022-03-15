@@ -6,6 +6,10 @@ html, body{
 
 }
 
+*{
+    font-family: "Trebuchet MS";
+}
+
 #app{
     height: 100%;
 }
@@ -23,7 +27,6 @@ html, body{
 .header-title{
     color: #d8d8d8;
     font-size: 1.2em;
-    font-family: Arial;
 
 }
 
@@ -31,7 +34,6 @@ html, body{
 .paper-title{
     color: #787878;
     font-size: 1.2em;
-    font-family: Arial;
     font-style: italic;
     margin-left:auto;
     margin-right:0;
@@ -48,7 +50,6 @@ html, body{
 .view1_title{
     fill: #6c6c6c;
     font-size: 1em;
-    font-family: Arial;
 }
 
 .view1_title:hover {
@@ -114,7 +115,8 @@ html, body{
 .linkpath23 {
     fill: none;
     stroke-width: 4px;
-    stroke: rgba(0, 233, 191, 0.67);
+    stroke: rgba(0, 177, 145, 0.49);
+
 }
 
 
@@ -127,7 +129,7 @@ html, body{
 
 .link12{
     fill: none;
-    stroke: rgba(0, 233, 191, 0.67);
+    stroke: rgba(0, 177, 145, 0.49);
     stroke-width: 4px;
 }
 
@@ -188,4 +190,8 @@ border-radius: 10px;
 
 .viewFidelity_node{
     transform: translate(-50%, -50%);
+}
+
+.view2_circuitName{
+    font-size: 0.9em;
 }
