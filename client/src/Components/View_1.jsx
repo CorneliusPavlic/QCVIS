@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import ReactDOM from 'react-dom';
 import * as d3 from 'd3'
 import axios from "axios";
 import * as science from 'science'
@@ -12,6 +13,7 @@ class View_1 extends Component {
     constructor(props){
         super(props);
         this.render_view1 = this.render_view1.bind(this)
+        this.init_view2 = this.init_view2.bind(this)
         this.state = {
 
         }
@@ -344,6 +346,9 @@ class View_1 extends Component {
                         return `translate(${(view1_margin_left/2-40)* theta}, ${height})`
                     })
                     .on('click', (d,item)=>{
+                        if(d3.select('.view2_svg').size()!=0){
+                            this.init_view2()
+                        }
                         select_computer(item[0]['qcomputer'])
                     })
 
@@ -532,6 +537,18 @@ class View_1 extends Component {
 
 
     }
+
+
+    init_view2(){
+        let clear_state = this.props.clear_state
+
+        ReactDOM.unmountComponentAtNode(document.getElementById('link12'))
+        ReactDOM.unmountComponentAtNode(document.getElementById('container_2'))
+        ReactDOM.unmountComponentAtNode(document.getElementById('container_counts'))
+        
+        clear_state()
+    }
+
 
     componentDidMount() {
 

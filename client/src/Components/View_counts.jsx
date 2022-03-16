@@ -296,11 +296,13 @@ class View_counts extends Component {
 
         return (
             <>
+                <Divider style={{ backgroundColor: '#868686'}} plain><Text style={{fontSize: '0.8em', color: '#fff'}} strong>Fidelity Comparison</Text></Divider>
+
                 <div id="svg_container_fidelity">
 
                 </div>
 
-                <Divider plain><Text style={{fontSize: '0.8em'}} strong>Probability Distributions</Text></Divider>
+                <Divider style={{ backgroundColor: '#868686'}} plain><Text style={{fontSize: '0.8em', color: '#fff'}} strong>Probability Distributions</Text></Divider>
 
 
                 <div id="svg_container_counts">

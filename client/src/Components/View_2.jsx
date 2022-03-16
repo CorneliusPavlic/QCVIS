@@ -42,6 +42,13 @@ class View_2 extends Component {
 
         const _this = this
 
+
+        let clear_state2 = this.props.clear_state2
+
+        clear_state2()
+        d3.selectAll('.viewCounts_svg,.viewFidelity_svg').remove("*")
+
+
         /*判断 这一次调用时 是不是第一次mount，还是更新的update*/
         // if(d3.select('.view2_svg').size()==0){
         axios.post(`/api/view2_api_datafile/`, {'view2_algo':view2_algo, 'trans_times': trans_times, 'backend_name': backend_name})
@@ -173,27 +180,27 @@ class View_2 extends Component {
 
             /*画 从左边指到circle的线*/
             block.append('line')
-                .attr('x1',  view2_block_text_width)
+                .attr('x1',  0)
                 .attr('y1', view2_block_height/2)
-                .attr('x2', d=>depth_scale(d[1]['depth']) + view2_block_text_width)
+                .attr('x2', d=>depth_scale(d[1]['depth']) + 0)
                 .attr('y2', view2_block_height/2)
                 .attr('stroke', '#a0a0a0')
 
 
             /*画 left-border的线*/
             block.append('line')
-                .attr('x1',  view2_block_text_width)
+                .attr('x1',  0)
                 .attr('y1', 2)
-                .attr('x2',  view2_block_text_width)
+                .attr('x2',  0)
                 .attr('y2', view2_block_height - 2)
                 .attr('stroke', '#a0a0a0')
 
 
             /*画 right-border的线*/
             block.append('line')
-                .attr('x1',  view2_chart_width + view2_block_text_width)
+                .attr('x1',  view2_chart_width + 0)
                 .attr('y1', 1)
-                .attr('x2',  view2_chart_width + view2_block_text_width)
+                .attr('x2',  view2_chart_width + 0)
                 .attr('y2', view2_block_height - 1)
                 .attr('stroke', '#a0a0a0')
 
@@ -201,7 +208,7 @@ class View_2 extends Component {
             /*画 代表circuit的circle*/
             block.append('circle')
                 .attr('class', 'view2_circle')
-                .attr('cx', d=>depth_scale(d[1]['depth']) + view2_block_text_width)
+                .attr('cx', d=>depth_scale(d[1]['depth']) + 0)
                 .attr('cy', view2_block_height/2)
                 .attr('r', d=>qual_scale(Math.abs(d[1][`${view2_attr}s_quality`] - qual_avg[`${view2_attr}_qual_avg`])))
                 .attr('fill', d=>d[1][`${view2_attr}s_quality`] > qual_avg[`${view2_attr}_qual_avg`]? "#08AEFF":'#FF5C0F')
@@ -231,7 +238,7 @@ class View_2 extends Component {
             block.append('text')
                 .text(d=>d[1]['id'])
                 .attr('class', 'view2_circuitName')
-                .attr('transform', `translate(0, ${view2_block_height/2+5})`)
+                .attr('transform', `translate(${view2_chart_width+5}, ${view2_block_height/2+5})`)
 
 
             block.append('title')
@@ -245,12 +252,12 @@ class View_2 extends Component {
 
 
             /*画横向的坐标轴*/
-            let bottom_axis = d3.axisBottom()
+            let bottom_axis = d3.axisTop()
                 .scale(depth_scale)
-                .tickValues([ depth_arr[0], depth_arr[Math.round(depth_arr.length*(1/3))], depth_arr[Math.round(depth_arr.length*(2/3))], depth_arr[depth_arr.length-1]])
+                .tickValues([d3.quantile(depth_arr, 0), d3.quantile(depth_arr, 0.25), d3.quantile(depth_arr, 0.75), d3.quantile(depth_arr, 1)])
 
             let bottom_axis_g = svg.append('g')
-                .attr('transform', `translate(${view2_margin_left + view2_block_text_width}, ${d3.selectAll('.view2_block').size()*view2_block_height + view2_margin_top  + 10})`)
+                .attr('transform', `translate(${view2_margin_left + 0}, ${view2_margin_top-10})`)
                 .call(bottom_axis)
 
 
@@ -546,7 +553,16 @@ class View_2 extends Component {
                 .attr('stroke', '#3a4040')
                 .attr('stroke-width', 1)
                 .append('title')
-                .text(d=> `ref value: ${times_avg['gate_times_avg'][d[0]]}`)
+                .text(d=> {
+                    let gname = ''
+                    if(d[0] in times_avg['gate_times_avg']){
+                        gname = d[0]
+                    }else if(`cx${d[0][4]}_${d[0][2]}` in times_avg['gate_times_avg']){
+                        gname = `cx${d[0][4]}_${d[0][2]}`
+                    }
+
+                    return `ref value: ${times_avg['gate_times_avg'][gname]}`
+                })
 
             bar_g.append('text')
                 .text(d=>{
@@ -697,9 +713,9 @@ class View_2 extends Component {
 
 
 
-
         /*情况1：控制view2 的 view2_attr 更新*/
         if(this.props.view2_attr && prevProps['view2_attr'] != this.props.view2_attr){/*加this.props.view2_attr判断是因为避免由于未传参而触发这个条件的情况 */
+
 
             this.render_view2()
 

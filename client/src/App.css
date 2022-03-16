@@ -195,3 +195,10 @@ border-radius: 10px;
 .view2_circuitName{
     font-size: 0.9em;
 }
+
+/*button*/
+.ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+    color: #fff;
+    background: #3fbfde;
+    border-color: #3fbfde;
+}
