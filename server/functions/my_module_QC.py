@@ -18,14 +18,14 @@ from pprint import pprint
 # get_physical_qubit_mapping()['instruction_and_qubit_data']
 # get_physical_qubit_mapping()['text_figure']
 
-def ibmq_load_account(hub_name='ibm-q-research'):
+def ibmq_load_account(hub_name='ibm-q'):
     '''
     # load 'ibm-q-research' account and return a provider
     :param hub_name:
     :return:
     '''
     IBMQ.load_account()
-    provider = IBMQ.get_provider(hub=hub_name)
+    provider = IBMQ.get_provider(hub=hub_name, group='open', project='main')
 
     return provider
 

@@ -1,11 +1,10 @@
 from flask import Flask, request, session, jsonify, json
 from flask_pymongo import PyMongo
 from flask_cors import CORS
-
 import os
 import json
 from datetime import datetime, timedelta
-
+import requests
 from functions.update_calidata import download_cali_data_to_latest
 
 from routes.view1_api_func import temporal_data_function
@@ -35,7 +34,6 @@ def root():
     except:
         return 'error'
 
-
 @app.route('/add_one')
 def hello():
     try:
@@ -44,8 +42,16 @@ def hello():
     except:
         return 'error'
 
-
-
+@app.route('/pending_jobs')
+def get_pending_jobs():
+    try:
+        response = requests.get('https://api.quantum.ibm.com/api/users/backends')
+        print({backend.get('name'): backend.get('queueLength', 1) for backend in response.json()})
+        return {backend.get('name'): backend.get('queueLength', 1) for backend in response.json()}
+    except requests.RequestException as e:
+        print(f"Error fetching backends: {e}")
+        return None
+    
 @app.route('/find')
 def find():
     try:
@@ -173,7 +179,7 @@ def execution_api():
 @app.route('/view1_api_datafile/<int:timerange>/<int:interval>/')
 def view1_api_datafile(timerange=30, interval=7):
     # 默认路由参数: interval：temporal view 的 时间间隔， 默认 1 天
-
+    print("hello")
 
     global query_data
     try:
@@ -188,30 +194,31 @@ def view1_api_datafile(timerange=30, interval=7):
             data['ref_value'] = json.load(json_file)
             json_file.close()
 
-
-        # 生成过滤数组
-        day = datetime(2022, 3, 6) - timedelta(days=1)  # -1 天是因为当天的数据永远不存在，因为ibmq延时一天更新
+        # 生成过滤数组 
+        day = datetime(2024, 10, 23) # -1 天是因为当天的数据永远不存在，因为ibmq延时一天更新
 
         # fial date arr
         date_arr = ['{year}-{month}-{day}'.format(year=day.year, month=day.month, day=day.day)]
 
         while day >= datetime(2021, 7, 8):
-            if day < datetime(2022, 3, 6) - timedelta(days=timerange):
+            if day < datetime(2024, 10, 23) - timedelta(days=timerange):
                 break
             day = day - timedelta(days=int(interval))
             date_arr.append('{year}-{month}-{day}'.format(year=day.year, month=day.month, day=day.day))
 
+        print(date_arr)
 
         for computer_name, arr in data['data'].items():
             new_arr = []
             for i, date_data in enumerate(arr):
-                if date_data['timestamp'] in date_arr:
+                timestamp_date = date_data['timestamp'].split('T')[0]
+                if timestamp_date in date_arr:
                     new_arr.append(date_data)
             data['data'][computer_name] = new_arr
 
 
         query_data = data['data']
-
+        print(data)
         return data
 
 
@@ -236,8 +243,6 @@ def view2_api_datafile():
             algo = request.get_json()['view2_algo'] or 'shor'
             trans_times = request.get_json()['trans_times'] or 10
             backend_name = request.get_json()['backend_name'] or 'ibmq_jakarta'  # 如果没有指定，默认用 ibmq_jakarta 来执行
-
-
 
             data = {}
             with open('database/view2_data/{}_{}.json'.format(backend_name, algo)) as json_file:
