@@ -195,13 +195,13 @@ def view1_api_datafile(timerange=30, interval=7):
             json_file.close()
 
         # 生成过滤数组 
-        day = datetime(2024, 10, 23) # -1 天是因为当天的数据永远不存在，因为ibmq延时一天更新
+        day = datetime(2024, 10, 29) # -1 天是因为当天的数据永远不存在，因为ibmq延时一天更新
 
         # fial date arr
         date_arr = ['{year}-{month}-{day}'.format(year=day.year, month=day.month, day=day.day)]
 
         while day >= datetime(2021, 7, 8):
-            if day < datetime(2024, 10, 23) - timedelta(days=timerange):
+            if day < datetime(2024, 10, 29) - timedelta(days=timerange):
                 break
             day = day - timedelta(days=int(interval))
             date_arr.append('{year}-{month}-{day}'.format(year=day.year, month=day.month, day=day.day))

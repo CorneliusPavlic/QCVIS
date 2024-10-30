@@ -4,7 +4,7 @@ from functions.my_module_QC import ibmq_load_account
 from functions.quantum_algos import Shors_algo, scaleable_Shors_algo, QFT, BV, two_qubit_algo
 from qiskit.providers.ibmq.job.exceptions import IBMQJobApiError
 from qiskit.quantum_info.analysis import hellinger_fidelity
-
+import re
 from flask import Flask, request, session, jsonify, json
 from flask_pymongo import PyMongo
 import json
@@ -192,8 +192,7 @@ def download_view23_data():
             for qubit, _ in backend_qubit_avg[attr].items():
                 i = int(qubit.split('_')[1])
                 for date in backend_data:
-                    if date['timestamp'] == '2022-3-5':
-                        backend_qubit_avg[attr][qubit] = date['qubit'][i][attr]
+                    backend_qubit_avg[attr][qubit] = date['qubit'][i][attr]
 
         # 每种 gate 的error rate的平均值是多少
         backend_gate_avg = {
@@ -208,7 +207,6 @@ def download_view23_data():
         for gate, _ in backend_gate_avg['error_rate'].items():
             temp_arr = []
             for date in backend_data:
-                if date['timestamp'] == '2022-3-5':
                     for _gate in date['gate']:
                         if _gate['gate_name'] == gate:
                             backend_gate_avg['error_rate'][gate] = _gate['error_rate']
@@ -232,7 +230,6 @@ def download_view23_data():
             trans_data['trans_{}'.format(i)] = qc_comp._data
             circuit_data['trans_{}'.format(i)] = qc_comp
 
-
         # 用来生成画图用的数据
         data = {}
 
@@ -242,12 +239,11 @@ def download_view23_data():
             # 每种qubit被用了多少次
             # 每种 gate 被用了多少次
             # pprint(qc)
-
             qubit_count = {}
             gate_count = {}
 
             for inst in qc:
-                if inst[0].name == 'cx':  # 先暂时只考虑 cx gate
+                if inst[0].name == 'cz' or inst[0].name == 'ecr':  # 先暂时只考虑 cx gate
                     q_src = inst[1][0].index
                     q_tgt = inst[1][1].index
                     gate = 'cx{}_{}'.format(q_src, q_tgt)
@@ -349,8 +345,9 @@ def download_view23_data():
                     qubit_times_arr[qname].append(qubit['times'])
             # gate
             for gname, gate in trans['gates'].items():
-                src = int(gname[2])
-                tgt = int(gname[4])
+                numbers = re.findall(r'\d+', gname)
+                src = int(numbers[0])
+                tgt = int(numbers[1])
 
                 if gname in gate_times_arr:
                     gate_times_arr[gname].append(gate['times'])
@@ -381,7 +378,6 @@ def download_view23_data():
         # pprint(circuit_data)
         # setup a simulator
         backend_sim = Aer.get_backend('qasm_simulator')
-        print(backend)
 
         #     返回的data
         data = {}
@@ -439,6 +435,7 @@ def cal_average(num):
 def cal_overall_qubit_quality(q):
     num = 0
     summary = []
+    #print(f"This is the q from calculating the overall qubit quality \n\n\n\n {q}")
     for _, qubit in q.items():
         num += qubit['times']
         summary.append(qubit['error_rate'] * qubit['times'])

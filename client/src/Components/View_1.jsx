@@ -60,7 +60,7 @@ class View_1 extends Component {
                 const {view1_height, view1_computer_height, view1_computer_block_width, view1_computer_block_height, view1_qubitMaxRadius, view1_qubitHeight, view1_legend_height, view1_legend_width} = params
                 const {view1_margin_top, view1_margin_left} = params
                 const {view1_block_top, view1_qubit_padding_left} = params
-                const view1_area_height = 12
+                const view1_area_height = 100
                 const view1_computerGap_height = 35
                 const view1_computer_width = view1_computer_block_width * Math.round(time_range/interval)
                 const view1_width = view1_computer_width + view1_margin_left + 2*view1_computer_block_width
@@ -103,7 +103,8 @@ class View_1 extends Component {
                 .append('svg')
                 .attr('class', 'view1_svg')
                 .attr('width', view1_width * theta)
-                .attr('height', view1_height * theta)
+                .attr('height', '100000px')
+                // .attr('height', view1_height * theta)
                 
                 
                 let view1 = svg.append('g')
