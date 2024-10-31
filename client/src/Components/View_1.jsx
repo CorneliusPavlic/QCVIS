@@ -31,13 +31,13 @@ class View_1 extends Component {
 
         let pending_jobs = {}
         // axios.get(`/api/view1_api/${time_range}/${interval}/ibm_lagos&ibm_perth&ibmq_belem&ibmq_bogota&ibmq_casablanca&ibmq_jakarta&ibmq_lima&ibmq_manila&ibmq_quito&ibmq_armonk&ibmq_santiago`)
-        axios.get("http://127.0.0.1:5000/pending_jobs").then(d=>{
+        axios.get("/api/pending_jobs").then(d=>{
             console.log("hello")
             console.log(d)
              pending_jobs = d.data;
         }).then(()=>{
 
-            axios.get(`http://127.0.0.1:5000/view1_api_datafile/${time_range}/${interval}/`)
+            axios.get(`/api/view1_api_datafile/${time_range}/${interval}/`)
             // axios.get(`http://131.123.39.100:5000/view1_api_datafile/30/7/`)
             .then(d=>{
                 
