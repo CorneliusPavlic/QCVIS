@@ -288,41 +288,41 @@ def download_view23_data():
                 }
 
             # 准备好 均值 和 次数，开始构造 gate 数组
-        g = {}
-        for name, times in gate_count.items():
-            numbers = list(map(int, re.findall(r'\d+', name)))
-            source, target = numbers[0], numbers[1]
-            error_rate = 0  # Default error rate if none is found
-            
-            # Try various gate formats for both source-target and target-source combinations
-            possible_keys = [
-                f'cx{source}_{target}', f'ecr{source}_{target}', f'cz{source}_{target}',
-                f'cx{target}_{source}', f'ecr{target}_{source}', f'cz{target}_{source}'
-            ]
-            
-            # Find the first available error rate from possible keys
-            for key in possible_keys:
-                if key in backend_gate_avg['error_rate']:
-                    error_rate = backend_gate_avg['error_rate'][key]
-                    break
-            
-            # Assign values to the output dictionary
-            g[name] = {
-                'times': times,
-                'source': f'q_{source}',
-                'target': f'q_{target}',
-                'error_rate': error_rate
-            }
+            g = {}
+            for name, times in gate_count.items():
+                numbers = list(map(int, re.findall(r'\d+', name)))
+                source, target = numbers[0], numbers[1]
+                error_rate = 0  # Default error rate if none is found
+                
+                # Try various gate formats for both source-target and target-source combinations
+                possible_keys = [
+                    f'cx{source}_{target}', f'ecr{source}_{target}', f'cz{source}_{target}',
+                    f'cx{target}_{source}', f'ecr{target}_{source}', f'cz{target}_{source}'
+                ]
+                
+                # Find the first available error rate from possible keys
+                for key in possible_keys:
+                    if key in backend_gate_avg['error_rate']:
+                        error_rate = backend_gate_avg['error_rate'][key]
+                        break
+                
+                # Assign values to the output dictionary
+                g[name] = {
+                    'times': times,
+                    'source': f'q_{source}',
+                    'target': f'q_{target}',
+                    'error_rate': error_rate
+                }
 
-            trans = {}
-            trans['id'] = trans_name
-            trans['depth'] = len(qc)
-            trans['qubits_quality'] = cal_overall_qubit_quality(q)
-            trans['gates_quality'] = cal_overall_gate_quality(g)
-            trans['qubits'] = q
-            trans['gates'] = g
+                trans = {}
+                trans['id'] = trans_name
+                trans['depth'] = len(qc)
+                trans['qubits_quality'] = cal_overall_qubit_quality(q)
+                trans['gates_quality'] = cal_overall_gate_quality(g)
+                trans['qubits'] = q
+                trans['gates'] = g
 
-            data[trans_name] = trans
+                data[trans_name] = trans
 
         with open('database/view2_data/{}_BV.json'.format(backend_name), 'w') as fp:
             print('Saving /view2_data/{}_BV.json'.format(backend_name))
