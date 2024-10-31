@@ -1,0 +1,1 @@
+{"qubit_qual_avg": 24.968789, "gate_qual_avg": 42.553191, "qubit_times_avg": {"q_114": 2.0, "q_109": 1.0, "q_113": 1.0}, "gate_times_avg": {"cx114_109": 1.0, "cx113_114": 1.0}}
