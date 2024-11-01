@@ -1,0 +1,1010 @@
+[
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr29_28",
+    "source": "q_29",
+    "target": "q_28",
+    "error_rate": 0.0077
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr67_66",
+    "source": "q_67",
+    "target": "q_66",
+    "error_rate": 0.0046
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr93_87",
+    "source": "q_93",
+    "target": "q_87",
+    "error_rate": 0.0067
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr99_100",
+    "source": "q_99",
+    "target": "q_100",
+    "error_rate": 0.0122
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr22_15",
+    "source": "q_22",
+    "target": "q_15",
+    "error_rate": 0.0343
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr26_16",
+    "source": "q_26",
+    "target": "q_16",
+    "error_rate": 0.0121
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr31_30",
+    "source": "q_31",
+    "target": "q_30",
+    "error_rate": 0.007
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr33_39",
+    "source": "q_33",
+    "target": "q_39",
+    "error_rate": 0.0043
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr43_34",
+    "source": "q_43",
+    "target": "q_34",
+    "error_rate": 0.0143
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr47_35",
+    "source": "q_47",
+    "target": "q_35",
+    "error_rate": 0.019
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr51_50",
+    "source": "q_51",
+    "target": "q_50",
+    "error_rate": 0.0106
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr53_60",
+    "source": "q_53",
+    "target": "q_60",
+    "error_rate": 0.0082
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr64_54",
+    "source": "q_64",
+    "target": "q_54",
+    "error_rate": 0.0205
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr68_69",
+    "source": "q_68",
+    "target": "q_69",
+    "error_rate": 0.0056
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr72_81",
+    "source": "q_72",
+    "target": "q_81",
+    "error_rate": 0.0153
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr77_71",
+    "source": "q_77",
+    "target": "q_71",
+    "error_rate": 0.0059
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr87_86",
+    "source": "q_87",
+    "target": "q_86",
+    "error_rate": 0.0098
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr91_98",
+    "source": "q_91",
+    "target": "q_98",
+    "error_rate": 0.0243
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr104_111",
+    "source": "q_104",
+    "target": "q_111",
+    "error_rate": 0.0153
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr114_109",
+    "source": "q_114",
+    "target": "q_109",
+    "error_rate": 0.0074
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr118_110",
+    "source": "q_118",
+    "target": "q_110",
+    "error_rate": 0.0159
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr4_15",
+    "source": "q_4",
+    "target": "q_15",
+    "error_rate": 0.049
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr16_8",
+    "source": "q_16",
+    "target": "q_8",
+    "error_rate": 0.0107
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr17_12",
+    "source": "q_17",
+    "target": "q_12",
+    "error_rate": 0.0141
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr33_20",
+    "source": "q_33",
+    "target": "q_20",
+    "error_rate": 0.0064
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr34_24",
+    "source": "q_34",
+    "target": "q_24",
+    "error_rate": 0.0087
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr46_45",
+    "source": "q_46",
+    "target": "q_45",
+    "error_rate": 0.0104
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr49_50",
+    "source": "q_49",
+    "target": "q_50",
+    "error_rate": 0.0063
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr53_41",
+    "source": "q_53",
+    "target": "q_41",
+    "error_rate": 0.0047
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr58_71",
+    "source": "q_58",
+    "target": "q_71",
+    "error_rate": 0.006
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr62_72",
+    "source": "q_62",
+    "target": "q_72",
+    "error_rate": 0.0213
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr65_66",
+    "source": "q_65",
+    "target": "q_66",
+    "error_rate": 0.0097
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr83_84",
+    "source": "q_83",
+    "target": "q_84",
+    "error_rate": 0.0103
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr88_89",
+    "source": "q_88",
+    "target": "q_89",
+    "error_rate": 0.0084
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr91_79",
+    "source": "q_91",
+    "target": "q_79",
+    "error_rate": 0.009
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr101_100",
+    "source": "q_101",
+    "target": "q_100",
+    "error_rate": 0.0125
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr104_105",
+    "source": "q_104",
+    "target": "q_105",
+    "error_rate": 0.0131
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr109_96",
+    "source": "q_109",
+    "target": "q_96",
+    "error_rate": 0.0049
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr112_108",
+    "source": "q_112",
+    "target": "q_108",
+    "error_rate": 0.0266
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr120_119",
+    "source": "q_120",
+    "target": "q_119",
+    "error_rate": 0.0049
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr123_124",
+    "source": "q_123",
+    "target": "q_124",
+    "error_rate": 0.01
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr7_6",
+    "source": "q_7",
+    "target": "q_6",
+    "error_rate": 0.0067
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr10_11",
+    "source": "q_10",
+    "target": "q_11",
+    "error_rate": 0.0064
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr18_14",
+    "source": "q_18",
+    "target": "q_14",
+    "error_rate": 0.0055
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr21_22",
+    "source": "q_21",
+    "target": "q_22",
+    "error_rate": 0.0099
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr25_26",
+    "source": "q_25",
+    "target": "q_26",
+    "error_rate": 0.0068
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr30_29",
+    "source": "q_30",
+    "target": "q_29",
+    "error_rate": 0.0155
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr40_39",
+    "source": "q_40",
+    "target": "q_39",
+    "error_rate": 0.0071
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr43_44",
+    "source": "q_43",
+    "target": "q_44",
+    "error_rate": 0.005
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr47_48",
+    "source": "q_47",
+    "target": "q_48",
+    "error_rate": 0.0244
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr52_56",
+    "source": "q_52",
+    "target": "q_56",
+    "error_rate": 0.0125
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr59_60",
+    "source": "q_59",
+    "target": "q_60",
+    "error_rate": 0.0147
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr64_63",
+    "source": "q_64",
+    "target": "q_63",
+    "error_rate": 0.0282
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr68_67",
+    "source": "q_68",
+    "target": "q_67",
+    "error_rate": 0.005
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr78_77",
+    "source": "q_78",
+    "target": "q_77",
+    "error_rate": 0.0062
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr82_81",
+    "source": "q_82",
+    "target": "q_81",
+    "error_rate": 0.0072
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr86_85",
+    "source": "q_86",
+    "target": "q_85",
+    "error_rate": 0.0057
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr94_90",
+    "source": "q_94",
+    "target": "q_90",
+    "error_rate": 0.0079
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr97_98",
+    "source": "q_97",
+    "target": "q_98",
+    "error_rate": 0.0103
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr101_102",
+    "source": "q_101",
+    "target": "q_102",
+    "error_rate": 0.0193
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr107_106",
+    "source": "q_107",
+    "target": "q_106",
+    "error_rate": 0.0069
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr111_122",
+    "source": "q_111",
+    "target": "q_122",
+    "error_rate": 0.0089
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr114_115",
+    "source": "q_114",
+    "target": "q_115",
+    "error_rate": 0.0074
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr119_118",
+    "source": "q_119",
+    "target": "q_118",
+    "error_rate": 0.0088
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr2_1",
+    "source": "q_2",
+    "target": "q_1",
+    "error_rate": 0.0043
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr5_6",
+    "source": "q_5",
+    "target": "q_6",
+    "error_rate": 0.0079
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr10_9",
+    "source": "q_10",
+    "target": "q_9",
+    "error_rate": 0.0059
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr17_30",
+    "source": "q_17",
+    "target": "q_30",
+    "error_rate": 0.0111
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr19_18",
+    "source": "q_19",
+    "target": "q_18",
+    "error_rate": 0.0129
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr23_22",
+    "source": "q_23",
+    "target": "q_22",
+    "error_rate": 0.0062
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr27_26",
+    "source": "q_27",
+    "target": "q_26",
+    "error_rate": 0.0066
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr36_51",
+    "source": "q_36",
+    "target": "q_51",
+    "error_rate": 0.008
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr39_38",
+    "source": "q_39",
+    "target": "q_38",
+    "error_rate": 0.0159
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr43_42",
+    "source": "q_43",
+    "target": "q_42",
+    "error_rate": 0.0174
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr47_46",
+    "source": "q_47",
+    "target": "q_46",
+    "error_rate": 0.0193
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr57_56",
+    "source": "q_57",
+    "target": "q_56",
+    "error_rate": 0.0093
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr61_60",
+    "source": "q_61",
+    "target": "q_60",
+    "error_rate": 0.0181
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr64_65",
+    "source": "q_64",
+    "target": "q_65",
+    "error_rate": 0.0093
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr68_55",
+    "source": "q_68",
+    "target": "q_55",
+    "error_rate": 0.0046
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr74_89",
+    "source": "q_74",
+    "target": "q_89",
+    "error_rate": 0.0274
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr76_77",
+    "source": "q_76",
+    "target": "q_77",
+    "error_rate": 0.0125
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr81_80",
+    "source": "q_81",
+    "target": "q_80",
+    "error_rate": 0.0081
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr84_85",
+    "source": "q_84",
+    "target": "q_85",
+    "error_rate": 0.0064
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr94_95",
+    "source": "q_94",
+    "target": "q_95",
+    "error_rate": 0.0097
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr99_98",
+    "source": "q_99",
+    "target": "q_98",
+    "error_rate": 0.016
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr102_103",
+    "source": "q_102",
+    "target": "q_103",
+    "error_rate": 0.0212
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr106_93",
+    "source": "q_106",
+    "target": "q_93",
+    "error_rate": 0.0132
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr113_114",
+    "source": "q_113",
+    "target": "q_114",
+    "error_rate": 0.0281
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr117_118",
+    "source": "q_117",
+    "target": "q_118",
+    "error_rate": 0.0186
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr123_122",
+    "source": "q_123",
+    "target": "q_122",
+    "error_rate": 0.0061
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr126_112",
+    "source": "q_126",
+    "target": "q_112",
+    "error_rate": 0.2121
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr0_14",
+    "source": "q_0",
+    "target": "q_14",
+    "error_rate": 0.0057
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr3_4",
+    "source": "q_3",
+    "target": "q_4",
+    "error_rate": 0.1369
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr7_8",
+    "source": "q_7",
+    "target": "q_8",
+    "error_rate": 0.0042
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr12_11",
+    "source": "q_12",
+    "target": "q_11",
+    "error_rate": 0.0046
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr20_21",
+    "source": "q_20",
+    "target": "q_21",
+    "error_rate": 0.013
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr24_25",
+    "source": "q_24",
+    "target": "q_25",
+    "error_rate": 0.0054
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr28_35",
+    "source": "q_28",
+    "target": "q_35",
+    "error_rate": 0.0054
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr36_32",
+    "source": "q_36",
+    "target": "q_32",
+    "error_rate": 0.0123
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr38_37",
+    "source": "q_38",
+    "target": "q_37",
+    "error_rate": 0.0118
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr42_41",
+    "source": "q_42",
+    "target": "q_41",
+    "error_rate": 0.0077
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr54_45",
+    "source": "q_54",
+    "target": "q_45",
+    "error_rate": 0.018
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr55_49",
+    "source": "q_55",
+    "target": "q_49",
+    "error_rate": 0.0058
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr57_58",
+    "source": "q_57",
+    "target": "q_58",
+    "error_rate": 0.0044
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr62_61",
+    "source": "q_62",
+    "target": "q_61",
+    "error_rate": 0.0074
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr70_74",
+    "source": "q_70",
+    "target": "q_74",
+    "error_rate": 0.016
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr73_85",
+    "source": "q_73",
+    "target": "q_85",
+    "error_rate": 0.0048
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr76_75",
+    "source": "q_76",
+    "target": "q_75",
+    "error_rate": 0.0161
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr80_79",
+    "source": "q_80",
+    "target": "q_79",
+    "error_rate": 0.0106
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr96_95",
+    "source": "q_96",
+    "target": "q_95",
+    "error_rate": 0.0062
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr105_106",
+    "source": "q_105",
+    "target": "q_106",
+    "error_rate": 0.0116
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr117_116",
+    "source": "q_117",
+    "target": "q_116",
+    "error_rate": 0.0156
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr122_121",
+    "source": "q_122",
+    "target": "q_121",
+    "error_rate": 0.0041
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr125_126",
+    "source": "q_125",
+    "target": "q_126",
+    "error_rate": 0.0077
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr0_1",
+    "source": "q_0",
+    "target": "q_1",
+    "error_rate": 0.0037
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr4_5",
+    "source": "q_4",
+    "target": "q_5",
+    "error_rate": 0.0224
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr8_9",
+    "source": "q_8",
+    "target": "q_9",
+    "error_rate": 0.0048
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr13_12",
+    "source": "q_13",
+    "target": "q_12",
+    "error_rate": 0.0045
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr20_19",
+    "source": "q_20",
+    "target": "q_19",
+    "error_rate": 0.0363
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr23_24",
+    "source": "q_23",
+    "target": "q_24",
+    "error_rate": 0.0056
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr27_28",
+    "source": "q_27",
+    "target": "q_28",
+    "error_rate": 0.0043
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr31_32",
+    "source": "q_31",
+    "target": "q_32",
+    "error_rate": 0.0045
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr37_52",
+    "source": "q_37",
+    "target": "q_52",
+    "error_rate": 0.0089
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr41_40",
+    "source": "q_41",
+    "target": "q_40",
+    "error_rate": 0.0099
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr44_45",
+    "source": "q_44",
+    "target": "q_45",
+    "error_rate": 0.008
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr49_48",
+    "source": "q_49",
+    "target": "q_48",
+    "error_rate": 0.0149
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr58_59",
+    "source": "q_58",
+    "target": "q_59",
+    "error_rate": 0.0089
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr62_63",
+    "source": "q_62",
+    "target": "q_63",
+    "error_rate": 0.0267
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr66_73",
+    "source": "q_66",
+    "target": "q_73",
+    "error_rate": 0.0047
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr69_70",
+    "source": "q_69",
+    "target": "q_70",
+    "error_rate": 0.0072
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr75_90",
+    "source": "q_75",
+    "target": "q_90",
+    "error_rate": 0.013
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr79_78",
+    "source": "q_79",
+    "target": "q_78",
+    "error_rate": 0.0156
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr83_82",
+    "source": "q_83",
+    "target": "q_82",
+    "error_rate": 0.0132
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr87_88",
+    "source": "q_87",
+    "target": "q_88",
+    "error_rate": 0.0077
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr96_97",
+    "source": "q_96",
+    "target": "q_97",
+    "error_rate": 0.0088
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr100_110",
+    "source": "q_100",
+    "target": "q_110",
+    "error_rate": 0.0124
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr104_103",
+    "source": "q_104",
+    "target": "q_103",
+    "error_rate": 0.0182
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr107_108",
+    "source": "q_107",
+    "target": "q_108",
+    "error_rate": 0.01
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr116_115",
+    "source": "q_116",
+    "target": "q_115",
+    "error_rate": 0.0082
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr120_121",
+    "source": "q_120",
+    "target": "q_121",
+    "error_rate": 0.0056
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr125_124",
+    "source": "q_125",
+    "target": "q_124",
+    "error_rate": 0.0253
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr3_2",
+    "source": "q_3",
+    "target": "q_2",
+    "error_rate": 1
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr92_83",
+    "source": "q_92",
+    "target": "q_83",
+    "error_rate": 1
+  },
+  {
+    "computer_id": "ibm_rensselaer",
+    "gate_name": "ecr92_102",
+    "source": "q_92",
+    "target": "q_102",
+    "error_rate": 1
+  }
+]

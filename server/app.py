@@ -26,7 +26,7 @@ db = mongodb_client.db
 
 # download_cali_data_to_latest()
 
-@app.route('/')
+@app.route('/api/')
 def root():
     try:
         # db.test.insert_one({'_id':0,'title': "todo title", 'body': "todo body"})
@@ -34,7 +34,7 @@ def root():
     except:
         return 'error'
 
-@app.route('/add_one')
+@app.route('/api/add_one')
 def hello():
     try:
         # db.test.insert_one({'_id':0,'title': "todo title", 'body': "todo body"})
@@ -42,7 +42,7 @@ def hello():
     except:
         return 'error'
 
-@app.route('/pending_jobs')
+@app.route('/api/pending_jobs')
 def get_pending_jobs():
     try:
         response = requests.get('https://api.quantum.ibm.com/api/users/backends')
@@ -52,7 +52,7 @@ def get_pending_jobs():
         print(f"Error fetching backends: {e}")
         return None
     
-@app.route('/find')
+@app.route('/api/find')
 def find():
     try:
         return [i for i in db.ibm_lagos.find()][0]
@@ -64,7 +64,7 @@ def find():
 query_data = []
 
 
-@app.route('/view1_api/<int:timerange>/<int:interval>/<string:backends>') # e.g., localhost:5000/view1_api/1/ibm_lagos&ibmq_jakarta
+@app.route('/api/view1_api/<int:timerange>/<int:interval>/<string:backends>') # e.g., localhost:5000/view1_api/1/ibm_lagos&ibmq_jakarta
 def view1_api(timerange=30, interval=7, backends='ibm_lagos'):
     # 默认路由参数: interval：temporal view 的 时间间隔， 默认 1 天
 
@@ -98,7 +98,7 @@ def view1_api(timerange=30, interval=7, backends='ibm_lagos'):
 api_data = 'apiData_TBD'
 transpiled_data = 'transData_TBD'
 
-@app.route('/view2_api/', methods = ['GET', 'POST'])
+@app.route('/api/view2_api/', methods = ['GET', 'POST'])
 def view2_api():
     try:
         global transpiled_data, api_data
@@ -145,7 +145,7 @@ def view2_api():
 
 
 
-@app.route('/execution_api/', methods=['GET', 'POST'])
+@app.route('/api/execution_api/', methods=['GET', 'POST'])
 def execution_api():
     try:
         global transpiled_data, api_data
@@ -176,7 +176,7 @@ def execution_api():
 
 
 
-@app.route('/view1_api_datafile/<int:timerange>/<int:interval>/')
+@app.route('/api/view1_api_datafile/<int:timerange>/<int:interval>/')
 def view1_api_datafile(timerange=30, interval=7):
     # 默认路由参数: interval：temporal view 的 时间间隔， 默认 1 天
     print("hello")
@@ -195,13 +195,13 @@ def view1_api_datafile(timerange=30, interval=7):
             json_file.close()
 
         # 生成过滤数组 
-        day = datetime(2024, 10, 29) # -1 天是因为当天的数据永远不存在，因为ibmq延时一天更新
+        day = datetime.today() # -1 天是因为当天的数据永远不存在，因为ibmq延时一天更新
 
         # fial date arr
         date_arr = ['{year}-{month}-{day}'.format(year=day.year, month=day.month, day=day.day)]
 
         while day >= datetime(2021, 7, 8):
-            if day < datetime(2024, 10, 29) - timedelta(days=timerange):
+            if day < datetime.today() - timedelta(days=timerange):
                 break
             day = day - timedelta(days=int(interval))
             date_arr.append('{year}-{month}-{day}'.format(year=day.year, month=day.month, day=day.day))
@@ -229,7 +229,7 @@ def view1_api_datafile(timerange=30, interval=7):
 
 
 
-@app.route('/view2_api_datafile/', methods = ['GET', 'POST'])
+@app.route('/api/view2_api_datafile/', methods = ['GET', 'POST'])
 def view2_api_datafile():
     try:
         global transpiled_data, api_data
@@ -263,7 +263,7 @@ def view2_api_datafile():
 
 
 
-@app.route('/execution_api_datafile/', methods=['GET', 'POST'])
+@app.route('/api/execution_api_datafile/', methods=['GET', 'POST'])
 def execution_api_datafile():
     try:
         global transpiled_data, api_data

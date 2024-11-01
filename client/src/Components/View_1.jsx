@@ -7,7 +7,6 @@ import * as science from 'science'
 import params from '../functions/preset_param'
 import {kernelEpanechnikov, kernelDensityEstimator} from "../functions/kde";
 
-
 class View_1 extends Component {
     constructor(props){
         super(props);
@@ -20,7 +19,6 @@ class View_1 extends Component {
 
 
 
-
     render_view1(){
         
         let select_computer = this.props.select_computer
@@ -28,18 +26,18 @@ class View_1 extends Component {
         let time_range = this.props.time_range || Number(document.getElementById('time_range').value)
         let interval = this.props.interval|| Number(document.getElementById('interval').value)
 
-
+        
         const _this = this
 
         let pending_jobs = {}
         // axios.get(`/api/view1_api/${time_range}/${interval}/ibm_lagos&ibm_perth&ibmq_belem&ibmq_bogota&ibmq_casablanca&ibmq_jakarta&ibmq_lima&ibmq_manila&ibmq_quito&ibmq_armonk&ibmq_santiago`)
-        axios.get("http://127.0.0.1:5000/pending_jobs").then(d=>{
+        axios.get("/api/pending_jobs").then(d=>{
             console.log("hello")
             console.log(d)
              pending_jobs = d.data;
         }).then(()=>{
 
-            axios.get(`http://127.0.0.1:5000/view1_api_datafile/${time_range}/${interval}/`)
+            axios.get(`/api/view1_api_datafile/${time_range}/${interval}/`)
             // axios.get(`http://131.123.39.100:5000/view1_api_datafile/30/7/`)
             .then(d=>{
                 
@@ -65,19 +63,12 @@ class View_1 extends Component {
                 const view1_computer_width = view1_computer_block_width * Math.round(time_range/interval)
                 const view1_width = view1_computer_width + view1_margin_left + 2*view1_computer_block_width
                 const view1_pendingJob_bar_height = 4, view1_pendingJob_bar_width = 85, view1_pendingJob_bar_radius = 3
+
+                const calculateQubitPosition = (qubit) => {
+                    const index = parseInt(qubit.split('_')[1], 10);  // Extract the numeric part of 'q_X'
+                    return index * 2 * view1_qubitMaxRadius;           // Calculate position
+                };
                 
-                
-                
-                /*qubit的位置字典*/
-                const qubit_position_dict= {
-                    'q_0': 0*2*view1_qubitMaxRadius,
-                    'q_1': 1*2*view1_qubitMaxRadius,
-                    'q_2': 2*2*view1_qubitMaxRadius,
-                    'q_3': 3*2*view1_qubitMaxRadius,
-                    'q_4': 4*2*view1_qubitMaxRadius,
-                    'q_5': 5*2*view1_qubitMaxRadius,
-                    'q_6': 6*2*view1_qubitMaxRadius
-                }
 
 
                 let qubit_attr_arr = []
@@ -103,8 +94,8 @@ class View_1 extends Component {
                 .append('svg')
                 .attr('class', 'view1_svg')
                 .attr('width', view1_width * theta)
-                .attr('height', '100000px')
-                // .attr('height', view1_height * theta)
+                .attr('height', "100000px")
+                //.attr('height', view1_height * theta)
                 
                 
                 let view1 = svg.append('g')
@@ -193,7 +184,9 @@ class View_1 extends Component {
                         
                         /*画代表电路的ref line*/
                         block.selectAll('.view1_ref_line')
-                        .data(d=>{return d['qubit']})
+                        .data(d=>{
+                            console.log(d['qubit'])
+                            return d['qubit']})
                         .join('line')
                         .attr('class', 'view1_ref_line')
                         .attr('x1', view1_qubit_padding_left*theta)
@@ -311,11 +304,11 @@ class View_1 extends Component {
                     .attr('class', 'gate')
                     // .attr('transform', `translate(60, 0)`)
                     .style('stroke', '#ababab')
-                    .style('stroke-width', 1* theta)
+                    .style('stroke-width', 2 * theta)
                     .attr('x1', d=>(scale(d['error_rate']*100)+view1_qubit_padding_left)* theta)
                     .attr('x2', d=>(scale(d['error_rate']*100)+view1_qubit_padding_left)* theta)
-                    .attr('y1', d=>qubit_position_dict[d['source']]* theta)
-                    .attr('y2', d=>qubit_position_dict[d['target']]* theta)
+                    .attr('y1', d => calculateQubitPosition(d['source']) * theta)
+                    .attr('y2', d => calculateQubitPosition(d['target']) * theta)
                     .append('title')
                     .text(d=>`${attr}: ${d['error_rate']*100}`)
                     
@@ -326,7 +319,7 @@ class View_1 extends Component {
                     .join('circle')
                     .attr('class', 'source-dot')
                     .attr('cx', d=>(scale(d['error_rate']*100)+view1_qubit_padding_left)* theta)
-                    .attr('cy', d=>qubit_position_dict[d['source']]* theta)
+                    .attr('cy', d => calculateQubitPosition(d['source']) * theta)
                     .attr('r', 2* theta)
                     .attr('fill', '#ababab')
                     
@@ -337,7 +330,7 @@ class View_1 extends Component {
                     .join('circle')
                     .attr('class', 'target-dot')
                     .attr('cx', d=>(scale(d['error_rate']*100)+view1_qubit_padding_left)* theta)
-                    .attr('cy', d=>qubit_position_dict[d['target']]* theta)
+                    .attr('cy', d => calculateQubitPosition(d['target']) * theta)
                     .attr('r', 2* theta)
                     .attr('fill', '#ababab')
                     

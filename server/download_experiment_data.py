@@ -10,6 +10,7 @@ from flask_pymongo import PyMongo
 import json
 import random
 import requests
+import re
 from pprint import pprint
 
 
@@ -192,7 +193,7 @@ def download_view23_data():
             for qubit, _ in backend_qubit_avg[attr].items():
                 i = int(qubit.split('_')[1])
                 for date in backend_data:
-                    backend_qubit_avg[attr][qubit] = date['qubit'][i][attr]
+                        backend_qubit_avg[attr][qubit] = date['qubit'][i][attr]
 
         # 每种 gate 的error rate的平均值是多少
         backend_gate_avg = {
@@ -210,7 +211,7 @@ def download_view23_data():
                     for _gate in date['gate']:
                         if _gate['gate_name'] == gate:
                             backend_gate_avg['error_rate'][gate] = _gate['error_rate']
-
+        print(f"{backend_gate_avg} \n\n\n\n")
         backend = requests.get(f"https://api.quantum.ibm.com/api/backends/{backend_name}/properties").json()
         config = requests.get("https://api.quantum.ibm.com/api/users/backends").json()
         for conf in config:
@@ -287,30 +288,39 @@ def download_view23_data():
             # 准备好 均值 和 次数，开始构造 gate 数组
             g = {}
             for name, times in gate_count.items():
-                source = name[2]
-                target = name[4]
-                error_rate = 0
-                if 'cx{}_{}'.format(source, target) in backend_gate_avg['error_rate']:
-                    error_rate = backend_gate_avg['error_rate']['cx{}_{}'.format(source, target)]
-                elif 'cx{}_{}'.format(target, source) in backend_gate_avg['error_rate']:
-                    error_rate = backend_gate_avg['error_rate']['cx{}_{}'.format(target, source)]
+                numbers = list(map(int, re.findall(r'\d+', name)))
+                source, target = numbers[0], numbers[1]
+                error_rate = 0  # Default error rate if none is found
+                
+                # Try various gate formats for both source-target and target-source combinations
+                possible_keys = [
+                    f'cx{source}_{target}', f'ecr{source}_{target}', f'cz{source}_{target}',
+                    f'cx{target}_{source}', f'ecr{target}_{source}', f'cz{target}_{source}'
+                ]
+                
+                # Find the first available error rate from possible keys
+                for key in possible_keys:
+                    if key in backend_gate_avg['error_rate']:
+                        error_rate = backend_gate_avg['error_rate'][key]
+                        break
+                
+                # Assign values to the output dictionary
                 g[name] = {
                     'times': times,
-                    'source': 'q_{}'.format(source),
-                    'target': 'q_{}'.format(target),
+                    'source': f'q_{source}',
+                    'target': f'q_{target}',
                     'error_rate': error_rate
                 }
 
-            trans = {}
+                trans = {}
+                trans['id'] = trans_name
+                trans['depth'] = len(qc)
+                trans['qubits_quality'] = cal_overall_qubit_quality(q)
+                trans['gates_quality'] = cal_overall_gate_quality(g)
+                trans['qubits'] = q
+                trans['gates'] = g
 
-            trans['id'] = trans_name
-            trans['depth'] = len(qc)
-            trans['qubits_quality'] = cal_overall_qubit_quality(q)
-            trans['gates_quality'] = cal_overall_gate_quality(g)
-            trans['qubits'] = q
-            trans['gates'] = g
-
-            data[trans_name] = trans
+                data[trans_name] = trans
 
         with open('database/view2_data/{}_BV.json'.format(backend_name), 'w') as fp:
             print('Saving /view2_data/{}_BV.json'.format(backend_name))
@@ -345,7 +355,7 @@ def download_view23_data():
                     qubit_times_arr[qname].append(qubit['times'])
             # gate
             for gname, gate in trans['gates'].items():
-                numbers = re.findall(r'\d+', gname)
+                numbers = list(map(int, re.findall(r'\d+', gname)))
                 src = int(numbers[0])
                 tgt = int(numbers[1])
 
@@ -378,6 +388,7 @@ def download_view23_data():
         # pprint(circuit_data)
         # setup a simulator
         backend_sim = Aer.get_backend('qasm_simulator')
+        #print(backend)
 
         #     返回的data
         data = {}
