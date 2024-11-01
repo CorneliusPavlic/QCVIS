@@ -2,7 +2,7 @@ const params = {
     'view1_width' : 640,
     'view1_height' : 1700,
     'view1_computer_height' : 160,
-    'view1_computer_width': 500,
+    'view1_computer_width': 400,
     'view1_computer_block_width' : 500,
     'view1_computer_block_height' : 100,
     'view1_qubitMaxRadius' : 8,
