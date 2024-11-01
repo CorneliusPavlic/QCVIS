@@ -198,13 +198,13 @@ def view1_api_datafile(timerange=30, interval=7):
         day = datetime.today() # -1 天是因为当天的数据永远不存在，因为ibmq延时一天更新
 
         # fial date arr
-        date_arr = ['{year}-{month}-{day}'.format(year=day.year, month=day.month, day=day.day)]
+        date_arr = ['{year}-{month:02d}-{day:02d}'.format(year=day.year, month=day.month, day=day.day)]
 
         while day >= datetime(2021, 7, 8):
             if day < datetime.today() - timedelta(days=timerange):
                 break
             day = day - timedelta(days=int(interval))
-            date_arr.append('{year}-{month}-{day}'.format(year=day.year, month=day.month, day=day.day))
+            date_arr.append('{year}-{month:02d}-{day:02d}'.format(year=day.year, month=day.month, day=day.day))
 
         print(date_arr)
 
@@ -218,7 +218,6 @@ def view1_api_datafile(timerange=30, interval=7):
 
 
         query_data = data['data']
-        print(data)
         return data
 
 

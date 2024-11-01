@@ -2,6 +2,7 @@ from qiskit import *
 from datetime import datetime, timedelta
 from functions.my_module_QC import ibmq_load_account
 from functions.quantum_algos import Shors_algo, scaleable_Shors_algo, QFT, BV, two_qubit_algo
+from qiskit.algorithms import Shor
 from qiskit.providers.ibmq.job.exceptions import IBMQJobApiError
 from qiskit.quantum_info.analysis import hellinger_fidelity
 import re
@@ -146,7 +147,7 @@ def download_view1_data(timerange=90,interval=1):
 def download_view23_data():
     # backends = ['ibm_lagos', 'ibm_perth', 'ibmq_belem', 'ibmq_bogota', 'ibmq_jakarta', 'ibmq_lima', 'ibmq_manila',
     #             'ibmq_quito', 'ibmq_armonk', 'ibmq_santiago']
-    algorithm_names = ['QFT', 'BV', 'two']
+    algorithm_names = ['QFT', 'BV', 'two', "shor"]
     algos = [QFT(), BV(), two_qubit_algo()]
     trans_times = 60
 
@@ -224,7 +225,7 @@ def download_view23_data():
             trans_data = {}
             circuit_data = {}
             for i in range(trans_times):
-                qc_comp = transpile(qc , coupling_map=backend['configuration']["couplingMap"], basis_gates=backend['configuration']["basisGates"], optimization_level=3,)
+                qc_comp = transpile(qc , coupling_map=backend['configuration']["couplingMap"], basis_gates=backend['configuration']["basisGates"], optimization_level=2,)
                 trans_data['trans_{}'.format(i)] = qc_comp._data
                 circuit_data['trans_{}'.format(i)] = qc_comp
 
@@ -319,8 +320,8 @@ def download_view23_data():
 
                     data[trans_name] = trans
 
-            with open('database/view2_data/{}_BV.json'.format(backend_name), 'w') as fp:
-                print('Saving /view2_data/{}_BV.json'.format(backend_name))
+            with open('database/view2_data/{}_{}.json'.format(backend_name, algorithm_names[algorithm_name]), 'w') as fp:
+                print('Saving /view2_data/{}_{}.json'.format(backend_name, algorithm_names[algorithm_name]))
                 json.dump(data, fp)
                 print('Saving completed')
                 fp.close()
@@ -375,8 +376,8 @@ def download_view23_data():
             ref_value['qubit_times_avg'] = qubit_times_arr
             ref_value['gate_times_avg'] = gate_times_arr
 
-            with open('database/view2_data/{}_BV_ref_value.json'.format(backend_name), 'w') as fp:
-                print('Saving /view2_data/{}_BV_ref_value.json'.format(backend_name))
+            with open('database/view2_data/{}_{}_ref_value.json'.format(backend_name, algorithm_names[algorithm_name]), 'w') as fp:
+                print('Saving /view2_data/{}_{}_ref_value.json'.format(backend_name, algorithm_names[algorithm_name]))
                 json.dump(ref_value, fp)
                 print('Saving completed')
                 fp.close()
