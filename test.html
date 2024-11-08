@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grid Layout of Nodes with 90-degree Connections</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        .node {
+            fill: blue;
+            stroke: black;
+            stroke-width: 2px;
+        }
+        .text {
+            fill: white;
+            font-size: 12px;
+            text-anchor: middle;
+        }
+        .link {
+            stroke: lightblue;
+            stroke-width: 2px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Grid Layout of Nodes with 90-degree Connections</h1>
+    <input type="file" id="fileInput" accept=".json">
+    <svg id="grid" width="1000" height="1000"></svg>
+
+    <script>
+        const GRID_SIZE = 15;
+        const CELL_SIZE = 30;
+        const PADDING = CELL_SIZE; // Offset for padding
+
+        // Create grid SVG and background
+        const svg = d3.select("#grid");
+
+        // Draw grid lines with offset
+        for (let i = 0; i <= GRID_SIZE; i++) {
+            svg.append("line")
+                .attr("x1", i * CELL_SIZE + PADDING)
+                .attr("y1", PADDING)
+                .attr("x2", i * CELL_SIZE + PADDING)
+                .attr("y2", GRID_SIZE * CELL_SIZE + PADDING)
+                .attr("stroke", "#ddd");
+
+            svg.append("line")
+                .attr("x1", PADDING)
+                .attr("y1", i * CELL_SIZE + PADDING)
+                .attr("x2", GRID_SIZE * CELL_SIZE + PADDING)
+                .attr("y2", i * CELL_SIZE + PADDING)
+                .attr("stroke", "#ddd");
+        }
+
+        // File input event
+        document.getElementById("fileInput").addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const data = JSON.parse(e.target.result);
+                    processData(data);
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function processData(data) {
+            const nodes = [];
+            const edges = [];
+
+            // Step 1: Extract nodes and edges from the data
+            for (let i = 0; i < data["qubits"].length; i++) {
+                nodes.push({ id: i });
+            }
+
+            data["gates"].forEach(gate => {
+                if (gate.qubits && gate.qubits.length === 2) {
+                    const qubit1 = parseInt(gate.qubits[0]);
+                    const qubit2 = parseInt(gate.qubits[1]);
+                    const [source, target] = qubit1 < qubit2 ? [qubit1, qubit2] : [qubit2, qubit1];
+                    edges.push({ source, target });
+                }
+            });
+
+            console.log(nodes, edges);
+            // Step 2: Generate grid matrix
+            const grid = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(-1));
+            grid[0][0] = 0;  // Starting position for the first node
+            placeNodesRecursive(0, edges, grid, 0, 0);
+
+            // Step 3: Visualize the nodes and edges on the grid
+            visualizeGrid(grid, edges);
+            console.log(grid);
+        }
+
+        function placeNodesRecursive(node, edges, grid, x, y, visited = new Set()) {
+            visited.add(node);
+
+            edges.forEach(edge => {
+                if (edge.source === node && !visited.has(edge.target)) {
+                    if (edge.target === node + 1 && x + 1 < GRID_SIZE) {
+                        grid[y][x + 1] = edge.target;
+                        placeNodesRecursive(edge.target, edges, grid, x + 1, y, visited);
+                    } else if (y + 1 < GRID_SIZE) {
+                        grid[y + 1][x] = edge.target;
+                        placeNodesRecursive(edge.target, edges, grid, x, y + 1, visited);
+                    }
+                } else if (edge.target === node && !visited.has(edge.source)) {
+                    if (edge.source === node - 1 && x - 1 >= 0) {
+                        grid[y][x - 1] = edge.source;
+                        placeNodesRecursive(edge.source, edges, grid, x - 1, y, visited);
+                    }
+                }
+            });
+        }
+
+        function visualizeGrid(grid, edges) {
+            svg.selectAll(".node").remove();
+            svg.selectAll(".link").remove();
+
+            // Place nodes based on grid matrix with padding offset
+            for (let y = 0; y < grid.length; y++) {
+                for (let x = 0; x < grid[y].length; x++) {
+                    if (grid[y][x] !== -1) {
+                        svg.append("circle")
+                            .attr("cx", x * CELL_SIZE + PADDING)
+                            .attr("cy", y * CELL_SIZE + PADDING)
+                            .attr("r", 12)
+                            .attr("class", "node");
+
+                        svg.append("text")
+                            .attr("x", x * CELL_SIZE + PADDING)
+                            .attr("y", y * CELL_SIZE + PADDING + 4)
+                            .attr("class", "text")
+                            .text(grid[y][x]);
+                    }
+                }
+            }
+
+            edges.forEach(edge => {
+                const srcPos = findNodePosition(grid, edge.source);
+                const tgtPos = findNodePosition(grid, edge.target);
+
+                if (srcPos && tgtPos) {
+                    if (srcPos.x !== tgtPos.x && srcPos.y !== tgtPos.y) {
+                        svg.append("line")
+                            .attr("x1", srcPos.x * CELL_SIZE + PADDING)
+                            .attr("y1", srcPos.y * CELL_SIZE + PADDING)
+                            .attr("x2", srcPos.x * CELL_SIZE + PADDING)
+                            .attr("y2", tgtPos.y * CELL_SIZE + PADDING)
+                            .attr("class", "link");
+
+                        svg.append("line")
+                            .attr("x1", srcPos.x * CELL_SIZE + PADDING)
+                            .attr("y1", tgtPos.y * CELL_SIZE + PADDING)
+                            .attr("x2", tgtPos.x * CELL_SIZE + PADDING)
+                            .attr("y2", tgtPos.y * CELL_SIZE + PADDING)
+                            .attr("class", "link");
+                    } else {
+                        svg.append("line")
+                            .attr("x1", srcPos.x * CELL_SIZE + PADDING)
+                            .attr("y1", srcPos.y * CELL_SIZE + PADDING)
+                            .attr("x2", tgtPos.x * CELL_SIZE + PADDING)
+                            .attr("y2", tgtPos.y * CELL_SIZE + PADDING)
+                            .attr("class", "link");
+                    }
+                }
+            });
+        }
+
+        function findNodePosition(grid, nodeId) {
+            for (let y = 0; y < grid.length; y++) {
+                for (let x = 0; x < grid[y].length; x++) {
+                    if (grid[y][x] === nodeId) {
+                        return { x: x, y: y };
+                    }
+                }
+            }
+            return null;
+        }
+    </script>
+</body>
+</html>
