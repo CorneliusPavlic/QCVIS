@@ -51,7 +51,7 @@ class View_2 extends Component {
 
         /*判断 这一次调用时 是不是第一次mount，还是更新的update*/
         // if(d3.select('.view2_svg').size()==0){
-        axios.post(`/api/view2_api_datafile/`, {'view2_algo':view2_algo, 'trans_times': trans_times, 'backend_name': backend_name})
+        axios.post(`/api/view2_api/`, {'view2_algo':view2_algo, 'trans_times': trans_times, 'backend_name': backend_name})
         // axios.get('/data/view23_mock.json') // TODO: fake data without compilation
             .then(res=>draw_view2(res))
             .catch(err=>{
@@ -70,6 +70,7 @@ class View_2 extends Component {
         // }
 
         function draw_view2(res){
+            console.log(res);
             let data = res.data['data']
 
 
@@ -82,6 +83,8 @@ class View_2 extends Component {
                 qubit_times_avg: res.data['ref_value']['qubit_times_avg'],
                 gate_times_avg: res.data['ref_value']['gate_times_avg'],
             }
+
+            console.log(qual_avg,times_avg)
 
 
 

@@ -52,6 +52,14 @@ def get_pending_jobs():
         print(f"Error fetching backends: {e}")
         return None
     
+@app.route('/api/get_json_backend/<string:backend>')
+def get_json_backend(backend):
+    try:
+        response = requests.get(f"https://api.quantum.ibm.com/api/backends/{backend}/properties")
+        return response.json()
+    except requests.RequestException as e:
+        print(f"Error fetching backends: {e}")
+        return None
 @app.route('/api/find')
 def find():
     try:
@@ -102,7 +110,7 @@ transpiled_data = 'transData_TBD'
 def view2_api():
     try:
         global transpiled_data, api_data
-
+        print("this is started")
         if request.method == 'POST':
             if not request.data:
                 print('No request body found')
@@ -114,13 +122,14 @@ def view2_api():
             backend_name = request.get_json()['backend_name'] or 'ibmq_jakarta' # 如果没有指定，默认用 ibmq_jakarta 来执行
 
 
-            result = view2_post_func(algo, trans_times, backend_name, query_data)
+            result = view2_post_func(algo, trans_times, backend_name)
 
             api_data = {
                 'data': result[0],
                 'ref_value': result[2]
             }
             transpiled_data = result[1]
+            print(api_data)
 
     
             return api_data
@@ -212,8 +221,8 @@ def view1_api_datafile(timerange=30, interval=7):
             new_arr = []
             for i, date_data in enumerate(arr):
                 timestamp_date = date_data['timestamp'].split('T')[0]
-                if timestamp_date in date_arr:
-                    new_arr.append(date_data)
+
+                new_arr.append(date_data)
             data['data'][computer_name] = new_arr
 
 

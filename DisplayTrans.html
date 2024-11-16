@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transpilation Visualization</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    #visualization {
+      width: 100%;
+      height: 600px;
+      border: 1px solid #ccc;
+    }
+
+    .tooltip {
+      position: absolute;
+      background-color: white;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      display: none;
+      pointer-events: none;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <label for="file-upload">Upload JSON File:</label>
+    <input type="file" id="file-upload" accept=".json" />
+    
+    <label for="num-results">Number of Results to Display:</label>
+    <input type="number" id="num-results" value="10" min="1" />
+    
+    <label for="weight-depth">Depth Weight:</label>
+    <input type="number" id="weight-depth" value="0.4" step="0.1" min="-1" max="1" />
+    
+    <label for="weight-qubits">Qubits Quality Weight:</label>
+    <input type="number" id="weight-qubits" value="0.3" step="0.1" min="0" max="1" />
+    
+    <label for="weight-gates">Gates Quality Weight:</label>
+    <input type="number" id="weight-gates" value="0.3" step="0.1" min="0" max="1" />
+    
+    <button id="update-visualization">Update Visualization</button>
+  </div>
+
+  <div id="visualization"></div>
+  <div class="tooltip" id="tooltip"></div>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script>
+    let data = [];
+
+    // Compute weighted scores for data
+    function computeScores(data, weights) {
+      return data.map(item => ({
+        ...item,
+        score:
+          item.depth * weights.depth +
+          item.qubits_quality * weights.qubits_quality +
+          item.gates_quality * weights.gates_quality
+      }));
+    }
+
+    // Normalize scores to range [0, 100]
+    function normalizeScores(data) {
+      const minScore = d3.min(data, d => d.score);
+      const maxScore = d3.max(data, d => d.score);
+
+      return data.map(item => ({
+        ...item,
+        normalizedScore: ((item.score - minScore) / (maxScore - minScore)) * 100
+      }));
+    }
+
+    // Update the visualization
+    function updateVisualization() {
+      const numResults = parseInt(document.getElementById("num-results").value, 10);
+      const weights = {
+        depth: parseFloat(document.getElementById("weight-depth").value),
+        qubits_quality: parseFloat(document.getElementById("weight-qubits").value),
+        gates_quality: parseFloat(document.getElementById("weight-gates").value),
+      };
+
+      // Compute and normalize scores
+      const scoredData = computeScores(data, weights);
+      const normalizedData = normalizeScores(scoredData);
+      const sortedData = normalizedData.sort((a, b) => b.normalizedScore - a.normalizedScore).slice(0, numResults);
+
+      const svg = d3.select("#visualization").html("").append("svg")
+        .attr("width", "100%")
+        .attr("height", 1000);
+
+      const width = document.getElementById("visualization").clientWidth;
+      const height = 600;
+
+      const xScale = d3.scaleBand()
+        .domain(sortedData.map(d => d.id))
+        .range([0, width])
+        .padding(0.2);
+
+        const yScale = d3.scalePow()
+        .exponent(2) // Squaring the value to emphasize higher scores
+        .domain([0, 100])
+        .range([height, 0]);
+
+
+      const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
+      const tooltip = d3.select("#tooltip");
+
+      // Bars
+      svg.selectAll(".bar")
+        .data(sortedData)
+        .enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", d => xScale(d.id))
+        .attr("y", d => yScale(d.normalizedScore))
+        .attr("width", xScale.bandwidth())
+        .attr("height", d => height - yScale(d.normalizedScore))
+        .attr("fill", d => colorScale(d.id))
+        .on("mouseover", (event, d) => {
+          tooltip.style("display", "block")
+            .html(`
+              <strong>${d.id}</strong><br>
+              Depth: ${d.depth}<br>
+              Qubits Quality: ${d.qubits_quality.toFixed(2)}<br>
+              Gates Quality: ${d.gates_quality.toFixed(2)}<br>
+              Normalized Score: ${d.normalizedScore.toFixed(2)} / 100
+            `)
+            .style("left", `${event.pageX + 10}px`)
+            .style("top", `${event.pageY + 10}px`);
+        })
+        .on("mousemove", (event) => {
+          tooltip.style("left", `${event.pageX + 10}px`)
+            .style("top", `${event.pageY + 10}px`);
+        })
+        .on("mouseout", () => {
+          tooltip.style("display", "none");
+        });
+
+      // Labels
+      svg.selectAll(".label")
+        .data(sortedData)
+        .enter()
+        .append("text")
+        .attr("class", "label")
+        .attr("x", d => xScale(d.id) + xScale.bandwidth() / 2)
+        .attr("y", d => yScale(d.normalizedScore) + 50)
+        .attr("text-anchor", "middle")
+        .text(d => d.id);
+
+      // Axes
+      svg.append("g")
+        .attr("transform", `translate(0, ${height})`)
+        .call(d3.axisBottom(xScale));
+
+      svg.append("g")
+        .call(d3.axisLeft(yScale));
+    }
+
+    // Handle file upload
+    document.getElementById("file-upload").addEventListener("change", function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const content = JSON.parse(e.target.result);
+          data = Object.values(content.data).map(d => ({
+            id: d.id,
+            depth: d.depth,
+            qubits_quality: d.qubits_quality,
+            gates_quality: d.gates_quality,
+          }));
+          updateVisualization();
+        };
+        reader.readAsText(file);
+      }
+    });
+
+    document.getElementById("update-visualization").addEventListener("click", updateVisualization);
+  </script>
+</body>
+</html>
