@@ -105,6 +105,9 @@ def view1_api(timerange=30, interval=7, backends='ibm_lagos'):
 
 api_data = 'apiData_TBD'
 transpiled_data = 'transData_TBD'
+# curl -X POST 127.0.0.1:5000/api/view2_api \
+#      -H "Content-Type: application/json" \
+#      -d '{"view2_algo": "BV", "trans_times": 40, "backend_name": "ibm_fez"}'
 
 @app.route('/api/view2_api/', methods = ['GET', 'POST'])
 def view2_api():

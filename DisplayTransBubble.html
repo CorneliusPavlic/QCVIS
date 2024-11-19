@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transpilation Bubble Chart</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    #visualization {
+      width: 100%;
+      height: 800px;
+      border: 1px solid #ccc;
+    }
+
+    .tooltip {
+      position: absolute;
+      background-color: white;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      display: none;
+      pointer-events: none;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <label for="file-upload">Upload JSON File:</label>
+    <input type="file" id="file-upload" accept=".json" />
+  </div>
+
+  <div id="visualization"></div>
+  <div class="tooltip" id="tooltip"></div>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script>
+    let data = [];
+
+    // Update the visualization
+    function updateVisualization() {
+      // Compute dynamic ranges for axes and bubble sizes
+      const minQubits = d3.min(data, d => d.qubits_quality);
+      const maxQubits = d3.max(data, d => d.qubits_quality);
+      const minGates = d3.min(data, d => d.gates_quality);
+      const maxGates = d3.max(data, d => d.gates_quality);
+      const minDepth = d3.min(data, d => d.depth);
+      const maxDepth = d3.max(data, d => d.depth);
+
+      const svg = d3.select("#visualization").html("").append("svg")
+        .attr("width", "100%")
+        .attr("height", 800);
+
+      const width = document.getElementById("visualization").clientWidth;
+      const height = 800;
+
+      // Scales
+      const xScale = d3.scaleLinear()
+        .domain([minQubits, maxQubits])
+        .range([50, width - 50]);
+
+      const yScale = d3.scaleLinear()
+        .domain([minGates, maxGates])
+        .range([height - 50, 50]);
+
+      const sizeScale = d3.scaleLinear()
+        .domain([maxDepth, minDepth]) // Inverted: smaller depth = larger bubble
+        .range([10, 50]); // Bubble size range
+
+      const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
+      const tooltip = d3.select("#tooltip");
+
+      // Axes
+      const xAxis = d3.axisBottom(xScale).ticks(10);
+      const yAxis = d3.axisLeft(yScale).ticks(10);
+
+      svg.append("g")
+        .attr("transform", `translate(0, ${height - 50})`)
+        .call(xAxis)
+        .append("text")
+        .attr("x", width / 2)
+        .attr("y", 40)
+        .attr("fill", "black")
+        .attr("text-anchor", "middle")
+        .text("Qubits Quality");
+
+      svg.append("g")
+        .attr("transform", "translate(50, 0)")
+        .call(yAxis)
+        .append("text")
+        .attr("x", -height / 2)
+        .attr("y", -40)
+        .attr("fill", "black")
+        .attr("text-anchor", "middle")
+        .attr("transform", "rotate(-90)")
+        .text("Gates Quality");
+
+      // Bubbles
+      svg.selectAll(".bubble")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("class", "bubble")
+        .attr("cx", d => xScale(d.qubits_quality))
+        .attr("cy", d => yScale(d.gates_quality))
+        .attr("r", d => sizeScale(d.depth))
+        .attr("fill", d => colorScale(d.id))
+        .attr("stroke", "black")
+        .attr("stroke-width", 0.5)
+        .on("mouseover", (event, d) => {
+          tooltip.style("display", "block")
+            .html(`
+              <strong>${d.id}</strong><br>
+              Depth: ${d.depth}<br>
+              Qubits Quality: ${d.qubits_quality.toFixed(2)}<br>
+              Gates Quality: ${d.gates_quality.toFixed(2)}
+            `)
+            .style("left", `${event.pageX + 10}px`)
+            .style("top", `${event.pageY + 10}px`);
+        })
+        .on("mousemove", (event) => {
+          tooltip.style("left", `${event.pageX + 10}px`)
+            .style("top", `${event.pageY + 10}px`);
+        })
+        .on("mouseout", () => {
+          tooltip.style("display", "none");
+        });
+    }
+
+    // Handle file upload
+    document.getElementById("file-upload").addEventListener("change", function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const content = JSON.parse(e.target.result);
+          data = Object.values(content.data).map(d => ({
+            id: d.id,
+            depth: d.depth,
+            qubits_quality: d.qubits_quality,
+            gates_quality: d.gates_quality,
+          }));
+          updateVisualization();
+        };
+        reader.readAsText(file);
+      }
+    });
+  </script>
+</body>
+</html>

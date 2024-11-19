@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grouped Bar Chart with Inverted Depth</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    #visualization {
+      width: 100%;
+      height: 600px;
+      border: 1px solid #ccc;
+    }
+
+    .tooltip {
+      position: absolute;
+      background-color: white;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      display: none;
+      pointer-events: none;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <label for="file-upload">Upload JSON File:</label>
+    <input type="file" id="file-upload" accept=".json" />
+    
+    <label for="num-results">Number of Results to Display:</label>
+    <input type="number" id="num-results" value="10" min="1" />
+    
+    <label for="toggle-normalization">Normalization Type:</label>
+    <select id="toggle-normalization">
+      <option value="range">Normalize to [min, max]</option>
+      <option value="scale">Normalize to [0, 100]</option>
+    </select>
+
+    <button id="update-visualization">Update Visualization</button>
+  </div>
+
+  <div id="visualization"></div>
+  <div class="tooltip" id="tooltip"></div>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script>
+    let data = [];
+
+    // Normalize data for a given metric
+    function normalizeData(data, type) {
+      const metrics = ["depth", "qubits_quality", "gates_quality"];
+      const normalized = {};
+
+      metrics.forEach(metric => {
+        const min = d3.min(data, d => d[metric]);
+        const max = d3.max(data, d => d[metric]);
+
+        normalized[metric] = data.map(d => {
+          if (metric === "depth") {
+            // Invert depth: smaller depth = better (higher bar)
+            const invertedDepth = max - d.depth;
+            if (type === "scale") {
+              return (invertedDepth / (max - min)) * 100;
+            } else {
+              return invertedDepth;
+            }
+          } else {
+            // Normalization for other metrics
+            if (type === "scale") {
+              return ((d[metric] - min) / (max - min)) * 100;
+            } else {
+              return d[metric] - min;
+            }
+          }
+        });
+      });
+
+      return normalized;
+    }
+
+    // Update the visualization
+    function updateVisualization() {
+      const numResults = parseInt(document.getElementById("num-results").value, 10);
+      const normalizationType = document.getElementById("toggle-normalization").value;
+
+      const weights = {
+        depth: -0.4,
+        qubits_quality: 0.3,
+        gates_quality: 0.3,
+      };
+
+      // Compute and sort data by score
+      const scoredData = data.map(item => ({
+        ...item,
+        score:
+          item.depth * weights.depth +
+          item.qubits_quality * weights.qubits_quality +
+          item.gates_quality * weights.gates_quality,
+      }));
+      const sortedData = scoredData.sort((a, b) => b.score - a.score).slice(0, numResults);
+
+      // Normalize the data
+      const normalizedData = normalizeData(sortedData, normalizationType);
+
+      const svg = d3.select("#visualization").html("").append("svg")
+        .attr("width", "100%")
+        .attr("height", 600);
+
+      const width = document.getElementById("visualization").clientWidth;
+      const height = 600;
+      const margin = { top: 50, right: 20, bottom: 100, left: 50 };
+      const minBarHeight = 5; // Minimum bar height
+
+      // Scales
+      const x0Scale = d3.scaleBand()
+        .domain(sortedData.map(d => d.id))
+        .range([margin.left, width - margin.right])
+        .padding(0.2);
+
+      const x1Scale = d3.scaleBand()
+        .domain(["depth", "qubits_quality", "gates_quality"])
+        .range([0, x0Scale.bandwidth()])
+        .padding(0.1);
+
+      const yScale = d3.scaleLinear()
+        .domain([0, normalizationType === "scale" ? 100 : d3.max(Object.values(normalizedData).flat())])
+        .range([height - margin.bottom, margin.top]);
+
+      const colorScale = d3.scaleOrdinal()
+        .domain(["depth", "qubits_quality", "gates_quality"])
+        .range(["#1f77b4", "#ff7f0e", "#2ca02c"]);
+
+      const tooltip = d3.select("#tooltip");
+
+      // Axes
+      const xAxis = d3.axisBottom(x0Scale);
+      const yAxis = d3.axisLeft(yScale);
+
+      svg.append("g")
+        .attr("transform", `translate(0, ${height - margin.bottom})`)
+        .call(xAxis)
+        .selectAll("text")
+        .attr("transform", "rotate(-45)")
+        .attr("text-anchor", "end");
+
+      svg.append("g")
+        .attr("transform", `translate(${margin.left}, 0)`)
+        .call(yAxis);
+
+      // Bars
+      svg.selectAll(".group")
+        .data(sortedData)
+        .enter()
+        .append("g")
+        .attr("class", "group")
+        .attr("transform", d => `translate(${x0Scale(d.id)}, 0)`)
+        .selectAll(".bar")
+        .data(d => [
+          { key: "depth", value: normalizedData["depth"][sortedData.indexOf(d)], original: d.depth },
+          { key: "qubits_quality", value: normalizedData["qubits_quality"][sortedData.indexOf(d)], original: d.qubits_quality },
+          { key: "gates_quality", value: normalizedData["gates_quality"][sortedData.indexOf(d)], original: d.gates_quality },
+        ])
+        .enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", d => x1Scale(d.key))
+        .attr("y", d => {
+          const barHeight = Math.max(height - margin.bottom - yScale(d.value), minBarHeight);
+          return height - margin.bottom - barHeight;
+        })
+        .attr("width", x1Scale.bandwidth())
+        .attr("height", d => Math.max(height - margin.bottom - yScale(d.value), minBarHeight))
+        .attr("fill", d => colorScale(d.key))
+        .on("mouseover", (event, d) => {
+          tooltip.style("display", "block")
+            .html(`<strong>${d.key}</strong><br>Original Value: ${d.original}<br>Normalized Value: ${d.value.toFixed(2)}`)
+            .style("left", `${event.pageX + 10}px`)
+            .style("top", `${event.pageY + 10}px`);
+        })
+        .on("mousemove", (event) => {
+          tooltip.style("left", `${event.pageX + 10}px`)
+            .style("top", `${event.pageY + 10}px`);
+        })
+        .on("mouseout", () => {
+          tooltip.style("display", "none");
+        });
+    }
+
+    // Handle file upload
+    document.getElementById("file-upload").addEventListener("change", function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const content = JSON.parse(e.target.result);
+          data = Object.values(content.data).map(d => ({
+            id: d.id,
+            depth: d.depth,
+            qubits_quality: d.qubits_quality,
+            gates_quality: d.gates_quality,
+          }));
+          updateVisualization();
+        };
+        reader.readAsText(file);
+      }
+    });
+
+    document.getElementById("update-visualization").addEventListener("click", updateVisualization);
+  </script>
+</body>
+</html>

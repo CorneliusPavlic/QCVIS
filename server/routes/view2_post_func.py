@@ -292,6 +292,7 @@ import re
 
 
 
+
 def view2_post_func(algo, trans_times, backend_name):
 
     # 每种 qubit 的T1，T2， error rate的平均值是多少
@@ -320,7 +321,6 @@ def view2_post_func(algo, trans_times, backend_name):
         backend_qubit_avg['T1'][qubit_name] = t1_value if t1_value is not None else 0
         backend_qubit_avg['T2'][qubit_name] = t2_value if t2_value is not None else 0
         backend_qubit_avg['error_rate'][qubit_name] = error_rate_value if error_rate_value is not None else 0
-
 
     # Initialize gate error rate averages
     backend_gate_avg = {'error_rate': {}}

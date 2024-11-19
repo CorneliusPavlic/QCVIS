@@ -99,30 +99,46 @@ const QuantumCircuit = (props) => {
             .range(["green", "red"]);
 
         const width = 1000;
-        const height = 1000;
+        const height = 600;
 
         const tooltip = d3.select(tooltipRef.current);
 
         let currentZoom = 1, minZoom = 0.1, maxZoom = 5;
-
+        let currentX = 0, currentY = 0;
+        let basePositionX = 0; 
+        let basePositionY = 0;
+        let alternatePositionX = 0;
+        let alternatePositionY = 0;
         // Zoom function that adjusts the viewBox instead of scaling elements
         const zoom = d3.zoom()
-            .scaleExtent([minZoom, maxZoom]) // Set minimum and maximum zoom levels
-            .on("zoom", (event) => {
-                currentZoom = event.transform.k;
-                
-                // Calculate new viewBox dimensions based on zoom level
-                const viewBoxWidth = width / currentZoom;
-                const viewBoxHeight = height / currentZoom;
-                
-                // Calculate the new viewBox position based on panning
-                let panningZoom = currentZoom <= 2 ? 2 : currentZoom; // Adjust panning speed based on current zoom level
-                const viewBoxX = -event.transform.x / panningZoom;
-                const viewBoxY = -event.transform.y / panningZoom;
-                
-                // Update the SVG viewBox to create zoom/pan effect
-                svg.attr("viewBox", `${viewBoxX} ${viewBoxY} ${viewBoxWidth} ${viewBoxHeight}`);
-            });
+        .scaleExtent([minZoom, maxZoom]) // Set minimum and maximum zoom levels
+        .on("zoom", (event) => {
+            const transform = event.transform;
+            
+            // // Define limits for panning
+            // const maxPanX = width ; // Example: allow panning to half the width
+            // const minPanX = -width * 2;
+            // const maxPanY = height; // Example: allow panning to half the height
+            // const minPanY = -height * 2;
+            if (transform.k === currentZoom) {
+                currentX = currentX - transform.x + basePositionX;
+                currentY = currentY - transform.y + basePositionY;
+                svg.attr("viewBox", `${(currentX)} ${(currentY)} ${width * currentZoom} ${height * currentZoom}`);
+                alternatePositionX = currentX - transform.x;
+                alternatePositionY = currentY - transform.y;
+            }
+            else {
+                currentX = transform.x + alternatePositionX;
+                currentY = transform.y + alternatePositionY;
+                svg.attr("viewBox", `${(currentX)} ${(currentY)} ${width * currentZoom} ${height * currentZoom}`);
+                basePositionX = transform.x;
+                basePositionY = transform.y;
+            }
+            // Apply clamped values to the viewBox
+
+            currentZoom = transform.k;
+        });
+    
 
         // Wrap the SVG content in a group to apply the zoom transformation
         //const svgGroup = svg.append("g");
@@ -140,11 +156,11 @@ const QuantumCircuit = (props) => {
             .style("stroke", d => colorScale(d[colorMetric]))
             .on("mouseover", function(event, d) {
                 tooltip.style("display", "block")
-                    .html(`<strong>Gate Error:</strong> ${d.gate_error}<br><strong>Gate Length:</strong> ${d.gate_length}`);
+                    .html(`<strong>Gate Error:</strong> ${Number((Math.round(d.gate_error * 100000) / 100000 * 100).toFixed(5))}%<br><strong>Gate Length:</strong> ${d.gate_length}`);
             })
             .on("mousemove", function(event) {
-                tooltip.style("top", (event.pageY + 10) + "px")
-                    .style("left", (event.pageX + 10) + "px");
+                tooltip.style("top", (event.pageY - 30) + "px")
+                    .style("left", (event.pageX - 50) + "px");
             })
             .on("mouseout", function() {
                 tooltip.style("display", "none");
@@ -233,26 +249,21 @@ const QuantumCircuit = (props) => {
         event.stopPropagation(); // Prevent event bubbling
         const popup = d3.select(popupRef.current);
         
-        // Set popup position and display it
-        popup.style("display", "block")
-            .style("top", `${event.clientY + 10}px`)
-            .style("left", `${event.clientX + 10}px`);
-        
         // Title and attributes
         let content = `<h3>Qubit ${d.id}</h3>`;
         content += d.attributes.map(attr => `<p>${attr.name}: ${attr.value} ${attr.unit}</p>`).join("");
-    
+        
         // Display connections
-        const connections = edges.filter(edge => edge.source.id === d.id || edge.target.id === d.id);
+        const connections = edges.filter(edge => !(edge.source.id === d.id) !== !(edge.target.id === d.id));
         content += "<h4>Connections:</h4>";
         content += connections.map(connection => {
             const connectedQubit = connection.source.id === d.id ? connection.target : connection.source;
             return `<p><a href="#" class="connected-qubit" data-qubit="${connectedQubit.id}">Qubit ${connectedQubit.id}</a> - 
-                    Gate Error: ${connection.gate_error}, Gate Length: ${connection.gate_length}</p>`;
+            Gate Error: ${Number((Math.round(connection.gate_error * 100000) / 100000 * 100).toFixed(5))}%, Gate Length: ${Math.round(connection.gate_length * 1000) / 1000}</p>`;
         }).join("");
         
         popup.html(content);
-    
+        
         // Add event listeners for connected qubit links
         popup.selectAll(".connected-qubit").on("click", function(event) {
             event.preventDefault();
@@ -261,66 +272,93 @@ const QuantumCircuit = (props) => {
             popup.style("display", "none"); // Close current popup
             showPopup(event, connectedQubitData, nodes, edges); // Open popup for selected qubit
         });
-    
+        
         // Node visualization with concentric rings for selected attributes
-        const size = (300 / selectedAttributes.length) / 2;
-        const svgSize = 500;
+        const size = (100 / selectedAttributes.length) / 2;
+        const svgSize = 200;
         const centerX = svgSize / 2;
         const centerY = svgSize / 2;
         const baseRadius = size;
         const radiusOffset = size;
-    
+        
         // Append SVG for the node visualization
         const nodeSvg = popup.append("div")
-            .attr("class", "node-visualization")
-            .append("svg")
-            .attr("width", svgSize)
-            .attr("height", svgSize + selectedAttributes.length * radiusOffset * 1.5);
-    
+        .attr("class", "node-visualization")
+        .append("svg")
+        .attr("width", svgSize + 50)
+        .attr("height", svgSize + selectedAttributes.length * radiusOffset * 1.5);
+        
         // Draw concentric rings for each selected attribute
         selectedAttributes.forEach((attribute, i) => {
             const attributeObj = d.attributes.find(attr => attr.name === attribute);
             const value = attributeObj ? attributeObj.value : 0;
             const colorValue = attributeScales[attribute](value) // Adjust domain based on attribute scale as needed
             const ringRadius = baseRadius + i * radiusOffset;
-    
+            
             nodeSvg.append("circle")
-                .attr("cx", centerX)
-                .attr("cy", centerY)
-                .attr("r", ringRadius)
-                .attr("fill", colorValue)
-                .attr("fill-opacity", 0)
-                .attr("stroke", colorValue)
-                .attr("stroke-width", size);
+            .attr("cx", centerX)
+            .attr("cy", centerY)
+            .attr("r", ringRadius)
+            .attr("fill", colorValue)
+            .attr("fill-opacity", 0)
+            .attr("stroke", colorValue)
+            .attr("stroke-width", size);
         });
-    
+        
         // Draw lines and labels for each attribute
         selectedAttributes.forEach((attribute, i) => {
             const ringRadius = baseRadius + i * radiusOffset;
             const labelX = centerX + ringRadius;
-            const labelY = centerY + 200;
-    
+            const labelY = centerY + size;
+            
             // Draw a line from ring to label
             nodeSvg.append("line")
-                .attr("x1", centerX + ringRadius)
-                .attr("y1", centerY)
-                .attr("x2", centerX + ringRadius)
-                .attr("y2", labelY + ringRadius * 1.5 - 10)
-                .attr("stroke", "black")
-                .attr("stroke-dasharray", "2,2")
-                .attr("stroke-width", 3);
-    
+            .attr("x1", centerX + ringRadius)
+            .attr("y1", centerY)
+            .attr("x2", centerX + ringRadius)
+            .attr("y2", labelY + ringRadius * 2.5 - 10)
+            .attr("stroke", "black")
+            .attr("stroke-dasharray", "2,2")
+            .attr("stroke-width", 3);
+            
             // Add the label text
             nodeSvg.append("text")
-                .attr("x", labelX)
-                .attr("y", labelY + ringRadius * 1.5 + 10)
-                .attr("text-anchor", "middle")
-                .attr("font-family", "Arial, sans-serif")
-                .attr("font-size", "18px")
-                .attr("fill", "#333")
-                .text(attribute);
-        });
+            .attr("x", labelX)
+            .attr("y", labelY + ringRadius * 2.5 + 10)
+            .attr("text-anchor", "middle")
+            .attr("font-family", "Arial, sans-serif")
+            .attr("font-size", "18px")
+            .attr("fill", "#333")
+            .text(attribute);
     
+            popup.style("display", "block");
+            // Get the popup's dimensions
+            const popupHeight = popup.node().offsetHeight;
+            const popupWidth = popup.node().offsetWidth;
+    
+            // Calculate available space
+            const screenHeight = window.innerHeight;
+            const screenWidth = window.innerWidth;
+    
+            // Default position
+            let top = event.clientY + 10;
+            let left = event.clientX + 10;
+            // Adjust position if the popup would overflow the screen
+            if (top + popupHeight > screenHeight) {
+                top = event.clientY - (top + popupHeight - screenHeight + 50); // Move up if it would overflow
+            }
+            if (left > 600){
+                left = 700
+            }
+    
+            // Apply the adjusted position
+            popup.style("top", `${top}px`).style("left", `${left}px`);
+            
+            
+            
+            
+        });
+        
         // Close popup when clicking outside
         const outsideClickHandler = (e) => {
             if (!popupRef.current.contains(e.target)) {
@@ -363,7 +401,7 @@ const QuantumCircuit = (props) => {
                 <label><input type="checkbox" value="readout_length" checked={selectedAttributes.includes("readout_length")} onChange={handleAttributeChange} /> Readout Length</label>
             </div>
 
-            <svg ref={svgRef} width="1000" height="1000"></svg>
+            <svg ref={svgRef} width="1000" height="600"></svg>
             <div ref={tooltipRef} className="tooltip" style={{ display: 'none' }}></div>
             <div ref={popupRef} className="popup" style={{ display: 'none' }}></div>
         </div>
