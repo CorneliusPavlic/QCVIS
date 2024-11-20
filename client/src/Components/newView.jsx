@@ -123,14 +123,11 @@ const QuantumCircuit = (props) => {
             if (transform.k === currentZoom) {
                 currentX = currentX - transform.x + basePositionX;
                 currentY = currentY - transform.y + basePositionY;
+                console.log(currentX, transform.x)
                 svg.attr("viewBox", `${(currentX)} ${(currentY)} ${width * currentZoom} ${height * currentZoom}`);
-                alternatePositionX = currentX - transform.x;
-                alternatePositionY = currentY - transform.y;
             }
             else {
-                currentX = transform.x + alternatePositionX;
-                currentY = transform.y + alternatePositionY;
-                svg.attr("viewBox", `${(currentX)} ${(currentY)} ${width * currentZoom} ${height * currentZoom}`);
+                svg.attr("viewBox", `${currentX} ${currentY} ${width * transform.k} ${height * transform.k}`);
                 basePositionX = transform.x;
                 basePositionY = transform.y;
             }
