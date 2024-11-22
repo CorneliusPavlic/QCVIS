@@ -1,7 +1,36 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
+import { IconButton } from '@mui/material';
+import SettingsIcon from '@mui/icons-material/Settings';
+import ConfigurationModal from './ConfigurationModal';
 
 const QuantumCircuit = (props) => {
+    const [modalOpen, setModalOpen] = useState(false);
+    const [attributes, setAttributes] = useState({
+        T1: true,
+        T2: true,
+        readout_error: true,
+        frequency: false,
+        anharmonicity: false,
+        prob_meas0_prep1: false,
+        prob_meas1_prep0: false,
+        readout_length: false,
+    });
+    const [ranges, setRanges] = useState({
+        T1: { min: 50, max: 200 },
+        T2: { min: 50, max: 200 },
+        frequency: { min: 4.5, max: 5.5 },
+        anharmonicity: { min: 0.0, max: -0.4 },
+        readout_error: { min: 0.08, max: 0.0 },
+        prob_meas0_prep1: { min: 0.1, max: 0.0 },
+        prob_meas1_prep0: { min: 0.1, max: 0.0 },
+        readout_length: { min: 1200, max: 1000 },
+    });
+    const [colorPalette, setColorPalette] = useState({ start: 'red', end: 'green' });
+    const [gateColoring, setGateColoring] = useState({
+        gate_error: { min: 0, max: 0.1 },
+        gate_length: { min: 50, max: 200 },
+    });
     const svgRef = useRef();
     const popupRef = useRef();
     const tooltipRef = useRef();
@@ -10,7 +39,30 @@ const QuantumCircuit = (props) => {
     const [backends, setBackends] = useState([]);
     const [selectedBackend, setSelectedBackend] = useState(null);
     const [data, setData] = useState(null);
-    
+
+    const handleSaveConfig = (config) => {
+        setAttributes(config.attributes);
+        setRanges(config.ranges);
+        setSelectedBackend(config.backend);
+        handleAttributeChange(config.attributes);
+        setColorPalette(config.colorPalette);
+    };
+
+    const handleResetConfig = () => {
+        setAttributes({
+            T1: true,
+            T2: true,
+            frequency: false,
+            anharmonicity: false,
+        });
+        setRanges({
+            T1: { min: 50, max: 200 },
+            T2: { min: 50, max: 200 },
+            frequency: { min: 4.5, max: 5.5 },
+        });
+        setColorPalette({ start: 'red', end: 'green' });
+    };
+
     const attributeScales = {
         T1: d3.scaleLinear().domain([50, 200]).range(["red", "green"]),
         T2: d3.scaleLinear().domain([50, 200]).range(["red", "green"]),
@@ -66,12 +118,14 @@ const QuantumCircuit = (props) => {
         setSelectedBackend(event.target.value);
     };
 
-    const handleAttributeChange = (event) => {
-        const { value, checked } = event.target;
-        setSelectedAttributes((prev) =>
-            checked ? [...prev, value] : prev.filter((attr) => attr !== value)
+    const handleAttributeChange = (updatedAttributes) => {
+        // Filter only the attributes that are true and update the state
+        const trueAttributes = Object.keys(updatedAttributes).filter(
+            (key) => updatedAttributes[key] === true
         );
+        setSelectedAttributes(trueAttributes);
     };
+    
 
     const processData = (data) => {
         const nodes = data.qubits.map((attributes, i) => ({
@@ -95,8 +149,9 @@ const QuantumCircuit = (props) => {
         svg.selectAll("*").remove(); // Clear previous elements
 
         const colorScale = d3.scaleLinear()
-            .domain([d3.min(edges, d => d[colorMetric]), d3.max(edges, d => d[colorMetric])])
-            .range(["green", "red"]);
+            .domain([gateColoring[colorMetric].min, gateColoring[colorMetric].max]) // Use selected metric range
+            .range([colorPalette.start, colorPalette.end]);
+
 
         const width = 1000;
         const height = 600;
@@ -150,7 +205,7 @@ const QuantumCircuit = (props) => {
             .append("line")
             .attr("class", "link")
             .style("stroke-width", 6)
-            .style("stroke", d => colorScale(d[colorMetric]))
+            .style('stroke', (d) => colorScale(d[colorMetric])) // Apply selected metric
             .on("mouseover", function(event, d) {
                 tooltip.style("display", "block")
                     .html(`<strong>Gate Error:</strong> ${Number((Math.round(d.gate_error * 100000) / 100000 * 100).toFixed(5))}%<br><strong>Gate Length:</strong> ${d.gate_length}`);
@@ -370,33 +425,30 @@ const QuantumCircuit = (props) => {
 
     return (
         <div>
-            <h1>Compact Quantum Circuit Visualization</h1>
-            
-            <label htmlFor="backendSelect">Select Backend:</label>
-            <select id="backendSelect" onChange={handleBackendChange}>
-                <option value="">-- Choose a Backend --</option>
-                {backends.map((backend, index) => (
-                    <option key={index} value={backend}>{backend}</option>
-                ))}
-            </select>
-
+            <div>
+            <IconButton onClick={() => setModalOpen(true)} aria-label="settings">
+                <SettingsIcon />
+            </IconButton>
+            <ConfigurationModal
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                attributes={attributes}
+                ranges={ranges}
+                colorPalette={colorPalette}
+                selectedBackend={selectedBackend}
+                backends={backends}
+                gateColoring={gateColoring}
+                onSave={handleSaveConfig}
+                onReset={handleResetConfig}
+            />
+            {/* Rest of the QuantumCircuit visualization */}
+        </div>
             <label htmlFor="colorMetric">Color by:</label>
             <select id="colorMetric" value={colorMetric} onChange={(e) => setColorMetric(e.target.value)}>
                 <option value="gate_error">Gate Error</option>
                 <option value="gate_length">Gate Length</option>
             </select>
 
-            <h3>Select Attributes to Display:</h3>
-            <div id="attributeCheckboxes">
-                <label><input type="checkbox" value="T1" checked={selectedAttributes.includes("T1")} onChange={handleAttributeChange} /> T1</label>
-                <label><input type="checkbox" value="T2" checked={selectedAttributes.includes("T2")} onChange={handleAttributeChange} /> T2</label>
-                <label><input type="checkbox" value="frequency" checked={selectedAttributes.includes("frequency")} onChange={handleAttributeChange} /> Frequency</label>
-                <label><input type="checkbox" value="anharmonicity" checked={selectedAttributes.includes("anharmonicity")} onChange={handleAttributeChange} /> Anharmonicity</label>
-                <label><input type="checkbox" value="readout_error" checked={selectedAttributes.includes("readout_error")} onChange={handleAttributeChange} /> Readout Error</label>
-                <label><input type="checkbox" value="prob_meas0_prep1" checked={selectedAttributes.includes("prob_meas0_prep1")} onChange={handleAttributeChange} /> Prob Meas0 Prep1</label>
-                <label><input type="checkbox" value="prob_meas1_prep0" checked={selectedAttributes.includes("prob_meas1_prep0")} onChange={handleAttributeChange} /> Prob Meas1 Prep0</label>
-                <label><input type="checkbox" value="readout_length" checked={selectedAttributes.includes("readout_length")} onChange={handleAttributeChange} /> Readout Length</label>
-            </div>
 
             <svg ref={svgRef} width="1000" height="600"></svg>
             <div ref={tooltipRef} className="tooltip" style={{ display: 'none' }}></div>
