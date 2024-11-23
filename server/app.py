@@ -60,6 +60,7 @@ def get_json_backend(backend):
     except requests.RequestException as e:
         print(f"Error fetching backends: {e}")
         return None
+    
 @app.route('/api/find')
 def find():
     try:
@@ -109,7 +110,7 @@ transpiled_data = 'transData_TBD'
 #      -H "Content-Type: application/json" \
 #      -d '{"view2_algo": "BV", "trans_times": 40, "backend_name": "ibm_fez"}'
 
-@app.route('/api/view2_api/', methods = ['GET', 'POST'])
+@app.route('/api/view2_api', methods = ['GET', 'POST'])
 def view2_api():
     try:
         global transpiled_data, api_data

@@ -19,20 +19,20 @@ const ConfigurationModal = ({
     attributes,
     ranges,
     colorPalette,
-    gateColoring, // Gate coloring configuration
+    gateColoring,
     selectedBackend,
     backends,
     onSave,
     onReset,
-    data, // Data for automatic range calculation
+    data,
 }) => {
     const [localAttributes, setLocalAttributes] = useState(attributes);
     const [localRanges, setLocalRanges] = useState(ranges);
     const [localBackend, setLocalBackend] = useState(selectedBackend);
     const [colorScheme, setColorScheme] = useState(colorPalette);
     const [localGateColoring, setLocalGateColoring] = useState(gateColoring);
-    const [isAutomatic, setIsAutomatic] = useState(true); // Toggle for automatic/manual range
-    const [selectedMetric, setSelectedMetric] = useState('gate_error'); // Default to gate_error
+    const [isAutomatic, setIsAutomatic] = useState(true);
+    const [selectedMetric, setSelectedMetric] = useState('gate_error');
 
     useEffect(() => {
         setLocalAttributes(attributes);
@@ -40,35 +40,63 @@ const ConfigurationModal = ({
         setLocalBackend(selectedBackend);
         setColorScheme(colorPalette);
         setLocalGateColoring(gateColoring);
-        setIsAutomatic(true); // Default to automatic mode
-        setSelectedMetric('gate_error'); // Default to gate_error
+        setIsAutomatic(true);
+        setSelectedMetric('gate_error');
     }, [attributes, ranges, selectedBackend, colorPalette, gateColoring]);
 
     // Calculate automatic ranges based on data
-    const calculateAutomaticRanges = (metric) => {
+    const calculateAutomaticRanges = (metric, invert = false) => {
         if (!data || !data.gates) return { min: 0, max: 1 }; // Fallback default
-        const values = data.gates.map((gate) =>
-            gate.parameters.find((param) => param.name === metric)?.value || 0
+    
+        const values = data.gates.map(
+            (gate) =>
+                gate.parameters.find((param) => param.name === metric)?.value || 0
         );
-        return {
+        const range = {
             min: Math.min(...values),
             max: Math.max(...values),
         };
+    
+        // Swap min and max if invert is true
+        return invert ? { min: range.max, max: range.min } : range;
     };
 
-    // Update ranges when toggling automatic/manual mode
-    const handleAutomaticToggle = (checked) => {
-        setIsAutomatic(checked);
-        if (checked) {
-            const autoRanges = calculateAutomaticRanges(selectedMetric);
-            setLocalGateColoring((prev) => ({
-                ...prev,
-                [selectedMetric]: autoRanges,
-            }));
-        }
+    const calculateAutomaticAttributeRanges = () => {
+        return Object.keys(attributes).reduce((acc, attr) => {
+            const invert = attributes[attr].invert;
+            const values = data?.qubits.map((qubit) => qubit[attr]) || [0];
+    
+            const range = {
+                min: Math.min(...values),
+                max: Math.max(...values),
+            };
+    
+            acc[attr] = invert ? { min: range.max, max: range.min } : range;
+            return acc;
+        }, {});
     };
+    
+    
+const handleAutomaticToggle = (checked) => {
+    setIsAutomatic(checked);
 
-    // Update ranges dynamically when switching metrics
+    if (checked) {
+        const autoGateRanges = calculateAutomaticRanges(
+            selectedMetric,
+            attributes[selectedMetric]?.invert
+        );
+
+        const autoAttributeRanges = calculateAutomaticAttributeRanges();
+
+        setLocalGateColoring((prev) => ({
+            ...prev,
+            [selectedMetric]: autoGateRanges,
+        }));
+
+        setLocalRanges(autoAttributeRanges);
+    }
+};
+
     const handleMetricChange = (metric) => {
         setSelectedMetric(metric);
         if (isAutomatic) {
@@ -131,6 +159,78 @@ const ConfigurationModal = ({
                     ))}
                 </Select>
 
+                {/* Attribute Toggles */}
+                <Typography variant="subtitle1" mt={2}>
+                    Attributes
+                </Typography>
+                {Object.keys(localAttributes).map((attribute) => (
+                    <FormControlLabel
+                        key={attribute}
+                        control={
+                            <Switch
+                                checked={localAttributes[attribute].visible}
+                                onChange={(e) =>
+                                    setLocalAttributes({
+                                        ...localAttributes,
+                                        [attribute]: {
+                                            ...localAttributes[attribute],
+                                            visible: e.target.checked,
+                                        },
+                                    })
+                                }
+                            />
+                        }
+                        label={attribute}
+                    />
+                ))}
+
+                {/* Attribute Ranges (Hidden if Automatic Mode is On) */}
+                {!isAutomatic && (
+                    <>
+                        <Typography variant="subtitle1" mt={2}>
+                            Attribute Ranges
+                        </Typography>
+                        {Object.keys(localRanges).map((attribute) => (
+                            <Grid container spacing={2} key={attribute} mt={1}>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        label={`${attribute} Min`}
+                                        type="number"
+                                        fullWidth
+                                        value={localRanges[attribute]?.min ?? ''}
+                                        onChange={(e) =>
+                                            setLocalRanges((prev) => ({
+                                                ...prev,
+                                                [attribute]: {
+                                                    ...prev[attribute],
+                                                    min: Number(e.target.value),
+                                                },
+                                            }))
+                                        }
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        label={`${attribute} Max`}
+                                        type="number"
+                                        fullWidth
+                                        value={localRanges[attribute]?.max ?? ''}
+                                        onChange={(e) =>
+                                            setLocalRanges((prev) => ({
+                                                ...prev,
+                                                [attribute]: {
+                                                    ...prev[attribute],
+                                                    max: Number(e.target.value),
+                                                },
+                                            }))
+                                        }
+                                    />
+                                </Grid>
+                            </Grid>
+                        ))}
+                    </>
+                )}
+
                 {/* Metric Toggle */}
                 <Typography variant="subtitle1" mt={2}>
                     Gate Metric
@@ -155,56 +255,83 @@ const ConfigurationModal = ({
                     label="Automatic Ranges"
                 />
 
-                {/* Manual Range Inputs (Hidden if Automatic Mode is On) */}
+                {/* Manual Range Inputs for Attributes */}
                 {!isAutomatic && (
-                    <Grid container spacing={2} mt={2}>
-                        <Grid item xs={6}>
-                            <TextField
-                                label="Min Value"
-                                type="number"
-                                fullWidth
-                                value={localGateColoring[selectedMetric]?.min || ''}
-                                onChange={(e) =>
-                                    setLocalGateColoring((prev) => ({
-                                        ...prev,
-                                        [selectedMetric]: {
-                                            ...prev[selectedMetric],
-                                            min: Number(e.target.value),
-                                        },
-                                    }))
-                                }
-                            />
+                    <>
+                        <Typography variant="subtitle1" mt={2}>
+                            Gate Ranges
+                        </Typography>
+                        <Grid container spacing={2} mt={2}>
+                            <Grid item xs={6}>
+                                <TextField
+                                    label={`${selectedMetric} Min`}
+                                    type="number"
+                                    fullWidth
+                                    value={localGateColoring[selectedMetric]?.min ?? ''}
+                                    onChange={(e) =>
+                                        setLocalGateColoring((prev) => ({
+                                            ...prev,
+                                            [selectedMetric]: {
+                                                ...prev[selectedMetric],
+                                                min: Number(e.target.value),
+                                            },
+                                        }))
+                                    }
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    label={`${selectedMetric} Max`}
+                                    type="number"
+                                    fullWidth
+                                    value={localGateColoring[selectedMetric]?.max ?? ''}
+                                    onChange={(e) =>
+                                        setLocalGateColoring((prev) => ({
+                                            ...prev,
+                                            [selectedMetric]: {
+                                                ...prev[selectedMetric],
+                                                max: Number(e.target.value),
+                                            },
+                                        }))
+                                    }
+                                />
+                            </Grid>
                         </Grid>
-                        <Grid item xs={6}>
-                            <TextField
-                                label="Max Value"
-                                type="number"
-                                fullWidth
-                                value={localGateColoring[selectedMetric]?.max || ''}
-                                onChange={(e) =>
-                                    setLocalGateColoring((prev) => ({
-                                        ...prev,
-                                        [selectedMetric]: {
-                                            ...prev[selectedMetric],
-                                            max: Number(e.target.value),
-                                        },
-                                    }))
-                                }
-                            />
-                        </Grid>
-                    </Grid>
+
+                    </>
                 )}
 
-                {/* Color Palette Picker */}
-                <Typography variant="subtitle1" mt={2}>
-                    Color Palette
-                </Typography>
-                <SketchPicker
-                    color={colorScheme}
-                    onChangeComplete={(color) =>
-                        setColorScheme({ ...color, hex: color.hex })
-                    }
-                />
+
+            {/* Color Palette Picker */}
+            <Typography variant="subtitle1" mt={2}>
+                Color Palette
+            </Typography>
+            <Grid container spacing={2}>
+                {[
+                    { start: 'red', end: 'green' },
+                    { start: 'blue', end: 'orange' },
+                    { start: 'purple', end: 'yellow' },
+                    { start: 'black', end: 'white' },
+                    { start: 'cyan', end: 'magenta' },
+                    { start: 'teal', end: 'gold' },
+                    { start: 'pink', end: 'lime' },
+                    { start: 'brown', end: 'skyblue' },
+                ].map((palette, index) => (
+                    <Grid item xs={6} key={index}>
+                        <Button
+                            fullWidth
+                            variant={colorScheme.start === palette.start && colorScheme.end === palette.end ? 'contained' : 'outlined'}
+                            style={{
+                                backgroundImage: `linear-gradient(to right, ${palette.start}, ${palette.end})`,
+                                color: palette.start === 'black' ? 'white' : 'black', // Adjust text color for visibility
+                            }}
+                            onClick={() => setColorScheme(palette)}
+                        >
+                            {`${palette.start} → ${palette.end}`}
+                        </Button>
+                    </Grid>
+                ))}
+            </Grid>
 
                 {/* Save and Reset Buttons */}
                 <Box mt={3} display="flex" justifyContent="space-between">

@@ -4,18 +4,42 @@ import { IconButton } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ConfigurationModal from './ConfigurationModal';
 
+
 const QuantumCircuit = (props) => {
     const [modalOpen, setModalOpen] = useState(false);
+    const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
+    const screenHeight = windowSize.height;
+    const graphWidth = Math.floor(windowSize.width * 0.75);
+    const graphHeight = Math.floor(windowSize.height * 0.75);
+
+    useEffect(() => {
+        // Listener for window resize
+        const handleResize = () => {
+            setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+        };
+
+        window.addEventListener('resize', handleResize);
+        
+        // Cleanup listener on component unmount
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+    //a list of all attributes found in the data and whether they should be visible by default, 
+    //Invert determines if a higher values is good or bad. for example a high T1 is good but a high readout error is bad.
+    // add to this list if IBM adds more attributes to the data. in theory you could query this from the data, but the issue is knowing whether to invert or to set as default.  
     const [attributes, setAttributes] = useState({
-        T1: true,
-        T2: true,
-        readout_error: true,
-        frequency: false,
-        anharmonicity: false,
-        prob_meas0_prep1: false,
-        prob_meas1_prep0: false,
-        readout_length: false,
+        T1: {visible: true, invert: false},
+        T2: {visible: true, invert: false},
+        readout_error: {visible: true, invert: true},
+        frequency: {visible: false, invert: false},
+        anharmonicity: {visible: false, invert: true},
+        prob_meas0_prep1: {visible: false, invert: true},
+        prob_meas1_prep0: {visible: false, invert: true},
+        readout_length: {visible: false, invert: true},
     });
+
+    // default ranges to prefill the manual range input fields. These are updated when manual mode is triggered. If set to automatic these are set to updated values automatically
     const [ranges, setRanges] = useState({
         T1: { min: 50, max: 200 },
         T2: { min: 50, max: 200 },
@@ -26,20 +50,27 @@ const QuantumCircuit = (props) => {
         prob_meas1_prep0: { min: 0.1, max: 0.0 },
         readout_length: { min: 1200, max: 1000 },
     });
+
+    // default color pallette. 
     const [colorPalette, setColorPalette] = useState({ start: 'red', end: 'green' });
+
+    // essentially the same as ranges. 
     const [gateColoring, setGateColoring] = useState({
-        gate_error: { min: 0, max: 0.1 },
+        gate_error: { min: 0.1, max: 0 },
         gate_length: { min: 50, max: 200 },
     });
     const svgRef = useRef();
     const popupRef = useRef();
     const tooltipRef = useRef();
+    //default gate display for coloring
     const [colorMetric, setColorMetric] = useState('gate_error');
+    //attributes to be displayed.
     const [selectedAttributes, setSelectedAttributes] = useState(["T1", "T2", "readout_error"]);
     const [backends, setBackends] = useState([]);
-    const [selectedBackend, setSelectedBackend] = useState(null);
+    const [selectedBackend, setSelectedBackend] = useState();
     const [data, setData] = useState(null);
 
+    // saves new attributes from the Modal
     const handleSaveConfig = (config) => {
         setAttributes(config.attributes);
         setRanges(config.ranges);
@@ -48,43 +79,57 @@ const QuantumCircuit = (props) => {
         setColorPalette(config.colorPalette);
     };
 
+    // resets attributes to default values
     const handleResetConfig = () => {
         setAttributes({
-            T1: true,
-            T2: true,
-            frequency: false,
-            anharmonicity: false,
+            T1: {visible: true, invert: false},
+            T2: {visible: true, invert: false},
+            readout_error: {visible: true, invert: true},
+            frequency: {visible: false, invert: false},
+            anharmonicity: {visible: false, invert: true},
+            prob_meas0_prep1: {visible: false, invert: true},
+            prob_meas1_prep0: {visible: false, invert: true},
+            readout_length: {visible: false, invert: true},
         });
         setRanges({
             T1: { min: 50, max: 200 },
             T2: { min: 50, max: 200 },
             frequency: { min: 4.5, max: 5.5 },
+            anharmonicity: { min: 0.0, max: -0.4 },
+            readout_error: { min: 0.08, max: 0.0 },
+            prob_meas0_prep1: { min: 0.1, max: 0.0 },
+            prob_meas1_prep0: { min: 0.1, max: 0.0 },
+            readout_length: { min: 1200, max: 1000 },
         });
         setColorPalette({ start: 'red', end: 'green' });
+        setSelectedAttributes(["T1", "T2", "readout_error"])
     };
 
-    const attributeScales = {
-        T1: d3.scaleLinear().domain([50, 200]).range(["red", "green"]),
-        T2: d3.scaleLinear().domain([50, 200]).range(["red", "green"]),
-        frequency: d3.scaleLinear().domain([4.5, 5.5]).range(["red", "green"]),
-        anharmonicity: d3.scaleLinear().domain([0.0, -0.4]).range(["red", "green"]),
-        readout_error: d3.scaleLinear().domain([0.08, 0.0]).range(["red", "green"]),
-        prob_meas0_prep1: d3.scaleLinear().domain([0.1, 0.0]).range(["red", "green"]),
-        prob_meas1_prep0: d3.scaleLinear().domain([0.1, 0.0]).range(["red", "green"]),
-        readout_length: d3.scaleLinear().domain([1200, 1000]).range(["red", "green"]),
+    // returns a color scale for a given attribute
+    const getAttributeScale = (attribute) => {
+        if (!ranges[attribute]) {
+            console.error(`No range defined for attribute: ${attribute}`);
+            return null; // Handle attributes that are not in the ranges
+        }
+        return d3.scaleLinear()
+            .domain([ranges[attribute].min, ranges[attribute].max])
+            .range([colorPalette.start, colorPalette.end]);
     };
     
+    // function for dragging nodes programatically 
     function startDrag(node, simulation) {
         if (!simulation.active) simulation.alphaTarget(0.3).restart();
         node.fx = node.x;
         node.fy = node.y;
     }
 
+    // function for ending drag programatically
     function endDrag(node, simulation) {
         if (!simulation.active) simulation.alphaTarget(0);
         node.fx = null;
         node.fy = null;
     }
+
     // Fetch available backends when the component mounts
     useEffect(() => {
         fetch('/api/pending_jobs')
@@ -94,6 +139,8 @@ const QuantumCircuit = (props) => {
                 setBackends(backendNames);
             })
             .catch(error => console.error("Error fetching backends:", error));
+        setSelectedBackend(props.backend)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Fetch data based on selected backend
@@ -105,7 +152,9 @@ const QuantumCircuit = (props) => {
                 .then(data => setData(data))
                 .catch(error => console.error("Error fetching backend data:", error));
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedBackend]);
+
 
     // Process data for D3 visualization whenever data, colorMetric, or selectedAttributes changes
     useEffect(() => {
@@ -114,19 +163,19 @@ const QuantumCircuit = (props) => {
         }
     }, [data, colorMetric, selectedAttributes]);
 
-    const handleBackendChange = (event) => {
-        setSelectedBackend(event.target.value);
-    };
+    // const handleBackendChange = (event) => {
+    //     setSelectedBackend(event.target.value);
+    // };
 
     const handleAttributeChange = (updatedAttributes) => {
         // Filter only the attributes that are true and update the state
         const trueAttributes = Object.keys(updatedAttributes).filter(
-            (key) => updatedAttributes[key] === true
+            (key) => updatedAttributes[key].visible === true
         );
         setSelectedAttributes(trueAttributes);
     };
     
-
+    //creates nodes and edges based on IBM data.
     const processData = (data) => {
         const nodes = data.qubits.map((attributes, i) => ({
             id: i,
@@ -144,6 +193,8 @@ const QuantumCircuit = (props) => {
         visualizeGraph(nodes, edges);
     };
 
+
+    // Visualize the graph using D3
     const visualizeGraph = (nodes, edges) => {
         const svg = d3.select(svgRef.current);
         svg.selectAll("*").remove(); // Clear previous elements
@@ -152,53 +203,33 @@ const QuantumCircuit = (props) => {
             .domain([gateColoring[colorMetric].min, gateColoring[colorMetric].max]) // Use selected metric range
             .range([colorPalette.start, colorPalette.end]);
 
-
-        const width = 1000;
-        const height = 600;
-
         const tooltip = d3.select(tooltipRef.current);
 
         let currentZoom = 1, minZoom = 0.1, maxZoom = 5;
         let currentX = 0, currentY = 0;
         let basePositionX = 0; 
         let basePositionY = 0;
-        let alternatePositionX = 0;
-        let alternatePositionY = 0;
         // Zoom function that adjusts the viewBox instead of scaling elements
         const zoom = d3.zoom()
         .scaleExtent([minZoom, maxZoom]) // Set minimum and maximum zoom levels
         .on("zoom", (event) => {
-            const transform = event.transform;
-            
-            // // Define limits for panning
-            // const maxPanX = width ; // Example: allow panning to half the width
-            // const minPanX = -width * 2;
-            // const maxPanY = height; // Example: allow panning to half the height
-            // const minPanY = -height * 2;
+            const transform = event.transform;;
             if (transform.k === currentZoom) {
                 currentX = currentX - transform.x + basePositionX;
                 currentY = currentY - transform.y + basePositionY;
-                console.log(currentX, transform.x)
-                svg.attr("viewBox", `${(currentX)} ${(currentY)} ${width * currentZoom} ${height * currentZoom}`);
+                svg.attr("viewBox", `${(currentX)} ${(currentY)} ${graphWidth * currentZoom} ${graphHeight * currentZoom}`);
             }
             else {
-                svg.attr("viewBox", `${currentX} ${currentY} ${width * transform.k} ${height * transform.k}`);
+                svg.attr("viewBox", `${currentX} ${currentY} ${graphWidth * transform.k} ${graphHeight * transform.k}`);
                 basePositionX = transform.x;
                 basePositionY = transform.y;
             }
-            // Apply clamped values to the viewBox
-
             currentZoom = transform.k;
         });
-    
 
-        // Wrap the SVG content in a group to apply the zoom transformation
-        //const svgGroup = svg.append("g");
-
-        // Enable zooming on the SVG
         svg.call(zoom);
 
-
+        //Setup edges between nodes. 
         const link = svg.selectAll(".link")
             .data(edges)
             .enter()
@@ -208,31 +239,36 @@ const QuantumCircuit = (props) => {
             .style('stroke', (d) => colorScale(d[colorMetric])) // Apply selected metric
             .on("mouseover", function(event, d) {
                 tooltip.style("display", "block")
-                    .html(`<strong>Gate Error:</strong> ${Number((Math.round(d.gate_error * 100000) / 100000 * 100).toFixed(5))}%<br><strong>Gate Length:</strong> ${d.gate_length}`);
-            })
+                    .html(`<strong>Gate Error:</strong> ${Number((d.gate_error * 100).toFixed(5))}%<br><strong>Gate Length:</strong> ${Number(d.gate_length.toFixed(3))
+}`);
+            }) // display tooltip on hover
             .on("mousemove", function(event) {
                 tooltip.style("top", (event.pageY - 30) + "px")
                     .style("left", (event.pageX - 50) + "px");
-            })
+            }) // stop displaying tooltip 
             .on("mouseout", function() {
                 tooltip.style("display", "none");
             });
 
+            // run the simulation, distance can be changed for nodes to be further apart, force needs to be negative
         const simulation = d3.forceSimulation(nodes)
             .force("link", d3.forceLink(edges).id(d => d.id).distance(50))
             .force("charge", d3.forceManyBody().strength(-40))
-            .force("center", d3.forceCenter(width / 2, height / 2));
+            .force("center", d3.forceCenter(graphWidth / 2, graphHeight / 2));
 
                     // Middle node setup
                     const middleNode = nodes[Math.floor(nodes.length / 2)];
-                    middleNode.fx = width / 2;
-                    middleNode.fy = height / 2;
+                    middleNode.fx = graphWidth / 2;
+                    middleNode.fy = graphHeight / 2;
         
+        // Holds the middle node to get everything to settle into position
         setTimeout(() => {
                 startDrag(middleNode, simulation);
                 setTimeout(() => endDrag(middleNode, simulation), 30000);
             }, 0);
         
+
+        //sets up nodes.
         const node = svg.selectAll(".node")
             .data(nodes)
             .enter().append("g")
@@ -256,13 +292,15 @@ const QuantumCircuit = (props) => {
             );
 
         node.each(function(d) {
+            //base radius of the circle and the offset for each attribute
             const baseRadius = 5;
             const radiusOffset = 5;
 
+            // sets the color of each ring based on the attribute's value. 
             selectedAttributes.forEach((attribute, i) => {
                 const attributeObj = d.attributes.find(attr => attr.name === attribute);
                 const value = attributeObj ? attributeObj.value : 0;
-                const colorValue =  attributeScales[attribute](value)
+                const colorValue =  getAttributeScale(attribute)(value);
                 d3.select(this).append("circle")
                     .attr("cx", 0)
                     .attr("cy", 0)
@@ -274,6 +312,7 @@ const QuantumCircuit = (props) => {
             });
         });
 
+        //sets text as the id of the node. Might remove to get rid of distractions
         svg.selectAll(".text")
             .data(nodes)
             .enter().append("text")
@@ -283,6 +322,7 @@ const QuantumCircuit = (props) => {
             .style("pointer-events", "none")
             .text(d => d.id);
 
+        //turns on simulation for every tick 
         simulation.on("tick", () => {
             link
                 .attr("x1", d => d.source.x)
@@ -297,6 +337,7 @@ const QuantumCircuit = (props) => {
         });
     };
 
+    // displays popup with qubit information
     const showPopup = (event, d, nodes, edges) => {
         event.stopPropagation(); // Prevent event bubbling
         const popup = d3.select(popupRef.current);
@@ -307,12 +348,24 @@ const QuantumCircuit = (props) => {
         
         // Display connections
         const connections = edges.filter(edge => !(edge.source.id === d.id) !== !(edge.target.id === d.id));
+        const uniqueConnections = new Set();
         content += "<h4>Connections:</h4>";
-        content += connections.map(connection => {
+        content += connections
+          .filter(connection => {
+            const connectedQubit = connection.source.id === d.id ? connection.target.id : connection.source.id;
+            if (uniqueConnections.has(connectedQubit)) {
+              return false; // Skip duplicate
+            }
+            uniqueConnections.add(connectedQubit); // Mark as seen
+            return true; // Include unique connection
+          })
+          .map(connection => {
             const connectedQubit = connection.source.id === d.id ? connection.target : connection.source;
             return `<p><a href="#" class="connected-qubit" data-qubit="${connectedQubit.id}">Qubit ${connectedQubit.id}</a> - 
-            Gate Error: ${Number((Math.round(connection.gate_error * 100000) / 100000 * 100).toFixed(5))}%, Gate Length: ${Math.round(connection.gate_length * 1000) / 1000}</p>`;
-        }).join("");
+            Gate Error: ${Number((d.gate_error * 100).toFixed(5))}%, Gate Length: ${Number(connection.gate_length.toFixed(3))}</p>`;
+          })
+          .join("");
+        
         
         popup.html(content);
         
@@ -344,7 +397,7 @@ const QuantumCircuit = (props) => {
         selectedAttributes.forEach((attribute, i) => {
             const attributeObj = d.attributes.find(attr => attr.name === attribute);
             const value = attributeObj ? attributeObj.value : 0;
-            const colorValue = attributeScales[attribute](value) // Adjust domain based on attribute scale as needed
+            const colorValue = getAttributeScale(attribute)(value);
             const ringRadius = baseRadius + i * radiusOffset;
             
             nodeSvg.append("circle")
@@ -388,9 +441,7 @@ const QuantumCircuit = (props) => {
             const popupHeight = popup.node().offsetHeight;
             const popupWidth = popup.node().offsetWidth;
     
-            // Calculate available space
-            const screenHeight = window.innerHeight;
-            const screenWidth = window.innerWidth;
+
     
             // Default position
             let top = event.clientY + 10;
@@ -399,8 +450,8 @@ const QuantumCircuit = (props) => {
             if (top + popupHeight > screenHeight) {
                 top = event.clientY - (top + popupHeight - screenHeight + 50); // Move up if it would overflow
             }
-            if (left > 600){
-                left = 700
+            if (left > graphWidth) {
+                left = graphWidth
             }
     
             // Apply the adjusted position
@@ -426,9 +477,30 @@ const QuantumCircuit = (props) => {
     return (
         <div>
             <div>
-            <IconButton onClick={() => setModalOpen(true)} aria-label="settings">
-                <SettingsIcon />
-            </IconButton>
+                <div>
+                    <div>Settings: </div>
+                    <IconButton onClick={() => setModalOpen(true)} aria-label="settings">
+                        <SettingsIcon />
+                    </IconButton>
+                </div>
+            {/* Label positioned absolutely within the container */}
+            <div
+                style={{
+                    position: 'absolute',
+                    top: 10,
+                    right: 10,
+                    background: 'rgba(255, 255, 255, 0.8)',
+                    padding: '5px 10px',
+                    borderRadius: '4px',
+                    fontFamily: 'Arial, sans-serif',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    color: '#333',
+                    zIndex: 10,
+                }}
+            >
+                Backend: {selectedBackend || 'Loading...'}
+                </div>
             <ConfigurationModal
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
@@ -443,14 +515,7 @@ const QuantumCircuit = (props) => {
             />
             {/* Rest of the QuantumCircuit visualization */}
         </div>
-            <label htmlFor="colorMetric">Color by:</label>
-            <select id="colorMetric" value={colorMetric} onChange={(e) => setColorMetric(e.target.value)}>
-                <option value="gate_error">Gate Error</option>
-                <option value="gate_length">Gate Length</option>
-            </select>
-
-
-            <svg ref={svgRef} width="1000" height="600"></svg>
+            <svg ref={svgRef} width={graphWidth} height={graphHeight}></svg>
             <div ref={tooltipRef} className="tooltip" style={{ display: 'none' }}></div>
             <div ref={popupRef} className="popup" style={{ display: 'none' }}></div>
         </div>
