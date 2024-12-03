@@ -28,7 +28,7 @@ const TransDataModal = ({ onSave, backendName, backends }) => {
           md: "75%", // Medium screens
           lg: "85%", // Larger screens
         },
-        transform: "translate(-10%, -50%)",
+        transform: "translate(-30%, -50%)",
         width: 300,
         bgcolor: "background.paper",
         boxShadow: 24,

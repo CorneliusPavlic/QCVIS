@@ -140,20 +140,20 @@ const handleAutomaticToggle = (checked) => {
             <Box
             sx={{
                 position: 'absolute',
-                top: '50%',
+                top: '30%',
                 left: {
                     xs: '60%', // Smaller screens
                     sm: '70%', // Small to medium screens
                     md: '75%', // Medium screens
                     lg: '85%', // Larger screens
                 },
-                transform: 'translate(-50%, -50%)',
-                width: 600,
+                transform: 'scale(0.67) translate(-70%, -50%)',
+                width: "35vw",
                 bgcolor: 'background.paper',
                 boxShadow: 24,
                 p: 4,
                 borderRadius: 2,
-                maxHeight: '90vh',
+                maxHeight: '120vh',
                 overflowY: 'auto',
             }}            
             >

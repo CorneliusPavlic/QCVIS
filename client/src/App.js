@@ -49,15 +49,15 @@ const App = () => {
             <Header className="header" style={{ height: '10%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <DeploymentUnitOutlined style={{ fontSize: '1.6em', color: '#d8d8d8', marginRight: '10px'}} />
-                    <Text className="header-title" style={{ color: '#ffffff', fontSize: '2em', fontWeight: 'bold' }}>QUIET</Text>
+                    <Text className="header-title" style={{ color: '#ffffff', fontSize: '1.3em', fontWeight: 'bold' }}>QUIET</Text>
                 </div>
-                <Text className="paper-title" style={{ color: '#ffffff', fontSize: '2em', marginLeft: '20px', flexGrow: 1 }}>
+                <Text className="paper-title" style={{ color: '#ffffff', fontSize: '1.3em', marginLeft: '20px', flexGrow: 1 }}>
                     A Quality-Aware Visualization System for Noise Mitigation in Quantum Computing
                 </Text>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
                     <Text
                         style={{
-                            fontSize: '2em',
+                            fontSize: '1.3em',
                             color: view === 'QuantumCircuit' ? '#40a9ff' : '#ffffff',
                             cursor: 'pointer',
                             textDecoration: view === 'QuantumCircuit' ? 'underline' : 'none',
@@ -68,7 +68,7 @@ const App = () => {
                     </Text>
                     <Text
                         style={{
-                            fontSize: '2em',
+                            fontSize: '1.3em',
                             color: view === 'TransDataView' ? '#40a9ff' : '#ffffff',
                             cursor: 'pointer',
                             textDecoration: view === 'TransDataView' ? 'underline' : 'none',
