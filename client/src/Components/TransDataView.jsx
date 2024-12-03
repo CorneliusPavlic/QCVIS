@@ -7,11 +7,26 @@ const TransDataView = ({ backendName }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [selectedBackend, setSelectedBackend] = useState(null);
+  const [backends, setBackends] = useState([]);
   const screenHeight = window.innerHeight;
   const screenWidth = window.innerWidth;
-  const visualizationWidth = Math.floor(screenWidth * 0.75);
-  const visualizationHeight = Math.floor(screenHeight * 0.75);
+  const visualizationWidth = Math.floor(screenWidth * 0.8);
+  const visualizationHeight = Math.floor(screenHeight * 0.8);
+    // Fetch available backends when the component mounts
+    useEffect(() => {
+      fetch('/api/pending_jobs')
+          .then(response => response.json())
+          .then(data => {
+              const backendNames = Object.keys(data);
+              setBackends(backendNames);
+          })
+          .catch(error => console.error("Error fetching backends:", error));
+      setSelectedBackend(backendName);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
+  
   const fetchData = async (config) => {
     setLoading(true);
     try {
@@ -23,6 +38,7 @@ const TransDataView = ({ backendName }) => {
       const result = await response.json();
       setLoading(false);
       setData(Object.values(result.data));
+      console.log(data)
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -37,7 +53,7 @@ const TransDataView = ({ backendName }) => {
       return;
     }
 
-    const svg = d3.select(container).html("").append("svg").attr("width", "100%").attr("height", 800);
+    const svg = d3.select(container).html("").append("svg").attr("width", "100%").attr("height", visualizationHeight);
 
     // Compute dynamic ranges for axes and bubble sizes
     const minQubits = d3.min(data, (d) => d.qubits_quality);
@@ -50,11 +66,11 @@ const TransDataView = ({ backendName }) => {
     // Scales
     const xScale = d3.scaleLinear()
       .domain([minQubits, maxQubits])
-      .range([50, visualizationWidth - 50]);
+      .range([100, visualizationWidth - 100]);
 
     const yScale = d3.scaleLinear()
       .domain([minGates, maxGates])
-      .range([visualizationHeight - 50, 50]);
+      .range([visualizationHeight - 100, 100]);
 
     const sizeScale = d3.scaleLinear()
       .domain([maxDepth, minDepth]) // Inverted: smaller depth = larger bubble
@@ -131,19 +147,15 @@ const TransDataView = ({ backendName }) => {
 
   return (
     <div>
-      <Button type="primary" onClick={() => setModalVisible(true)} style={{ marginBottom: 16 }}>
-        Configure Transpilation
-      </Button>
       <TransDataModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
         onSave={fetchData}
         backendName={backendName}
+        backends={backends}
       />
       {loading ? (
         <Spin tip="Loading..." size="large" />
       ) : (
-        <div id="visualization" style={{ width: "100%", height: 800, border: "1px solid #ccc" }} />
+        <div id="visualization" style={{ width: "80%", height: {visualizationHeight}, border: "1px solid #ccc" }} />
       )}
       <div id="tooltip" style={{ position: "absolute", display: "none", background: "#fff", border: "1px solid #ccc", padding: "10px", borderRadius: "5px", boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)", pointerEvents: "none" }}></div>
     </div>

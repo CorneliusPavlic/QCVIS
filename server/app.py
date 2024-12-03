@@ -124,7 +124,7 @@ def view2_api():
             algo = request.get_json()['view2_algo'] or 'shor'
             trans_times = request.get_json()['trans_times'] or 10
             backend_name = request.get_json()['backend_name'] or 'ibmq_jakarta' # 如果没有指定，默认用 ibmq_jakarta 来执行
-
+            print(trans_times)
 
             result = view2_post_func(algo, trans_times, backend_name)
 

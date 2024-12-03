@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Modal,
     Box,
     Typography,
     Button,
@@ -11,11 +10,26 @@ import {
     FormControlLabel,
     Grid,
 } from '@mui/material';
-import { SketchPicker } from 'react-color';
+import { styled } from '@mui/material/styles';
+
+const StyledSelect = styled(Select)(({ theme }) => ({
+    width: '100%',
+    backgroundColor: theme.palette.background.paper,
+    borderRadius: theme.shape.borderRadius,
+    boxShadow: theme.shadows[1],
+    '& .MuiOutlinedInput-notchedOutline': {
+        borderColor: theme.palette.divider,
+    },
+    '&:hover .MuiOutlinedInput-notchedOutline': {
+        borderColor: theme.palette.primary.main,
+    },
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+        borderColor: theme.palette.primary.dark,
+    },
+}));
+
 
 const ConfigurationModal = ({
-    open,
-    onClose,
     attributes,
     ranges,
     colorPalette,
@@ -116,30 +130,32 @@ const handleAutomaticToggle = (checked) => {
             colorPalette: colorScheme,
             gateColoring: localGateColoring,
         });
-        onClose();
     };
 
     const handleReset = () => {
         onReset();
-        onClose();
     };
 
     return (
-        <Modal open={open} onClose={onClose}>
             <Box
-                sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: 600,
-                    bgcolor: 'background.paper',
-                    boxShadow: 24,
-                    p: 4,
-                    borderRadius: 2,
-                    maxHeight: '80vh',
-                    overflowY: 'auto',
-                }}
+            sx={{
+                position: 'absolute',
+                top: '50%',
+                left: {
+                    xs: '60%', // Smaller screens
+                    sm: '70%', // Small to medium screens
+                    md: '75%', // Medium screens
+                    lg: '85%', // Larger screens
+                },
+                transform: 'translate(-50%, -50%)',
+                width: 600,
+                bgcolor: 'background.paper',
+                boxShadow: 24,
+                p: 4,
+                borderRadius: 2,
+                maxHeight: '90vh',
+                overflowY: 'auto',
+            }}            
             >
                 <Typography variant="h6" mb={2}>
                     Configuration Settings
@@ -147,7 +163,7 @@ const handleAutomaticToggle = (checked) => {
 
                 {/* Backend Selection */}
                 <Typography variant="subtitle1">Backend</Typography>
-                <Select
+                <StyledSelect
                     fullWidth
                     value={localBackend || ''}
                     onChange={(e) => setLocalBackend(e.target.value)}
@@ -157,7 +173,7 @@ const handleAutomaticToggle = (checked) => {
                             {backend}
                         </MenuItem>
                     ))}
-                </Select>
+                </StyledSelect>
 
                 {/* Attribute Toggles */}
                 <Typography variant="subtitle1" mt={2}>
@@ -235,14 +251,14 @@ const handleAutomaticToggle = (checked) => {
                 <Typography variant="subtitle1" mt={2}>
                     Gate Metric
                 </Typography>
-                <Select
+                <StyledSelect
                     fullWidth
                     value={selectedMetric}
                     onChange={(e) => handleMetricChange(e.target.value)}
                 >
                     <MenuItem value="gate_error">Gate Error</MenuItem>
                     <MenuItem value="gate_length">Gate Length</MenuItem>
-                </Select>
+                </StyledSelect>
 
                 {/* Automatic Range Toggle */}
                 <FormControlLabel
@@ -343,7 +359,6 @@ const handleAutomaticToggle = (checked) => {
                     </Button>
                 </Box>
             </Box>
-        </Modal>
     );
 };
 

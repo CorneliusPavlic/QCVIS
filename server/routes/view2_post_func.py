@@ -360,7 +360,7 @@ def view2_post_func(algo, trans_times, backend_name):
     circuit_data = {}
 
     for i in range(trans_times):
-        qc_comp = transpile(qc , coupling_map=backend_data['configuration']["couplingMap"], basis_gates=backend_data['configuration']["basisGates"], optimization_level=3,)
+        qc_comp = transpile(qc , coupling_map=backend_data['configuration']["couplingMap"], basis_gates=backend_data['configuration']["basisGates"], optimization_level=2,)
         trans_data['trans_{}'.format(i)] = qc_comp._data
         circuit_data['trans_{}'.format(i)] = qc_comp
     # 用来生成画图用的数据

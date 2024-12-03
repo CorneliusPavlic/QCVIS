@@ -9,8 +9,8 @@ const QuantumCircuit = (props) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
     const screenHeight = windowSize.height;
-    const graphWidth = Math.floor(windowSize.width * 0.75);
-    const graphHeight = Math.floor(windowSize.height * 0.75);
+    const graphWidth = Math.floor(windowSize.width);
+    const graphHeight = Math.floor(windowSize.height * 0.8);
 
     useEffect(() => {
         // Listener for window resize
@@ -477,12 +477,6 @@ const QuantumCircuit = (props) => {
     return (
         <div>
             <div>
-                <div>
-                    <div>Settings: </div>
-                    <IconButton onClick={() => setModalOpen(true)} aria-label="settings">
-                        <SettingsIcon />
-                    </IconButton>
-                </div>
             {/* Label positioned absolutely within the container */}
             <div
                 style={{
@@ -499,9 +493,9 @@ const QuantumCircuit = (props) => {
                     zIndex: 10,
                 }}
             >
-                Backend: {selectedBackend || 'Loading...'}
                 </div>
             <ConfigurationModal
+                className="config-panel"
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
                 attributes={attributes}
