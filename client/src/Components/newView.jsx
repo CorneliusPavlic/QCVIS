@@ -252,8 +252,8 @@ const QuantumCircuit = (props) => {
 
             // run the simulation, distance can be changed for nodes to be further apart, force needs to be negative
         const simulation = d3.forceSimulation(nodes)
-            .force("link", d3.forceLink(edges).id(d => d.id).distance(50))
-            .force("charge", d3.forceManyBody().strength(-40))
+            .force("link", d3.forceLink(edges).id(d => d.id).distance(0))
+            .force("charge", d3.forceManyBody().strength(-100))
             .force("center", d3.forceCenter(graphWidth / 2, graphHeight / 2));
 
                     // Middle node setup
