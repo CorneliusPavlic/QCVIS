@@ -77,8 +77,15 @@ const ConfigurationModal = ({
 
     const calculateAutomaticAttributeRanges = () => {
         return Object.keys(attributes).reduce((acc, attr) => {
+            console.log(attr);
             const invert = attributes[attr].invert;
-            const values = data?.qubits.map((qubit) => qubit[attr]) || [0];
+            
+            // Extract the values for the given attribute from each qubit
+            const values = data?.qubits.map((qubit) => {
+                // For each qubit, find the dictionary with the matching attribute name
+                const attributeData = qubit.filter(item => item.name === attr); 
+                return attributeData.length > 0 ? attributeData[0].value : 0; // Use the value from the first match or 0 if not found
+            }) || [0];
     
             const range = {
                 min: Math.min(...values),
@@ -91,6 +98,7 @@ const ConfigurationModal = ({
     };
     
     
+    
 const handleAutomaticToggle = (checked) => {
     setIsAutomatic(checked);
 
@@ -101,7 +109,6 @@ const handleAutomaticToggle = (checked) => {
         );
 
         const autoAttributeRanges = calculateAutomaticAttributeRanges();
-
         setLocalGateColoring((prev) => ({
             ...prev,
             [selectedMetric]: autoGateRanges,

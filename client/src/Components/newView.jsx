@@ -496,8 +496,6 @@ const QuantumCircuit = (props) => {
                 </div>
             <ConfigurationModal
                 className="config-panel"
-                open={modalOpen}
-                onClose={() => setModalOpen(false)}
                 attributes={attributes}
                 ranges={ranges}
                 colorPalette={colorPalette}
@@ -506,6 +504,7 @@ const QuantumCircuit = (props) => {
                 gateColoring={gateColoring}
                 onSave={handleSaveConfig}
                 onReset={handleResetConfig}
+                data={data}
             />
             {/* Rest of the QuantumCircuit visualization */}
         </div>
