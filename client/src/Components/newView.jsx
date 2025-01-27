@@ -198,80 +198,51 @@ const QuantumCircuit = (props) => {
     const visualizeGraph = (nodes, edges) => {
         const svg = d3.select(svgRef.current);
         svg.selectAll("*").remove(); // Clear previous elements
-
+    
         const colorScale = d3.scaleLinear()
-            .domain([gateColoring[colorMetric].min, gateColoring[colorMetric].max]) // Use selected metric range
+            .domain([gateColoring[colorMetric].min, gateColoring[colorMetric].max])
             .range([colorPalette.start, colorPalette.end]);
-
+    
         const tooltip = d3.select(tooltipRef.current);
-
-        let currentZoom = 1, minZoom = 0.1, maxZoom = 5;
-        let currentX = 0, currentY = 0;
-        let basePositionX = 0; 
-        let basePositionY = 0;
-        // Zoom function that adjusts the viewBox instead of scaling elements
-        const zoom = d3.zoom()
-        .scaleExtent([minZoom, maxZoom]) // Set minimum and maximum zoom levels
-        .on("zoom", (event) => {
-            const transform = event.transform;;
-            if (transform.k === currentZoom) {
-                currentX = currentX - transform.x + basePositionX;
-                currentY = currentY - transform.y + basePositionY;
-                svg.attr("viewBox", `${(currentX)} ${(currentY)} ${graphWidth * currentZoom} ${graphHeight * currentZoom}`);
-            }
-            else {
-                svg.attr("viewBox", `${currentX} ${currentY} ${graphWidth * transform.k} ${graphHeight * transform.k}`);
-                basePositionX = transform.x;
-                basePositionY = transform.y;
-            }
-            currentZoom = transform.k;
+    
+        // Create a parent group for zooming
+        const zoomGroup = svg.append("g").attr("class", "zoom-group");
+    
+        // Set up zoom behavior
+        const zoom = d3.zoom().on("zoom", (e) => {
+            zoomGroup.attr("transform", e.transform); // Apply transform to the parent group
         });
-
+    
         svg.call(zoom);
-
-        //Setup edges between nodes. 
-        const link = svg.selectAll(".link")
+    
+        // Add links to the parent group
+        const link = zoomGroup.selectAll(".link")
             .data(edges)
             .enter()
             .append("line")
             .attr("class", "link")
             .style("stroke-width", 6)
-            .style('stroke', (d) => colorScale(d[colorMetric])) // Apply selected metric
-            .on("mouseover", function(event, d) {
+            .style("stroke", (d) => colorScale(d[colorMetric]))
+            .on("mouseover", function (event, d) {
                 tooltip.style("display", "block")
-                    .html(`<strong>Gate Error:</strong> ${Number((d.gate_error * 100).toFixed(5))}%<br><strong>Gate Length:</strong> ${Number(d.gate_length.toFixed(3))
-}`);
-            }) // display tooltip on hover
-            .on("mousemove", function(event) {
-                tooltip.style("top", (event.pageY - 30) + "px")
-                    .style("left", (event.pageX - 50) + "px");
-            }) // stop displaying tooltip 
-            .on("mouseout", function() {
+                    .html(
+                        `<strong>Gate Error:</strong> ${Number((d.gate_error * 100).toFixed(5))}%<br>
+                         <strong>Gate Length:</strong> ${Number(d.gate_length.toFixed(3))}`
+                    );
+            })
+            .on("mousemove", function (event) {
+                tooltip.style("top", `${event.pageY - 30}px`)
+                    .style("left", `${event.pageX - 50}px`);
+            })
+            .on("mouseout", function () {
                 tooltip.style("display", "none");
             });
-
-            // run the simulation, distance can be changed for nodes to be further apart, force needs to be negative
-        const simulation = d3.forceSimulation(nodes)
-            .force("link", d3.forceLink(edges).id(d => d.id).distance(0))
-            .force("charge", d3.forceManyBody().strength(-100))
-            .force("center", d3.forceCenter(graphWidth / 2, graphHeight / 2));
-
-                    // Middle node setup
-                    const middleNode = nodes[Math.floor(nodes.length / 2)];
-                    middleNode.fx = graphWidth / 2;
-                    middleNode.fy = graphHeight / 2;
-        
-        // Holds the middle node to get everything to settle into position
-        setTimeout(() => {
-                startDrag(middleNode, simulation);
-                setTimeout(() => endDrag(middleNode, simulation), 30000);
-            }, 0);
-        
-
-        //sets up nodes.
-        const node = svg.selectAll(".node")
+    
+        // Add nodes to the parent group
+        const node = zoomGroup.selectAll(".node")
             .data(nodes)
-            .enter().append("g")
+            .enter()
+            .append("g")
             .attr("class", "node")
             .on("click", (event, d) => showPopup(event, d, nodes, edges))
             .call(d3.drag()
@@ -290,17 +261,16 @@ const QuantumCircuit = (props) => {
                     d.fy = null;
                 })
             );
-
-        node.each(function(d) {
-            //base radius of the circle and the offset for each attribute
+    
+        // Add concentric rings for each node
+        node.each(function (d) {
             const baseRadius = 5;
             const radiusOffset = 5;
-
-            // sets the color of each ring based on the attribute's value. 
+    
             selectedAttributes.forEach((attribute, i) => {
                 const attributeObj = d.attributes.find(attr => attr.name === attribute);
                 const value = attributeObj ? attributeObj.value : 0;
-                const colorValue =  getAttributeScale(attribute)(value);
+                const colorValue = getAttributeScale(attribute)(value);
                 d3.select(this).append("circle")
                     .attr("cx", 0)
                     .attr("cy", 0)
@@ -311,9 +281,9 @@ const QuantumCircuit = (props) => {
                     .attr("stroke-width", 5);
             });
         });
-
-        //sets text as the id of the node. Might remove to get rid of distractions
-        svg.selectAll(".text")
+    
+        // Add text labels
+        zoomGroup.selectAll(".text")
             .data(nodes)
             .enter().append("text")
             .attr("class", "text")
@@ -321,21 +291,36 @@ const QuantumCircuit = (props) => {
             .attr("text-anchor", "middle")
             .style("pointer-events", "none")
             .text(d => d.id);
-
-        //turns on simulation for every tick 
+    
+        // Simulation
+        const simulation = d3.forceSimulation(nodes)
+            .force("link", d3.forceLink(edges).id(d => d.id).distance(0))
+            .force("charge", d3.forceManyBody().strength(-100))
+            .force("center", d3.forceCenter(graphWidth / 2, graphHeight / 2));
+                        // Middle node setup
+                        const middleNode = nodes[Math.floor(nodes.length / 2)];
+                        middleNode.fx = graphWidth / 2;
+                        middleNode.fy = graphHeight / 2;
+            
+            // Holds the middle node to get everything to settle into position
+        setTimeout(() => {
+                    startDrag(middleNode, simulation);
+                    setTimeout(() => endDrag(middleNode, simulation), 30000);
+                }, 0);
+                
         simulation.on("tick", () => {
-            link
-                .attr("x1", d => d.source.x)
+            link.attr("x1", d => d.source.x)
                 .attr("y1", d => d.source.y)
                 .attr("x2", d => d.target.x)
                 .attr("y2", d => d.target.y);
-
+    
             node.attr("transform", d => `translate(${d.x},${d.y})`);
-            svg.selectAll(".text")
+            zoomGroup.selectAll(".text")
                 .attr("x", d => d.x)
                 .attr("y", d => d.y);
         });
     };
+    
 
     // displays popup with qubit information
     const showPopup = (event, d, nodes, edges) => {
