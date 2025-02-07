@@ -9,6 +9,7 @@ const QuantumCircuit = (props) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
     const screenHeight = windowSize.height;
+    const screenWidth = windowSize.width;
     const graphWidth = Math.floor(windowSize.width);
     const graphHeight = Math.floor(windowSize.height * 0.8);
 
@@ -39,6 +40,8 @@ const QuantumCircuit = (props) => {
         readout_length: {visible: false, invert: true},
     });
 
+    
+
     // default ranges to prefill the manual range input fields. These are updated when manual mode is triggered. If set to automatic these are set to updated values automatically
     const [ranges, setRanges] = useState({
         T1: { min: 50, max: 200 },
@@ -50,6 +53,17 @@ const QuantumCircuit = (props) => {
         prob_meas1_prep0: { min: 0.1, max: 0.0 },
         readout_length: { min: 1200, max: 1000 },
     });
+
+    const attributeAbbreviations = {
+        T1: "T1",
+        T2: "T2",
+        frequency: "FQ",
+        anharmonicity: "AH",
+        readout_error: "RE",
+        prob_meas0_prep1: "M0",
+        prob_meas1_prep0: "M1",
+        readout_length: "RL"
+      };
 
     // default color pallette. 
     const [colorPalette, setColorPalette] = useState({ start: 'red', end: 'green' });
@@ -105,6 +119,27 @@ const QuantumCircuit = (props) => {
         setSelectedAttributes(["T1", "T2", "readout_error"])
     };
 
+    const calculateAutomaticAttributeRanges = () => {
+        return Object.keys(attributes).reduce((acc, attr) => {
+            const invert = attributes[attr].invert;
+            
+            // Extract the values for the given attribute from each qubit
+            const values = data?.qubits.map((qubit) => {
+                // For each qubit, find the dictionary with the matching attribute name
+                const attributeData = qubit.filter(item => item.name === attr); 
+                return attributeData.length > 0 ? attributeData[0].value : 0; // Use the value from the first match or 0 if not found
+            }) || [0];
+    
+            const range = {
+                min: Number(Math.min(...values).toFixed(5)),
+                max: Number(Math.max(...values).toFixed(5)),
+            };
+    
+            acc[attr] = invert ? { min: range.max, max: range.min } : range;
+            return acc;
+        }, {});
+    };
+
     // returns a color scale for a given attribute
     const getAttributeScale = (attribute) => {
         if (!ranges[attribute]) {
@@ -146,14 +181,21 @@ const QuantumCircuit = (props) => {
     // Fetch data based on selected backend
     useEffect(() => {
         if (selectedBackend) {
-            props.select_computer(selectedBackend)
+            props.select_computer(selectedBackend);
+            const startTime = performance.now(); // Start timing
+    
             fetch(`/api/get_json_backend/${selectedBackend}`)
                 .then(response => response.json())
-                .then(data => setData(data))
+                .then(data => {
+                    const endTime = performance.now(); // End timing
+                    console.log(`API call took ${(endTime - startTime).toFixed(2)} ms`);
+                    setData(data);
+                })
                 .catch(error => console.error("Error fetching backend data:", error));
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedBackend]);
+    
 
 
     // Process data for D3 visualization whenever data, colorMetric, or selectedAttributes changes
@@ -189,8 +231,8 @@ const QuantumCircuit = (props) => {
                 gate_error: gate.parameters.find(param => param.name === 'gate_error').value,
                 gate_length: gate.parameters.find(param => param.name === 'gate_length').value
             }));
-
-        visualizeGraph(nodes, edges);
+        setRanges(calculateAutomaticAttributeRanges());
+        setTimeout(visualizeGraph(nodes, edges), 100);
     };
 
 
@@ -265,7 +307,7 @@ const QuantumCircuit = (props) => {
         // Add concentric rings for each node
         node.each(function (d) {
             const baseRadius = 5;
-            const radiusOffset = 5;
+            const radiusOffset = 10;
     
             selectedAttributes.forEach((attribute, i) => {
                 const attributeObj = d.attributes.find(attr => attr.name === attribute);
@@ -278,7 +320,7 @@ const QuantumCircuit = (props) => {
                     .attr("fill", colorValue)
                     .attr("fill-opacity", 0)
                     .attr("stroke", colorValue)
-                    .attr("stroke-width", 5);
+                    .attr("stroke-width", radiusOffset);
             });
         });
     
@@ -329,7 +371,7 @@ const QuantumCircuit = (props) => {
         
         // Title and attributes
         let content = `<h3>Qubit ${d.id}</h3>`;
-        content += d.attributes.map(attr => `<p>${attr.name}: ${attr.value} ${attr.unit}</p>`).join("");
+        content += d.attributes.map(attr => `<p>${attr.name}: ${attr.value.toFixed(5)} ${attr.unit}</p>`).join("");
         
         // Display connections
         const connections = edges.filter(edge => !(edge.source.id === d.id) !== !(edge.target.id === d.id));
@@ -364,12 +406,12 @@ const QuantumCircuit = (props) => {
         });
         
         // Node visualization with concentric rings for selected attributes
-        const size = (100 / selectedAttributes.length) / 2;
+        const size = (150 / selectedAttributes.length) / 2;
         const svgSize = 200;
-        const centerX = svgSize / 2;
-        const centerY = svgSize / 2;
+        const centerX = svgSize / 2 + 25;
         const baseRadius = size;
         const radiusOffset = size;
+        const centerY = svgSize / 2 + (selectedAttributes.length * radiusOffset * 1.5)/2;
         
         // Append SVG for the node visualization
         const nodeSvg = popup.append("div")
@@ -381,13 +423,13 @@ const QuantumCircuit = (props) => {
         // Draw concentric rings for each selected attribute
         selectedAttributes.forEach((attribute, i) => {
             const attributeObj = d.attributes.find(attr => attr.name === attribute);
-            const value = attributeObj ? attributeObj.value : 0;
+            const value = (attributeObj ? attributeObj.value : 0);
             const colorValue = getAttributeScale(attribute)(value);
             const ringRadius = baseRadius + i * radiusOffset;
             
             nodeSvg.append("circle")
             .attr("cx", centerX)
-            .attr("cy", centerY)
+            .attr("cy", centerY )
             .attr("r", ringRadius)
             .attr("fill", colorValue)
             .attr("fill-opacity", 0)
@@ -406,7 +448,7 @@ const QuantumCircuit = (props) => {
             .attr("x1", centerX + ringRadius)
             .attr("y1", centerY)
             .attr("x2", centerX + ringRadius)
-            .attr("y2", labelY + ringRadius * 2.5 - 10)
+            .attr("y2", labelY + (ringRadius * 1.5) * (i % 2 === 0 ? 1 : -1) - (i % 2 === 0 ? 15 : 0))
             .attr("stroke", "black")
             .attr("stroke-dasharray", "2,2")
             .attr("stroke-width", 3);
@@ -414,12 +456,12 @@ const QuantumCircuit = (props) => {
             // Add the label text
             nodeSvg.append("text")
             .attr("x", labelX)
-            .attr("y", labelY + ringRadius * 2.5 + 10)
+            .attr("y", labelY + (ringRadius * 1.5) * (i % 2 === 0 ? 1 : -1))
             .attr("text-anchor", "middle")
             .attr("font-family", "Arial, sans-serif")
             .attr("font-size", "18px")
             .attr("fill", "#333")
-            .text(attribute);
+            .text(attributeAbbreviations[attribute]);
     
             popup.style("display", "block");
             // Get the popup's dimensions
@@ -432,11 +474,11 @@ const QuantumCircuit = (props) => {
             let top = event.clientY + 10;
             let left = event.clientX + 10;
             // Adjust position if the popup would overflow the screen
-            if (top + popupHeight > screenHeight) {
-                top = event.clientY - (top + popupHeight - screenHeight + 50); // Move up if it would overflow
+            if (top + popupHeight > screenHeight * 0.85) {
+                top = event.clientY - (top + popupHeight - screenHeight * 0.9); // Move up if it would overflow
             }
-            if (left > graphWidth) {
-                left = graphWidth
+            if (left > graphWidth * 0.8) {
+                left = graphWidth - screenWidth * 0.5
             }
     
             // Apply the adjusted position

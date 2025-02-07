@@ -1,6 +1,7 @@
 from random import randrange, uniform
 from time import time
 from qiskit import *
+import qiskit
 from functions.my_module_QC import ibmq_load_account
 from functions.quantum_algos import Shors_algo, two_qubit_algo, QFT, Grover, BV
 from pprint import pprint
@@ -383,8 +384,9 @@ def view2_post_func(algo, trans_times, backend_name):
 
                 for inst in qc:
                     if inst[0].name == 'cz' or inst[0].name == 'ecr':  # 先暂时只考虑 cx gate
-                        q_src = inst[1][0].index
-                        q_tgt = inst[1][1].index
+                        print(inst[1][0]._index)
+                        q_src = inst[1][0]._index
+                        q_tgt = inst[1][1]._index
                         gate = 'cx{}_{}'.format(q_src, q_tgt)
 
                         # 判断 q_src 在不在qubit_count 里

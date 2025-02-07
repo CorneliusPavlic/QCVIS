@@ -88,8 +88,8 @@ const ConfigurationModal = ({
             }) || [0];
     
             const range = {
-                min: Math.min(...values),
-                max: Math.max(...values),
+                min: Number(Math.min(...values).toFixed(5)),
+                max: Number(Math.max(...values).toFixed(5)),
             };
     
             acc[attr] = invert ? { min: range.max, max: range.min } : range;
