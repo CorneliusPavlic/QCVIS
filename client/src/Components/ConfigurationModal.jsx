@@ -35,6 +35,7 @@ const ConfigurationModal = ({
     colorPalette,
     gateColoring,
     selectedBackend,
+    setSelectedBackend,
     backends,
     onSave,
     onReset,
@@ -173,7 +174,10 @@ const handleAutomaticToggle = (checked) => {
                 <StyledSelect
                     fullWidth
                     value={localBackend || ''}
-                    onChange={(e) => setLocalBackend(e.target.value)}
+                    onChange={(e) => {
+                        setLocalBackend(e.target.value);
+                        handleSave();
+                        setSelectedBackend(e.target.value);}}
                 >
                     {backends.map((backend, index) => (
                         <MenuItem key={index} value={backend}>

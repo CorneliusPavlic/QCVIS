@@ -527,6 +527,7 @@ const QuantumCircuit = (props) => {
                 ranges={ranges}
                 colorPalette={colorPalette}
                 selectedBackend={selectedBackend}
+                setSelectedBackend={setSelectedBackend}
                 backends={backends}
                 gateColoring={gateColoring}
                 onSave={handleSaveConfig}
