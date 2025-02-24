@@ -66,6 +66,11 @@ const App = () => {
                     >
                         Quantum Circuit
                     </Text>
+                    <Text style={{
+                            fontSize: '2em',
+                            color:'#ffffff',
+                            textDecoration: 'none',
+                        }}>→</Text>
                     <Text
                         style={{
                             fontSize: '1.3em',

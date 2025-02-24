@@ -5,6 +5,7 @@ import TransDataModal from "./TransDataModal";
 
 const TransDataView = ({ backendName }) => {
   const [data, setData] = useState([]);
+  const [qasm, setQasm] = useState([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedBackend, setSelectedBackend] = useState(null);
@@ -27,6 +28,33 @@ const TransDataView = ({ backendName }) => {
   }, []);
 
   
+  const handleBubbleClick = async (circuitData) => {
+    console.log(circuitData.id)
+    console.log(qasm[circuitData.id]);
+    try {
+      const response = await fetch("/api/save_qpy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ circuit: qasm[circuitData.id] }),
+      });
+  
+      if (!response.ok) throw new Error("Failed to fetch .qpy file");
+  
+      // Convert response to blob and trigger download
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${circuitData.id}.qpy`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Error downloading .qpy file:", error);
+    }
+  };
+
+  
   const fetchData = async (config) => {
     setLoading(true);
     try {
@@ -37,7 +65,9 @@ const TransDataView = ({ backendName }) => {
       });
       const result = await response.json();
       setLoading(false);
+      console.log(result)
       setData(Object.values(result.data));
+      setQasm(result.circuits)
       console.log(data)
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -128,15 +158,19 @@ const TransDataView = ({ backendName }) => {
             Gates Quality: ${d.gates_quality.toFixed(2)}
           `)
           .style("left", `${event.pageX + 10}px`)
-          .style("top", `${event.pageY + 10}px`);
+          .style("top", `${event.pageY - 75}px`);
       })
       .on("mousemove", (event) => {
         tooltip.style("left", `${event.pageX + 10}px`)
-          .style("top", `${event.pageY + 10}px`);
+          .style("top", `${event.pageY - 75}px`);
       })
       .on("mouseout", () => {
         tooltip.style("display", "none");
+      })
+      .on("click", (event, d) => {
+        handleBubbleClick(d);  // Send selected circuit data to backend for .qpy file
       });
+      
   };
 
   useEffect(() => {
@@ -152,8 +186,19 @@ const TransDataView = ({ backendName }) => {
         backendName={backendName}
         backends={backends}
       />
-      {loading ? (
+      {loading ? (<div
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <Spin tip="Loading..." size="large" />
+      </div>
       ) : (
         <div id="visualization" style={{ width: "80%", height: {visualizationHeight}, border: "1px solid #ccc" }} />
       )}
