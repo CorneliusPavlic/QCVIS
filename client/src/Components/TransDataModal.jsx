@@ -9,24 +9,24 @@ const TransDataModal = ({ onSave, backendName, backends }) => {
   const [selectedAlgo, setSelectedAlgo] = useState("bv");
   const [transTimes, setTransTimes] = useState(40);
   const [selectedBackend, setSelectedBackend] = useState(backendName);
-  const [qpyFile, setQpyFile] = useState(null);
+  const [qasmFile, setQasmFile] = useState(null);
 
-  // Handle QPY File Upload
+  // Handle QASM File Upload
   const handleFileUpload = (file) => {
-    if (qpyFile) {
-      message.error("Only one QPY file can be uploaded at a time.");
+    if (qasmFile) {
+      message.error("Only one QASM file can be uploaded at a time.");
       return false;
     }
-    
-    setQpyFile(file);
-    message.success("QPY File uploaded successfully!");
+
+    setQasmFile(file);
+    message.success("QASM File uploaded successfully!");
     return false;
   };
 
-  // Remove QPY File
+  // Remove QASM File
   const handleRemoveFile = () => {
-    setQpyFile(null);
-    message.info("QPY File removed.");
+    setQasmFile(null);
+    message.info("QASM File removed.");
   };
 
   // Save Data
@@ -35,12 +35,12 @@ const TransDataModal = ({ onSave, backendName, backends }) => {
     formData.append("backend_name", selectedBackend);
     formData.append("trans_times", transTimes);
 
-    if (selectedAlgo === "upload_qpy") {
-      if (qpyFile) {
-        formData.append("qpyFile", qpyFile);
-        formData.append("view2_algo", "qpy");
+    if (selectedAlgo === "upload_qasm") {
+      if (qasmFile) {
+        formData.append("qasmFile", qasmFile);
+        formData.append("view2_algo", "qasm");
       } else {
-        message.error("Please upload a QPY file.");
+        message.error("Please upload a QASM file.");
         return;
       }
     } else {
@@ -71,9 +71,9 @@ const TransDataModal = ({ onSave, backendName, backends }) => {
         style={{
           width: "100%",
           marginBottom: 16,
-          height: 40,  // Fix height
+          height: 40,
           display: "flex",
-          alignItems: "center", // Center text
+          alignItems: "center",
         }}
         value={selectedBackend}
         onChange={setSelectedBackend}
@@ -90,14 +90,14 @@ const TransDataModal = ({ onSave, backendName, backends }) => {
         style={{
           width: "100%",
           marginBottom: 16,
-          height: 40,  // Fix height
+          height: 40,
           display: "flex",
           alignItems: "center",
         }}
         value={selectedAlgo}
         onChange={(value) => {
           setSelectedAlgo(value);
-          setQpyFile(null);
+          setQasmFile(null);
         }}
       >
         <Option value="shor">Shor's Algorithm</Option>
@@ -105,20 +105,20 @@ const TransDataModal = ({ onSave, backendName, backends }) => {
         <Option value="qft">QFT Algorithm</Option>
         <Option value="grover">Grover's Algorithm</Option>
         <Option value="bv">Bernstein-Vazirani Algorithm</Option>
-        <Option value="upload_qpy">Upload QPY File</Option>
+        <Option value="upload_qasm">Upload QASM File</Option>
       </Select>
 
-      {selectedAlgo === "upload_qpy" && (
+      {selectedAlgo === "upload_qasm" && (
         <>
-          <Typography.Text strong>Upload a QPY File</Typography.Text>
+          <Typography.Text strong>Upload a QASM File</Typography.Text>
           <Upload
             beforeUpload={handleFileUpload}
             showUploadList={true}
-            accept=".qpy"
-            fileList={qpyFile ? [qpyFile] : []}
+            accept=".qasm"
+            fileList={qasmFile ? [qasmFile] : []}
             onRemove={handleRemoveFile}
           >
-            {!qpyFile && (
+            {!qasmFile && (
               <Button
                 icon={<UploadOutlined />}
                 style={{
@@ -127,17 +127,17 @@ const TransDataModal = ({ onSave, backendName, backends }) => {
                   marginBottom: 16,
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center",  // Center icon and text
+                  justifyContent: "center",
                 }}
               >
-                Upload QPY File
+                Upload QASM File
               </Button>
             )}
           </Upload>
 
-          {qpyFile && (
+          {qasmFile && (
             <Typography.Text type="success" style={{ display: "block", marginBottom: 16 }}>
-              {qpyFile.name} uploaded successfully
+              {qasmFile.name} uploaded successfully
             </Typography.Text>
           )}
         </>
@@ -164,7 +164,7 @@ const TransDataModal = ({ onSave, backendName, backends }) => {
           height: 40,
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",  // Center text
+          justifyContent: "center",
         }}
         onClick={handleSave}
       >

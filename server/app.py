@@ -111,27 +111,38 @@ transpiled_data = 'transData_TBD'
 #      -H "Content-Type: application/json" \
 #      -d '{"view2_algo": "BV", "trans_times": 40, "backend_name": "ibm_fez"}'
 
-@app.route('/api/view2_api', methods = ['GET', 'POST'])
+from flask import Flask, request, jsonify
+from qiskit import QuantumCircuit
+import io
+
+app = Flask(__name__)
+
+@app.route('/api/view2_api', methods=['GET', 'POST'])
 def view2_api():
     try:
         global transpiled_data, api_data
         print("this is started")
-        qc = None
-        # 获取请求体 Request Body
-        algo = request.form['view2_algo'] or 'shor'
-        trans_times = request.form['trans_times'] or 10
-        backend_name = request.form['backend_name'] or 'ibmq_jakarta' # 如果没有指定，默认用 ibmq_jakarta 来执行
+        qc = None  # Quantum Circuit placeholder
 
-        if "qpyFile" in request.files:
-            qpy_file = request.files["qpyFile"]
-            qpy_bytes = qpy_file.read()  # Read binary content
-            qc = load(io.BytesIO(qpy_bytes))[0]
-        
+        # 获取请求体 Request Body
+        algo = request.form.get('view2_algo', 'shor')
+        trans_times = int(request.form.get('trans_times', 10))
+        backend_name = request.form.get('backend_name', 'ibmq_jakarta')
+
+        if "qasmFile" in request.files:
+            qasm_file = request.files["qasmFile"]
+            qasm_string = qasm_file.read().decode("utf-8")  # Read file as text
+            qc = QuantumCircuit.from_qasm_str(qasm_string)  # ✅ Load QASM into QuantumCircuit
+            print("QASM File loaded successfully!")
+
+        # Pass `qc` to `view2_post_func`, even if it's `None`
         result = view2_post_func(algo, trans_times, backend_name, qc)
+
+        # Convert circuits to QASM format
         circuits_dict = {}
         for key, qc in result[1].items():
             try:
-                circuits_dict[key] = dumps(qc)  # Convert each circuit to QASM
+                circuits_dict[key] = qc.qasm()  # ✅ Convert circuit to QASM
             except Exception as e:
                 print(f"Error processing {key}: {e}")
                 circuits_dict[key] = ""  # Store empty string if conversion fails
@@ -143,11 +154,12 @@ def view2_api():
         }
         transpiled_data = result[1]
         print("we got past the view2_api part")
-        return api_data
+        return jsonify(api_data)  # ✅ Return JSON response
         
     except Exception as e:
-        print(e)
-        return 'error'
+        print(f"Error: {e}")
+        return jsonify({"error": str(e)}), 500  # ✅ Return error as JSON
+
 
 @app.route("/api/save_qpy", methods=["POST"])
 def save_qpy():
