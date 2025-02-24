@@ -6,7 +6,7 @@ from functions.quantum_algos import Shors_algo, two_qubit_algo, QFT, Grover, BV
 from pprint import pprint
 import requests
 import re
-
+import sys
 # def view2_post_func(algo, trans_times, backend_name, query_data):
 
 
@@ -293,7 +293,7 @@ import re
 
 
 
-def view2_post_func(algo, trans_times, backend_name):
+def view2_post_func(algo, trans_times, backend_name, qc=None):
 
     # 每种 qubit 的T1，T2， error rate的平均值是多少
     backend_data = requests.get(f"https://api.quantum.ibm.com/api/backends/{backend_name}/properties").json()
@@ -334,21 +334,19 @@ def view2_post_func(algo, trans_times, backend_name):
     # build a quantum circuit
 
     # 根据传进来的 algo 名称，决定algo
-    if algo == 'shor':
-        qc = Shors_algo()
-    elif algo == 'two_qubit':
-        qc = two_qubit_algo()
-    elif algo=='qft':
-        qc = QFT()
-    elif algo=='grover':
-        qc = Grover()
-    elif algo=='bv':
-        qc = BV()
-    else:
-        qc = Shors_algo()
-
-
-
+    if qc is None:
+        if algo == 'shor':
+            qc = Shors_algo()
+        elif algo == 'two_qubit':
+            qc = two_qubit_algo()
+        elif algo=='qft':
+            qc = QFT()
+        elif algo=='grover':
+            qc = Grover()
+        elif algo=='bv':
+            qc = BV()
+        else:
+            qc = Shors_algo()
 
     config = requests.get("https://api.quantum.ibm.com/api/users/backends").json()
     for conf in config:
@@ -359,8 +357,8 @@ def view2_post_func(algo, trans_times, backend_name):
     trans_data = {}
     circuit_data = {}
 
-    for i in range(trans_times):
-        qc_comp = transpile(qc , coupling_map=backend_data['configuration']["couplingMap"], basis_gates=backend_data['configuration']["basisGates"], optimization_level=2,)
+    for i in range(int(trans_times)):
+        qc_comp = transpile(qc , coupling_map=backend_data['configuration']["couplingMap"], basis_gates=backend_data['configuration']["basisGates"], optimization_level=3, layout_method="sabre", routing_method="sabre", translation_method='synthesis' )
         trans_data['trans_{}'.format(i)] = qc_comp._data
         circuit_data['trans_{}'.format(i)] = qc_comp
     # 用来生成画图用的数据
@@ -383,8 +381,8 @@ def view2_post_func(algo, trans_times, backend_name):
 
                 for inst in qc:
                     if inst[0].name == 'cz' or inst[0].name == 'ecr':  # 先暂时只考虑 cx gate
-                        q_src = inst[1][0].index
-                        q_tgt = inst[1][1].index
+                        q_src = inst[1][0]._index
+                        q_tgt = inst[1][1]._index
                         gate = 'cx{}_{}'.format(q_src, q_tgt)
 
                         # 判断 q_src 在不在qubit_count 里

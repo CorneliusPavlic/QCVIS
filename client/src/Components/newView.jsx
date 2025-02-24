@@ -307,11 +307,7 @@ const QuantumCircuit = (props) => {
         // Add concentric rings for each node
         node.each(function (d) {
             const baseRadius = 5;
-<<<<<<< HEAD
-            const radiusOffset = 5;
-=======
             const radiusOffset = 10;
->>>>>>> 9ef443f4a9f0e2393201419f67d84231750a8833
     
             selectedAttributes.forEach((attribute, i) => {
                 const attributeObj = d.attributes.find(attr => attr.name === attribute);
@@ -343,19 +339,6 @@ const QuantumCircuit = (props) => {
             .force("link", d3.forceLink(edges).id(d => d.id).distance(0))
             .force("charge", d3.forceManyBody().strength(-100))
             .force("center", d3.forceCenter(graphWidth / 2, graphHeight / 2));
-<<<<<<< HEAD
-                        // Middle node setup
-                        const middleNode = nodes[Math.floor(nodes.length / 2)];
-                        middleNode.fx = graphWidth / 2;
-                        middleNode.fy = graphHeight / 2;
-            
-            // Holds the middle node to get everything to settle into position
-        setTimeout(() => {
-                    startDrag(middleNode, simulation);
-                    setTimeout(() => endDrag(middleNode, simulation), 30000);
-                }, 0);
-                
-=======
     
         // Middle node setup
         const middleNode = nodes[Math.floor(nodes.length / 2)];
@@ -367,7 +350,6 @@ const QuantumCircuit = (props) => {
                 startDrag(middleNode, simulation);
                 setTimeout(() => endDrag(middleNode, simulation), 30000);
             }, 0);
->>>>>>> 9ef443f4a9f0e2393201419f67d84231750a8833
         simulation.on("tick", () => {
             link.attr("x1", d => d.source.x)
                 .attr("y1", d => d.source.y)

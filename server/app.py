@@ -9,7 +9,9 @@ from qiskit.qpy import dump
 from routes.view1_api_func import temporal_data_function
 from routes.view2_post_func import view2_post_func
 from qiskit.qasm3 import dumps
+from qiskit.qpy import load
 import qiskit
+import io
 app = Flask(__name__)
 CORS(app)
 
@@ -114,41 +116,34 @@ def view2_api():
     try:
         global transpiled_data, api_data
         print("this is started")
-        if request.method == 'POST':
-            if not request.data:
-                print('No request body found')
-                return 'No request body found'
+        qc = None
+        # 获取请求体 Request Body
+        algo = request.form['view2_algo'] or 'shor'
+        trans_times = request.form['trans_times'] or 10
+        backend_name = request.form['backend_name'] or 'ibmq_jakarta' # 如果没有指定，默认用 ibmq_jakarta 来执行
 
-            # 获取请求体 Request Body
-            algo = request.get_json()['view2_algo'] or 'shor'
-            trans_times = request.get_json()['trans_times'] or 10
-            backend_name = request.get_json()['backend_name'] or 'ibmq_jakarta' # 如果没有指定，默认用 ibmq_jakarta 来执行
-            print(trans_times)
-
-            result = view2_post_func(algo, trans_times, backend_name)
-            circuits_dict = {}
-            for key, qc in result[1].items():
-                try:
-                    circuits_dict[key] = dumps(qc)  # Convert each circuit to QASM
-                except Exception as e:
-                    print(f"Error processing {key}: {e}")
-                    circuits_dict[key] = ""  # Store empty string if conversion fails
-                    
-            api_data = {
-                'data': result[0],
-                'circuits': circuits_dict,
-                'ref_value': result[2]
-            }
-            transpiled_data = result[1]
-            print("we got past the view2_api part")
-            return api_data
+        if "qpyFile" in request.files:
+            qpy_file = request.files["qpyFile"]
+            qpy_bytes = qpy_file.read()  # Read binary content
+            qc = load(io.BytesIO(qpy_bytes))[0]
         
-        if request.method == 'GET':
-            # 这种情况是已经 通过post请求修改了transpiled_data, 所以类型不再是‘transData_TBD’的 str, 所以可以开始处理而生成 View 3
-            if not isinstance(transpiled_data, str):
-                return api_data
-            # 没有修改 api_data 的情况，直接返回原始数值 ‘api_data_TBD’
-            return api_data
+        result = view2_post_func(algo, trans_times, backend_name, qc)
+        circuits_dict = {}
+        for key, qc in result[1].items():
+            try:
+                circuits_dict[key] = dumps(qc)  # Convert each circuit to QASM
+            except Exception as e:
+                print(f"Error processing {key}: {e}")
+                circuits_dict[key] = ""  # Store empty string if conversion fails
+                
+        api_data = {
+            'data': result[0],
+            'circuits': circuits_dict,
+            'ref_value': result[2]
+        }
+        transpiled_data = result[1]
+        print("we got past the view2_api part")
+        return api_data
         
     except Exception as e:
         print(e)
@@ -332,7 +327,7 @@ def save_qpy():
     
 
 if __name__ == '__main__':
-    app.run(port=5000)
+    app.run(port=5000, debug=True)
 
 
 

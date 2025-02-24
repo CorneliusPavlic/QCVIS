@@ -55,25 +55,30 @@ const TransDataView = ({ backendName }) => {
   };
 
   
-  const fetchData = async (config) => {
+  const fetchData = async (formData) => {
     setLoading(true);
+
+    console.log("FormData Contents:");
+    formData.forEach((value, key) => {
+      console.log(key, value);
+    });
+    
     try {
+      console.log("Sending request with FormData:", formData);
       const response = await fetch("/api/view2_api", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(config),
+        body: formData, // Do NOT include headers manually; browser sets it for FormData
       });
       const result = await response.json();
       setLoading(false);
-      console.log(result)
-      setData(Object.values(result.data));
-      setQasm(result.circuits)
-      console.log(data)
+      console.log("Received response:", result);
+      setData(Object.values(result.data || {}));
+      setQasm(result.circuits || {});
     } catch (error) {
       console.error("Error fetching data:", error);
-    } finally {
     }
   };
+  
 
   const renderVisualization = () => {
     const container = document.getElementById("visualization");
