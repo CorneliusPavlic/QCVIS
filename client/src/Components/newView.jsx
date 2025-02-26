@@ -389,7 +389,7 @@ const QuantumCircuit = (props) => {
           .map(connection => {
             const connectedQubit = connection.source.id === d.id ? connection.target : connection.source;
             return `<p><a href="#" class="connected-qubit" data-qubit="${connectedQubit.id}">Qubit ${connectedQubit.id}</a> - 
-            Gate Error: ${Number((d.gate_error * 100).toFixed(5))}%, Gate Length: ${Number(connection.gate_length.toFixed(3))}</p>`;
+            Gate Error: ${Number((connection.gate_error * 100).toFixed(5))}%, Gate Length: ${Number(connection.gate_length.toFixed(3))}</p>`;
           })
           .join("");
         

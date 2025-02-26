@@ -35,17 +35,11 @@ def root():
     except:
         return 'error'
 
-# @app.route('/api/add_one')
-# def hello():
-#     try:
-#         # db.test.insert_one({'_id':0,'title': "todo title", 'body': "todo body"})
-#         return 'hello'
-#     except:
-#         return 'error'
 
 @app.route('/api/pending_jobs')
 def get_pending_jobs():
     try:
+        print("what is going on")
         response = requests.get('https://api.quantum.ibm.com/api/users/backends')
         print({backend.get('name'): backend.get('queueLength', 1) for backend in response.json()})
         return {backend.get('name'): backend.get('queueLength', 1) for backend in response.json()}
@@ -111,11 +105,8 @@ transpiled_data = 'transData_TBD'
 #      -H "Content-Type: application/json" \
 #      -d '{"view2_algo": "BV", "trans_times": 40, "backend_name": "ibm_fez"}'
 
-from flask import Flask, request, jsonify
-from qiskit import QuantumCircuit
-import io
 
-app = Flask(__name__)
+
 
 @app.route('/api/view2_api', methods=['GET', 'POST'])
 def view2_api():
@@ -142,7 +133,7 @@ def view2_api():
         circuits_dict = {}
         for key, qc in result[1].items():
             try:
-                circuits_dict[key] = qc.qasm()  # ✅ Convert circuit to QASM
+                circuits_dict[key] = dumps(qc)  # Convert QuantumCircuit to QASM
             except Exception as e:
                 print(f"Error processing {key}: {e}")
                 circuits_dict[key] = ""  # Store empty string if conversion fails
@@ -164,6 +155,7 @@ def view2_api():
 @app.route("/api/save_qpy", methods=["POST"])
 def save_qpy():
     # try:
+        print(request.json)
         # Get circuit data (as OpenQASM strings) from the request
         circuit = request.json.get("circuit")
         print(circuit)
@@ -339,7 +331,7 @@ def save_qpy():
     
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run(debug=True)
 
 
 

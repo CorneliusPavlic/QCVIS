@@ -30,7 +30,7 @@ const TransDataView = ({ backendName }) => {
   
   const handleBubbleClick = async (circuitData) => {
     console.log(circuitData.id)
-    console.log(qasm[circuitData.id]);
+    console.log(qasm);
     try {
       const response = await fetch("/api/save_qpy", {
         method: "POST",
@@ -73,7 +73,7 @@ const TransDataView = ({ backendName }) => {
       setLoading(false);
       console.log("Received response:", result);
       setData(Object.values(result.data || {}));
-      setQasm(result.circuits || {});
+      setQasm({...result.circuits});
     } catch (error) {
       console.error("Error fetching data:", error);
     }
