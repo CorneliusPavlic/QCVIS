@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Spin, Button } from "antd";
 import * as d3 from "d3";
 import TransDataModal from "./TransDataModal";
 
 const TransDataView = ({ backendName }) => {
   const [data, setData] = useState([]);
-  const [qasm, setQasm] = useState([]);
+  const [qasm, setQasm] = useState(null);
+  const qasmRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedBackend, setSelectedBackend] = useState(null);
@@ -27,15 +28,19 @@ const TransDataView = ({ backendName }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    qasmRef.current = qasm;
+  }, [qasm]);
   
+
   const handleBubbleClick = async (circuitData) => {
     console.log(circuitData.id)
-    console.log(qasm);
+    console.log(qasmRef.current);
     try {
       const response = await fetch("/api/save_qpy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ circuit: qasm[circuitData.id] }),
+        body: JSON.stringify({ circuit: qasmRef.current[circuitData.id] }),
       });
   
       if (!response.ok) throw new Error("Failed to fetch .qpy file");
@@ -71,9 +76,9 @@ const TransDataView = ({ backendName }) => {
       });
       const result = await response.json();
       setLoading(false);
-      console.log("Received response:", result);
+      console.log("Received response:", result.circuits);
       setData(Object.values(result.data || {}));
-      setQasm({...result.circuits});
+      setQasm({...result.circuits})
     } catch (error) {
       console.error("Error fetching data:", error);
     }
