@@ -189,7 +189,7 @@ def BV():
     s = s[::-1]  # reverse s to fit qiskit's qubit ordering
     for q in range(n):
         if s[q] == '0':
-            bv_circuit.i(q)
+            bv_circuit.id(q)
         else:
             bv_circuit.cx(q, n)
 
