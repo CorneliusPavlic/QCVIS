@@ -34,8 +34,6 @@ const TransDataView = ({ backendName }) => {
   
 
   const handleBubbleClick = async (circuitData) => {
-    console.log(circuitData.id)
-    console.log(qasmRef.current);
     try {
       const response = await fetch("/api/save_qpy", {
         method: "POST",
@@ -63,20 +61,14 @@ const TransDataView = ({ backendName }) => {
   const fetchData = async (formData) => {
     setLoading(true);
 
-    console.log("FormData Contents:");
-    formData.forEach((value, key) => {
-      console.log(key, value);
-    });
     
     try {
-      console.log("Sending request with FormData:", formData);
       const response = await fetch("/api/view2_api", {
         method: "POST",
         body: formData, // Do NOT include headers manually; browser sets it for FormData
       });
       const result = await response.json();
       setLoading(false);
-      console.log("Received response:", result.circuits);
       setData(Object.values(result.data || {}));
       setQasm({...result.circuits})
     } catch (error) {
@@ -87,11 +79,6 @@ const TransDataView = ({ backendName }) => {
 
   const renderVisualization = () => {
     const container = document.getElementById("visualization");
-
-    if (!container) {
-      console.error("Visualization container not found!");
-      return;
-    }
 
     const svg = d3.select(container).html("").append("svg").attr("width", "100%").attr("height", visualizationHeight);
 
